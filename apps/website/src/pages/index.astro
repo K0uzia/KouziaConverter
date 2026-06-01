@@ -1,0 +1,131 @@
+---
+import Nav from '../components/Nav.astro';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <Nav />
+  <main class="page">
+    <section class="hero">
+      <h1>ConvertAllLocal</h1>
+      <p class="lead">
+        Le même outil de conversion, dans votre navigateur ou en application installée.
+        Gratuit et open source. Rien n'est envoyé sur un serveur.
+      </p>
+      <div class="cta">
+        <a href="/convert" class="btn btn-primary">Convertir en ligne</a>
+        <a href="/download" class="btn btn-secondary">Télécharger l'application</a>
+      </div>
+    </section>
+
+    <section class="features">
+      <article>
+        <h2>100 % local</h2>
+        <p>
+          Sur le web, les fichiers restent dans votre navigateur. Avec l'application,
+          tout se passe sur votre machine via FFmpeg et des outils natifs (à venir).
+        </p>
+      </article>
+      <article>
+        <h2>Même service, deux environnements</h2>
+        <p>
+          Les limites sur le site viennent du navigateur (mémoire, codecs), pas d'un modèle
+          payant ou d'une version d'essai.
+        </p>
+      </article>
+      <article>
+        <h2>Open source (MIT)</h2>
+        <p>
+          Projet gratuit pour toujours. Code public, contributions bienvenues.
+        </p>
+      </article>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 2rem 0 3rem;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+    margin: 0 0 1rem;
+  }
+
+  .lead {
+    font-size: 1.125rem;
+    color: var(--cal-text-muted);
+    max-width: 40rem;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--cal-radius);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--cal-accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--cal-accent-hover);
+    text-decoration: none;
+  }
+
+  .btn-secondary {
+    border: 1px solid var(--cal-border);
+    color: var(--cal-text);
+    background: var(--cal-surface);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--cal-accent);
+    text-decoration: none;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .features article {
+    padding: 1.25rem;
+    background: var(--cal-surface);
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-radius);
+  }
+
+  .features h2 {
+    font-size: 1rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .features p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--cal-text-muted);
+    line-height: 1.5;
+  }
+</style>

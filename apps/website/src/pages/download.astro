@@ -1,0 +1,91 @@
+---
+import Nav from '../components/Nav.astro';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Télécharger - ConvertAllLocal" description="Application ConvertAllLocal, même outil sans les limites du navigateur.">
+  <Nav />
+  <main class="page">
+    <h1>Télécharger l'application</h1>
+    <p class="lead">
+      L'application installée est le même ConvertAllLocal, sans les contraintes du navigateur
+      (gros fichiers, vidéo, batch, icônes ICO/ICNS). Gratuite et open source.
+    </p>
+
+    <section class="card">
+      <h2>Releases</h2>
+      <p class="muted">Bientôt disponible sur GitHub Releases.</p>
+      <ul class="platforms">
+        <li><strong>Linux</strong> : AppImage / .deb (prévu)</li>
+        <li><strong>Windows</strong> : installateur MSI ou portable (prévu)</li>
+      </ul>
+      <p class="note">
+        Stack prévue : Tauri 2 + Svelte, binaire léger, pas d'Electron.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Pourquoi l'application ?</h2>
+      <ul>
+        <li>Vidéo (MP4, WebM, MOV, MKV, AVI) et formats icônes spécialisés</li>
+        <li>Fichiers plus volumineux et traitement par lot</li>
+        <li>Fonctionnement hors ligne après installation</li>
+        <li>Toujours 100 % local, aucun envoi vers un serveur</li>
+      </ul>
+    </section>
+
+    <p>
+      <a href="/convert">Utiliser la version navigateur</a> pour les images (avec limites techniques).
+    </p>
+  </main>
+</Layout>
+
+<style>
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 4rem;
+  }
+
+  h1 {
+    margin: 0 0 0.75rem;
+  }
+
+  .lead {
+    color: var(--cal-text-muted);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .card {
+    background: var(--cal-surface);
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-radius);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .card h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.125rem;
+  }
+
+  .muted {
+    color: var(--cal-text-muted);
+    margin: 0 0 1rem;
+  }
+
+  .platforms,
+  .card ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--cal-text-muted);
+    line-height: 1.7;
+  }
+
+  .note {
+    margin: 1rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--cal-text-muted);
+  }
+</style>

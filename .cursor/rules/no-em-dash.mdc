@@ -1,0 +1,36 @@
+---
+description: Interdit le tiret cadratin (—) ; préférer "-" seulement si nécessaire, pas en milieu de phrase
+alwaysApply: true
+---
+
+# Ponctuation : pas de tiret cadratin (—)
+
+## Règle
+
+- **Ne pas utiliser** le tiret cadratin `—` (U+2014) dans le projet : texte UI, docs, commentaires orientés utilisateur, messages de commit si rédigés en français/anglais pour le produit.
+- **Préférer** reformuler la phrase (virgule, point, deux-points, parenthèses).
+- Le **tiret ASCII** `-` (U+002D) est autorisé **uniquement quand c'est nécessaire**, pas comme substitut stylistique du cadratin en plein milieu de phrase.
+
+## Quand `-` est acceptable
+
+- **Titres de page** : `Convertir - ConvertAllLocal` (séparateur titre / marque).
+- **Listes techniques** : `Linux - AppImage`, `browser/ - conversion navigateur`.
+- **Plages ou noms composés** : `WebP 80 %`, chemins, identifiants, CLI.
+- **Tableaux** : cellule vide ou séparateur minimal si aucune autre formulation n'est possible (ex. `:` ou laisser vide).
+
+## Quand éviter `-` au milieu d'une phrase
+
+```text
+❌ Traitement local — rien n'est envoyé sur un serveur.
+✅ Traitement local. Rien n'est envoyé sur un serveur.
+
+❌ Gratuit, open source — rien n'est envoyé sur un serveur.
+✅ Gratuit et open source, sans envoi sur un serveur.
+
+❌ Même outil — sans limite navigateur.
+✅ Même outil, sans les limites du navigateur.
+```
+
+## Vérification
+
+Avant de valider une PR ou une rédaction, chercher le caractère `—` dans les fichiers modifiés et le remplacer par une reformulation ou un usage légitime de `-` (titres, listes).

@@ -1,0 +1,171 @@
+---
+import { BROWSER_MAX_FILE_BYTES } from '@convertalllocal/capabilities';
+import {
+  IMAGE_FORMAT_DOCS,
+  VIDEO_FORMAT_DOCS,
+  docAvailabilitySymbol,
+} from '@convertalllocal/core';
+import Nav from '../components/Nav.astro';
+import Layout from '../layouts/Layout.astro';
+
+const maxMb = Math.round(BROWSER_MAX_FILE_BYTES / (1024 * 1024));
+---
+
+<Layout title="Formats - ConvertAllLocal" description="Formats convertibles sur le site et dans l'application.">
+  <Nav />
+  <main class="page">
+    <h1>Formats supportés</h1>
+    <p class="lead">
+      Même catalogue selon l'environnement. Sur le <strong>site</strong>, uniquement images
+      (pas de vidéo), avec une limite de <strong>{maxMb}&nbsp;Mo</strong> par fichier.
+      L'<strong>application</strong> couvre l'ensemble sans cette limite navigateur.
+    </p>
+
+    <section>
+      <h2>Vidéo</h2>
+      <p class="section-note">Conversion vidéo : application uniquement.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Format</th>
+              <th>Usage principal</th>
+              <th>Avantages</th>
+              <th>Site (navigateur)</th>
+              <th>Application</th>
+            </tr>
+          </thead>
+          <tbody>
+            {VIDEO_FORMAT_DOCS.map((row) => (
+              <tr>
+                <td><strong>{row.label}</strong></td>
+                <td>{row.mainUse}</td>
+                <td class="note">{row.advantages}</td>
+                <td>{docAvailabilitySymbol(row.web, 'web', maxMb)}</td>
+                <td>{docAvailabilitySymbol(row.app, 'app')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Images et icônes</h2>
+      <p class="section-note">
+        Sur le site : images uniquement, chaque fichier ≤ {maxMb}&nbsp;Mo.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Format</th>
+              <th>Usage principal</th>
+              <th>Site (navigateur)</th>
+              <th>Application</th>
+            </tr>
+          </thead>
+          <tbody>
+            {IMAGE_FORMAT_DOCS.map((row) => (
+              <tr>
+                <td><strong>{row.label}</strong></td>
+                <td>{row.mainUse}</td>
+                <td>{docAvailabilitySymbol(row.web, 'web', maxMb)}</td>
+                <td>{docAvailabilitySymbol(row.app, 'app')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="presets">
+      <h2>Présets suggérés</h2>
+      <p>
+        WebP 80 %, MP4 H.264, ICO (Windows), ICNS (macOS), PNG 256×256 (Linux).
+        Configurables dans l'interface convertisseur.
+      </p>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 4rem;
+  }
+
+  h1 {
+    margin: 0 0 0.75rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .lead {
+    color: var(--cal-text-muted);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .section-note {
+    color: var(--cal-text-muted);
+    font-size: 0.875rem;
+    margin: 0 0 0.75rem;
+  }
+
+  section + section {
+    margin-top: 2.5rem;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-radius);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  th,
+  td {
+    padding: 0.625rem 0.875rem;
+    text-align: left;
+    border-bottom: 1px solid var(--cal-border);
+  }
+
+  th {
+    background: var(--cal-surface);
+    font-weight: 600;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .note {
+    color: var(--cal-text-muted);
+    font-size: 0.8125rem;
+  }
+
+  .presets {
+    margin-top: 2.5rem;
+  }
+
+  .presets h2 {
+    font-size: 1.125rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .presets p {
+    color: var(--cal-text-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+</style>

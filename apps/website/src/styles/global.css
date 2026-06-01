@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@import "normalize.css";
+@import "@convertalllocal/ui/styles/tokens.css";
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+    background: var(--cal-bg);
+    color: var(--cal-text);
+    font-family: var(--cal-font);
+  }
+
+  a {
+    color: var(--cal-accent);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "convertalllocal",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @convertalllocal/website dev",
+    "build": "pnpm -r build",
+    "check": "pnpm -r check",
+    "setup": "pnpm install",
+    "dev:npx": "npx pnpm@10.12.1 --filter @convertalllocal/website dev",
+    "build:npx": "npx pnpm@10.12.1 -r build",
+    "check:npx": "npx pnpm@10.12.1 -r check",
+    "setup:npx": "npx pnpm@10.12.1 install"
+  },
+  "packageManager": "pnpm@10.12.1"
+}

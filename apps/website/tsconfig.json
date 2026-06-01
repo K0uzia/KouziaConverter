@@ -1,0 +1,14 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@convertalllocal/ui": ["../../packages/ui/src/lib/index.ts"],
+      "@convertalllocal/ui/*": ["../../packages/ui/src/lib/*"],
+      "@convertalllocal/core": ["../../packages/core/src/index.ts"],
+      "@convertalllocal/capabilities": ["../../packages/capabilities/src/index.ts"]
+    }
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}
