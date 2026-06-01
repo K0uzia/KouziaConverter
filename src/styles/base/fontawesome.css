@@ -1,0 +1,5 @@
+/**
+ * Font Awesome 7 (npm, bundlé au build : fonctionne hors ligne).
+ * Ne pas charger depuis un CDN.
+ */
+@import '@fortawesome/fontawesome-free/css/all.min.css';

@@ -13,26 +13,31 @@ pnpm install
 pnpm dev
 ```
 
-Si `pnpm` est introuvable : voir le Readme (étape 3) ou `npm run setup:npx` puis `npm run dev:npx`.
+Si `pnpm` est introuvable : voir le Readme (étape 3) ou `npm run dev:npx`.
 
-## Structure du monorepo
+## Structure du projet
+
+Voir [src/ARCHITECTURE.md](./src/ARCHITECTURE.md).
 
 ```
-apps/website/          # Site Astro (vitrine + convertisseur navigateur)
-packages/core/         # Types, formats, presets (données)
-packages/capabilities/ # Matrice navigateur / desktop
-packages/ui/           # Composants Svelte partagés
+src/
+  components/     # Un dossier par composant (.astro + .css)
+  layouts/
+  pages/
+  styles/         # global, tokens, fontawesome, pages/*.css
+public/
 ```
 
 ## Périmètre actuel
 
-- Interface web et fondations (`core`, `capabilities`, `ui`)
-- Moteurs de conversion : non implémentés
+- Site Astro, composants modulaires, Font Awesome local (npm)
+- UI convertisseur et moteurs de conversion : à développer
 - Application desktop Tauri : phase suivante
 
 ## Conventions
 
-- Français pour l’UI et la doc utilisateur en phase 1
+- Français pour l'UI et la doc utilisateur en phase 1
 - Pas de modèle « essai » ou freemium : limites web = contraintes navigateur
 - Pas de tiret cadratin (`—`) : voir `.cursor/rules/no-em-dash.mdc`
+- Icônes : `<Icon icon="fa-solid fa-…" />`, pas de CDN Font Awesome
 - PRs focalisées, messages de commit clairs

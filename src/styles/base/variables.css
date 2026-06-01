@@ -1,0 +1,178 @@
+/**
+ * Toutes les valeurs de style sont déclarées ici une seule fois.
+ * Les autres feuilles n'utilisent que var() et calc(var(...)).
+ */
+
+:root {
+  
+  /* Unité structurelle (header, espacements dérivés) */
+  --head: 64px;
+  --container: 80rem;
+
+  /* Couleurs */
+  --color-canvas: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-ink: #14171c;
+  --color-muted: #6b7280;
+  --color-line: #e5e7eb;
+  --color-brand: #0d9488;
+  --color-brand-hover: #0f766e;
+  --color-on-brand: #ffffff;
+
+  /* Typographie */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --text-sm: calc(var(--head) / 4.571);
+  --text-md: calc(var(--head) / 4);
+  --text-logo: calc(var(--head) / 3.765);
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+  --line-tight: 1.15;
+
+  /* Rayons, ombres */
+  --radius-md: calc(var(--head) / 10.667);
+  --shadow-sm: 0 1px 2px rgba(20, 23, 28, 0.05);
+
+  /* Espacements dérivés de --head */
+  --pad-x: calc(var(--head) / 4);
+  --pad-x-md: calc(var(--head) / 2.667);
+  --pad-x-lg: calc(var(--head) / 2);
+  --gap-nav: calc(var(--head) / 2.667);
+  --gap-logo: calc(var(--head) / 10.24);
+  --gap-header-end: calc(var(--head) / 2.667);
+
+  /* Header */
+  --header-logo-icon: calc(var(--head) / 2);
+  --header-cta-pad-y: calc(var(--head) / 10.24);
+  --header-cta-pad-x: calc(var(--head) / 5.12);
+
+  /* Hero (largeur du bloc texte selon l'écran, typo inchangée) */
+  --hero-width: 100%;
+  --hero-width-md: calc(var(--container) * 0.85);
+  --hero-width-lg: calc(var(--container) * 0.72);
+  --viewport: 100dvh;
+  --hero-pad-y: var(--head);
+  --hero-pad-y-sm: calc(var(--head) * 1.5);
+  --hero-pad-y-lg: calc(var(--head) * 2);
+  --text-hero: calc(var(--head) * 9 / 16);
+  --text-hero-lg: calc(var(--head) * 3 / 4);
+  --text-lead: calc(var(--head) / 4);
+  --text-lead-lg: calc(var(--head) / 3.556);
+  --line-relaxed: 1.625;
+  --hero-gap-actions: calc(var(--head) / 4);
+  --hero-gap-actions-sm: calc(var(--head) / 2.667);
+  --hero-btn-pad-y: calc(var(--head) / 10.667);
+  --hero-btn-pad-x: calc(var(--head) / 5.12);
+  --radius-btn: calc(var(--head) / 16);
+  --color-brand-muted: #e6f7f5;
+  --color-brand-subtle: #f0faf9;
+  --color-icon-bg: #f3f4f6;
+
+  /* Typographie technique (extensions) */
+  --font-mono: ui-monospace, 'Cascadia Code', 'Segoe UI Mono', monospace;
+
+  /* Supports (section features) */
+  --supports-pad-y: calc(var(--head) / 2);
+  --supports-container-pad-x: var(--pad-x);
+  --supports-container-pad-x-sm: var(--pad-x-md);
+  --supports-container-pad-x-lg: var(--pad-x-lg);
+  --supports-aside-w: calc(var(--head) * 9);
+  --supports-layout-gap: calc(var(--head) / 1.25);
+  --supports-title-size: calc(var(--head) / 1.778);
+  --supports-intro-size: calc(var(--head) / 3.556);
+  --supports-intro-margin-top: calc(var(--head) / 2);
+  --supports-why-margin-top: calc(var(--head) / 1.6);
+  --supports-why-title-size: calc(var(--head) / 3.2);
+  --supports-wheel-size: calc(var(--head) * 7.5);
+  --supports-wheel-size-mobile: calc(var(--head) * 5.5);
+  --supports-wheel-center-ratio: 0.58;
+  --supports-wheel-radius: calc(var(--supports-wheel-size) * 0.36);
+  --supports-wheel-radius-mobile: calc(var(--supports-wheel-size-mobile) * 0.42);
+  --supports-wheel-pill-size: calc(var(--head) * 1.35);
+  --supports-wheel-pill-icon: calc(var(--head) / 2.35);
+  --supports-wheel-envelope-size: calc(
+    var(--supports-wheel-radius) * 2 + var(--supports-wheel-pill-size)
+  );
+  --supports-wheel-envelope-size-mobile: calc(
+    var(--supports-wheel-size-mobile) * var(--supports-wheel-center-ratio) + var(--head) / 4
+  );
+  --supports-wheel-center-pad: calc(var(--head) / 3.2);
+  --supports-wheel-duration: 0.45s;
+  --supports-wheel-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --supports-wheel-panel-title-size: calc(var(--head) / 3.2);
+  --supports-wheel-panel-lead-size: calc(var(--head) / 5.818);
+  --supports-switch-track-pad: calc(var(--head) / 64);
+  --supports-icon-bg: var(--color-icon-bg);
+  --supports-icon-color: var(--color-ink);
+  --supports-switch-bg: var(--color-icon-bg);
+  --supports-switch-radius: calc(var(--head) / 8);
+  --supports-switch-btn-pad-y: calc(var(--head) / 12.8);
+  --supports-switch-btn-pad-x: calc(var(--head) / 8);
+  --supports-switch-btn-size: calc(var(--head) / 4.571);
+  --supports-formats-margin-top: calc(var(--head) / 4);
+  --supports-formats-meta-h: calc(
+    var(--supports-switch-track-pad) * 2 + var(--supports-switch-btn-pad-y) * 2 +
+      var(--supports-switch-btn-size) * var(--line-tight)
+  );
+  --supports-formats-body-h: calc(var(--head) * 2.25);
+  --supports-formats-label-size: calc(var(--head) / 4.571);
+  --supports-formats-body-pad: calc(var(--head) / 6.4);
+  --supports-formats-border: var(--color-line);
+  --supports-formats-radius: calc(var(--head) / 10.667);
+  --supports-tag-gap: calc(var(--head) / 16);
+  --supports-tag-size: calc(var(--head) / 5.818);
+  --supports-tag-pad-y: calc(var(--head) / 24);
+  --supports-tag-pad-x: calc(var(--head) / 12.8);
+  --supports-tag-radius: calc(var(--head) / 16);
+  --supports-tag-bg: var(--color-icon-bg);
+  --supports-tag-color: var(--color-ink);
+  --supports-why-size: calc(var(--head) / 4.571);
+
+  /* Transitions */
+  --ease: 0.15s ease;
+
+  /* Breakpoints (pour media queries uniquement) */
+  --bp-md: 768px;
+  --bp-sm: 640px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --supports-title-size: calc(var(--head) / 1.6);
+    --supports-intro-size: var(--text-lead);
+    --supports-wheel-panel-title-size: calc(var(--head) / 2.667);
+    --supports-wheel-panel-lead-size: var(--text-sm);
+    --supports-switch-btn-size: var(--text-sm);
+    --supports-formats-label-size: var(--text-sm);
+    --supports-tag-size: calc(var(--head) / 5.12);
+    --supports-why-size: var(--text-sm);
+    --supports-why-title-size: calc(var(--head) / 2.667);
+    --supports-formats-body-h: calc(var(--head) * 2);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --supports-container-pad-x-lg: calc(var(--head) / 2.5);
+    --supports-title-size: calc(var(--head) / 1.454);
+    --supports-intro-size: var(--text-lead-lg);
+    --supports-wheel-panel-title-size: var(--text-lead);
+    --supports-wheel-panel-lead-size: calc(var(--head) / 5.12);
+    --supports-formats-label-size: calc(var(--head) / 4);
+    --supports-tag-size: calc(var(--head) / 4.571);
+    --supports-why-title-size: var(--text-lead);
+    --supports-aside-w: calc(var(--head) * 10);
+    --supports-layout-gap: var(--head);
+    --supports-wheel-size: calc(var(--head) * 8.5);
+    --supports-formats-body-h: calc(var(--head) * 2.35);
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --supports-wheel-panel-title-size: calc(var(--head) / 2.286);
+    --supports-tag-size: var(--text-sm);
+  }
+}

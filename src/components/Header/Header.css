@@ -1,0 +1,212 @@
+.header {
+  display: block;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  width: 100%;
+  height: var(--head);
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  border-bottom-width: 1px;
+  border-style: solid;
+  border-color: var(--color-line);
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  transition: none;
+  overflow: visible;
+  z-index: 50;
+}
+
+.header__container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pad-x);
+  width: 100%;
+  max-width: var(--container);
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 var(--pad-x);
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 640px) {
+  .header__container {
+    padding: 0 var(--pad-x-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .header__container {
+    padding: 0 var(--pad-x-lg);
+  }
+}
+
+.header__logo {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--gap-logo);
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-logo);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-tight);
+  color: var(--color-brand);
+  background: transparent;
+  text-decoration: none;
+  transition: color var(--ease);
+  overflow: visible;
+  z-index: auto;
+}
+
+.header__logo:hover {
+  color: var(--color-brand-hover);
+}
+
+.header__logo-icon {
+  display: block;
+  width: var(--header-logo-icon);
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.header__logo-text {
+  display: inline;
+  color: var(--color-ink);
+}
+
+.header__end {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--gap-header-end);
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.header__nav {
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.header__nav-list {
+  display: none;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--gap-nav);
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  list-style: none;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 768px) {
+  .header__nav-list {
+    display: flex;
+  }
+}
+
+.header__nav-link {
+  display: inline;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--line-tight);
+  color: var(--color-muted);
+  background: transparent;
+  text-decoration: none;
+  transition: color var(--ease);
+  overflow: visible;
+  z-index: auto;
+}
+
+.header__nav-link:hover {
+  color: var(--color-ink);
+}
+
+.header__cta {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: var(--header-cta-pad-y) var(--header-cta-pad-x);
+  border-width: 0;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--line-tight);
+  color: var(--color-on-brand);
+  background: var(--color-brand);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--ease);
+  overflow: visible;
+  z-index: auto;
+}
+
+.header__cta:hover {
+  background: var(--color-brand-hover);
+}

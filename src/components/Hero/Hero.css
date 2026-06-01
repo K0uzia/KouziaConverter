@@ -1,0 +1,191 @@
+.hero {
+  display: grid;
+  place-content: center;
+  width: 100%;
+  min-height: calc(var(--viewport) - var(--head));
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.hero__container {
+  display: block;
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: calc(var(--hero-pad-y) / 2) var(--pad-x);
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 640px) {
+  .hero__container {
+    padding: calc(var(--hero-pad-y-sm) / 2) var(--pad-x-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero__container {
+    padding: calc(var(--hero-pad-y-lg) / 2) var(--pad-x-lg);
+  }
+}
+
+.hero__content {
+  display: block;
+  width: var(--hero-width);
+  max-width: var(--hero-width);
+  margin: 0 auto;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  text-align: center;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 640px) {
+  .hero__content {
+    width: var(--hero-width-md);
+    max-width: var(--hero-width-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero__content {
+    width: var(--hero-width-lg);
+    max-width: var(--hero-width-lg);
+  }
+}
+
+.hero__title {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-hero);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-tight);
+  color: var(--color-ink);
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 640px) {
+  .hero__title {
+    font-size: var(--text-hero-lg);
+  }
+}
+
+.hero__title-accent {
+  font-weight: var(--weight-bold);
+  color: var(--color-brand);
+}
+
+.hero__lead {
+  display: block;
+  width: 100%;
+  margin: calc(var(--head) / 4) 0 0 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-lead);
+  font-weight: var(--weight-normal);
+  line-height: var(--line-relaxed);
+  color: var(--color-muted);
+  background: transparent;
+  text-wrap: pretty;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 640px) {
+  .hero__lead {
+    font-size: var(--text-lead-lg);
+  }
+}
+
+.hero__actions {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hero-gap-actions);
+  width: 100%;
+  margin: calc(var(--head) / 4) 0 0 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 640px) {
+  .hero__actions {
+    margin: calc(var(--head) / 2.667) 0 0 0;
+  }
+}
+
+.hero__btn {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  padding: var(--hero-btn-pad-y) var(--hero-btn-pad-x);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: var(--radius-btn);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  line-height: var(--line-tight);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--ease), color var(--ease), border-color var(--ease);
+  overflow: visible;
+  z-index: auto;
+}
+
+.hero__btn--primary {
+  border-color: var(--color-brand);
+  color: var(--color-on-brand);
+  background: var(--color-brand);
+}
+
+.hero__btn--primary:hover {
+  border-color: var(--color-brand-hover);
+  color: var(--color-on-brand);
+  background: var(--color-brand-hover);
+}
+
+.hero__btn--secondary {
+  border-color: var(--color-line);
+  color: var(--color-muted);
+  background: var(--color-surface);
+}
+
+.hero__btn--secondary:hover {
+  border-color: var(--color-line);
+  color: var(--color-ink);
+  background: var(--color-brand-muted);
+}

@@ -1,0 +1,12 @@
+---
+description: Conventions CSS du projet ConvertAllLocal
+globs: "**/*.css"
+alwaysApply: false
+---
+
+# CSS
+
+- Toutes les valeurs dans `src/styles/base/variables.css` uniquement.
+- Autres fichiers : seulement `var()` et `calc(var(...))`, pas de px/couleurs en dur.
+- Pas de nesting CSS.
+- Ordre des propriétés : position → display (+ flex) → width → height → margin → padding → border → font → color → background → transform → animation → transition → overflow → z-index.

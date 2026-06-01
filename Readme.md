@@ -1,9 +1,9 @@
 [![Licence MIT](https://img.shields.io/github/license/K0uzia/ConvertAllLocal)](./LICENSE)
 [![Open Source](https://img.shields.io/badge/Open%20Source-Oui-2ea043)](https://github.com/K0uzia/ConvertAllLocal)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D22.12-339933?logo=node.js&logoColor=white)](./package.json)
-[![pnpm](https://img.shields.io/badge/pnpm-10+-F69220?logo=pnpm&logoColor=white)](./pnpm-workspace.yaml)
+[![pnpm](https://img.shields.io/badge/pnpm-10+-F69220?logo=pnpm&logoColor=white)](./package.json)
 [![100 % local](https://img.shields.io/badge/Traitement-100%25%20local-0ea5e9)](./Readme.md)
-[![Stack](https://img.shields.io/badge/Stack-Astro%20%7C%20Svelte-BC52EE?logo=astro&logoColor=white)](./apps/website/)
+[![Stack](https://img.shields.io/badge/Stack-Astro-BC52EE?logo=astro&logoColor=white)](./src/)
 [![Desktop](https://img.shields.io/badge/Desktop-Linux%20%7C%20Windows-1793D2?logo=linux&logoColor=white)](./Readme.md#formats-convertibles)
 
 # ConvertAllLocal - FR
@@ -16,7 +16,7 @@ ConvertAllLocal est un outil **gratuit et open source** (MIT) de conversion loca
 
 | | **Site (navigateur)** | **Application (à venir)** |
 |---|------------------------|---------------------------|
-| Accès | [Convertir en ligne](/convert) sur le site | Téléchargement (Tauri, Linux/Windows) |
+| Accès | Convertir sur le site | Téléchargement (Tauri, Linux/Windows) |
 | Données | Restent dans le navigateur | Restent sur votre machine |
 | Limites | Images uniquement, ≤ 12 Mo par fichier | Vidéo, batch, icônes, gros fichiers |
 
@@ -24,8 +24,8 @@ Les limites sur le web ne sont **pas** une version d'essai ou un modèle payant 
 
 ## État du projet
 
-- **Fait** : monorepo, site Astro, UI convertisseur (Svelte), packages `core` / `capabilities` / `ui`
-- **En cours** : moteurs de conversion (FFmpeg, images, icônes)
+- **Fait** : site Astro, architecture modulaire (composants + CSS par module), Font Awesome en local (npm, hors ligne)
+- **En cours** : UI convertisseur, moteurs de conversion (FFmpeg, images, icônes)
 - **Prévu** : application desktop Tauri 2 (léger, sans Electron)
 
 ## Installation en mode développement (local)
@@ -40,7 +40,7 @@ Guide pour cloner le dépôt, installer les outils requis et lancer le site en l
 | [Node.js](https://nodejs.org/) | ≥ 22.12 | `node -v` |
 | [pnpm](https://pnpm.io/installation) | 10.x | `pnpm -v` |
 
-`npm` est inclus avec Node.js. **pnpm** est obligatoire pour ce monorepo (fichier `pnpm-workspace.yaml`).
+`npm` est inclus avec Node.js. **pnpm** est recommandé (`packageManager` dans `package.json`).
 
 ### 2. Cloner le dépôt
 
@@ -49,7 +49,7 @@ git clone https://github.com/K0uzia/ConvertAllLocal.git
 cd ConvertAllLocal
 ```
 
-Fork ou branche personnelle : adaptez l’URL de `git clone`.
+Fork ou branche personnelle : adaptez l'URL de `git clone`.
 
 ### 3. Installer pnpm (si la commande est introuvable)
 
@@ -84,7 +84,7 @@ pnpm -v
 
 Autres méthodes : [documentation officielle pnpm](https://pnpm.io/installation).
 
-**Alternative sans installation globale** : utiliser les scripts `npm run *:npx` à l’étape 4 (pnpm est invoqué via `npx`).
+**Alternative sans installation globale** : utiliser `npm run dev:npx` (pnpm invoqué via `npx`).
 
 ### 4. Installer les dépendances du projet
 
@@ -92,12 +92,6 @@ Autres méthodes : [documentation officielle pnpm](https://pnpm.io/installation)
 
 ```bash
 pnpm install
-```
-
-Sans pnpm dans le PATH :
-
-```bash
-npm run setup:npx
 ```
 
 ### 5. Lancer le site en développement
@@ -112,21 +106,20 @@ Sans pnpm global :
 npm run dev:npx
 ```
 
-Ouvrir [http://localhost:4321](http://localhost:4321) (port par défaut d’Astro). Pages utiles : `/`, `/convert`, `/formats`.
+Ouvrir [http://localhost:4321](http://localhost:4321) (port par défaut d'Astro).
 
 ### 6. Autres commandes utiles
 
 ```bash
-pnpm build          # build de production (sortie dans apps/website/dist/)
-pnpm check          # vérification TypeScript / Svelte sur tout le monorepo
-pnpm --filter @convertalllocal/website preview   # prévisualiser le build (après pnpm build)
+pnpm build          # build de production (sortie dans dist/)
+pnpm preview        # prévisualiser le build
 ```
 
-Équivalents sans pnpm global : `npm run build:npx`, `npm run check:npx`.
+Équivalent sans pnpm global : `npm run build:npx`.
 
 ### Dépannage
 
-- **`pnpm: command not found`** : refaire l’étape 3 ou utiliser `npm run …:npx`.
+- **`pnpm: command not found`** : refaire l'étape 3 ou utiliser `npm run …:npx`.
 - **Version Node trop ancienne** : installer Node 22 LTS ([nvm](https://github.com/nvm-sh/nvm) ou installeur officiel).
 - **Erreurs après un pull** : `pnpm install` pour resynchroniser le lockfile.
 
@@ -134,26 +127,30 @@ Pour contribuer (conventions, structure) : [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Architecture
 
+Détail des dossiers : [src/ARCHITECTURE.md](./src/ARCHITECTURE.md).
+
 ```
-apps/website/              # Astro, vitrine + /convert
-packages/core/             # Formats, presets, types
-packages/capabilities/     # Matrice navigateur / desktop
-packages/ui/               # Composants Svelte partagés
+src/
+  components/     # Header, Footer, Icon… (un .css par composant)
+  layouts/        # Layout global
+  pages/          # Routes Astro
+  styles/         # global, tokens, fontawesome, pages/*.css
+public/
 ```
+
+**Icônes** : package npm `@fortawesome/fontawesome-free`, importé dans `src/styles/fontawesome.css` (aucun CDN, fonctionne offline après build).
 
 ## Fonctionnalités (vision)
 
 - **Conversion 100 % locale** : FFmpeg (vidéo), outils images/icônes (à intégrer)
-- **Interface** : drag & drop, presets, file d'attente
+- **Interface** : drag & drop, choix du format de sortie, file d'attente
 - **Batch** : application desktop
-- **Offline** : après installation de l'app
+- **Offline** : après installation de l'app ; le site utilise des assets bundlés (dont Font Awesome)
 
 ## Formats convertibles
 
 **Site (navigateur)** : images seulement, **12 Mo max** par fichier, traitement local sans upload.  
 **Application** : vidéo, images, icônes, sans limite navigateur (moteurs à intégrer).
-
-Tableau détaillé aussi sur la page **[Formats](/formats)** du site.
 
 ### Vidéo
 
@@ -183,4 +180,4 @@ Tableau détaillé aussi sur la page **[Formats](/formats)** du site.
 
 ## Licence
 
-MIT. Voir [LICENSE](./LICENSE). Dépendances tierces futures : [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).
+MIT. Voir [LICENSE](./LICENSE). Dépendances tierces : [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).

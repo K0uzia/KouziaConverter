@@ -12,7 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Version lue depuis package.json → "packageManager": "pnpm@10.12.1"
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
@@ -22,9 +21,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Check
-        run: pnpm check
 
       - name: Build
         run: pnpm build

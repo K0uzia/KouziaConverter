@@ -1,0 +1,24 @@
+---
+description: Ne pas lancer pnpm build automatiquement après chaque modification
+alwaysApply: true
+---
+
+# Pas de build systématique
+
+Ne lance **pas** `pnpm build`, `npm run build`, `astro build` ni équivalent après chaque changement de code.
+
+## Quand build
+
+- L'utilisateur le demande explicitement (« build », « vérifie que ça compile », avant une PR, etc.)
+- Tu dois confirmer une **erreur de compilation** signalée par l'utilisateur ou par la CI, et le build est le seul moyen de la reproduire
+
+## À la place
+
+- Pour du CSS/HTML/Astro : s'appuyer sur la lecture des fichiers et le serveur dev déjà lancé (`pnpm dev`)
+- Pour du TypeScript : `read_lints` sur les fichiers modifiés si besoin
+- Mentionner à l'utilisateur qu'il peut recharger la page dev ou lancer `pnpm build` lui-même
+
+## Interdit
+
+- Build « pour vérifier » en fin de tâche par habitude
+- Build après chaque petit patch CSS, données ou composant

@@ -1,0 +1,253 @@
+---
+import './Supports.css';
+import {
+  supportCategories,
+  formatsForEnv,
+  formatsForAppColumn,
+  formatsListsIdentical,
+  type SupportCategoryId,
+} from '../../data/supported-formats.ts';
+
+const labelSite = 'Site';
+const labelApp = 'Application';
+const labelBoth = 'Site et Application';
+
+const categoryDescriptions: Record<SupportCategoryId, string> = {
+  images: 'Photos et graphiques, du web au RAW professionnel.',
+  video: 'Conteneurs vidéo via l\'application desktop.',
+  audio: 'Fichiers audio courants, directement dans le navigateur.',
+  documents: 'Documents bureautiques et exports texte en desktop.',
+};
+---
+
+<section class="supports" id="formats" aria-labelledby="supports-title">
+  <div class="supports__container">
+    <div class="supports__layout">
+      <header class="supports__header">
+        <h2 class="supports__title" id="supports-title">Formats supportés</h2>
+        <p class="supports__intro">
+          Sur le site : images et une sélection audio. L'application desktop couvre en plus la vidéo,
+          les documents et les formats listés sous Application. Tous les formats affichés comme
+          disponibles sur le site le sont aussi dans l'application.
+        </p>
+        <div class="supports__why">
+          <h3 class="supports__why-title">
+            Pourquoi certains formats sont réservés à l'application ?
+          </h3>
+          <ul class="supports__why-list">
+            <li>Formats RAW et appareil photo : pas de décodeur fiable dans le navigateur.</li>
+            <li>HEIC, EPS, PSD, AI : moteurs lourds inadaptés au web.</li>
+            <li>Formats ImageMagick internes : besoin du binaire desktop.</li>
+            <li>Limite mémoire du navigateur pour les fichiers volumineux.</li>
+          </ul>
+        </div>
+      </header>
+
+      <div class="supports__wheel" data-supports-wheel>
+        <div
+          class="supports__wheel-mobile"
+          role="tablist"
+          aria-label="Catégories de formats"
+        >
+          {
+            supportCategories.map((category, index) => (
+              <button
+                type="button"
+                class:list={['supports__wheel-pill-mobile', { 'is-active': index === 0 }]}
+                role="tab"
+                aria-selected={index === 0 ? 'true' : 'false'}
+                aria-controls={`supports-wheel-panel-${category.id}`}
+                aria-label={category.title}
+                data-wheel-pill
+                data-wheel-index={index}
+                tabindex={index === 0 ? 0 : -1}
+              >
+                <span class="supports__wheel-pill-mobile-icon" aria-hidden="true">
+                  <i class={category.icon}></i>
+                </span>
+              </button>
+            ))
+          }
+        </div>
+
+        <div class="supports__wheel-stage">
+          <div class="supports__wheel-envelope" aria-hidden="true"></div>
+          <div class="supports__wheel-center">
+            {
+              supportCategories.map((category, index) => {
+                const siteFormats = formatsForEnv(category.formats, 'web');
+                const appFormats = formatsForAppColumn(category.formats);
+                const hasSite = siteFormats.length > 0;
+                const hasApp = appFormats.length > 0;
+                const sameOnSiteAndApp = formatsListsIdentical(siteFormats, appFormats);
+                const useSwitch = hasSite && hasApp && !sameOnSiteAndApp;
+                const tabId = `supports-${category.id}`;
+
+                return (
+                  <article
+                    class:list={['supports__wheel-panel', { 'is-active': index === 0 }]}
+                    id={`supports-wheel-panel-${category.id}`}
+                    data-wheel-panel
+                    role="tabpanel"
+                    aria-labelledby={`supports-wheel-title-${category.id}`}
+                    hidden={index !== 0}
+                  >
+                    <header class="supports__wheel-panel-head">
+                      <h3
+                        class="supports__wheel-panel-title"
+                        id={`supports-wheel-title-${category.id}`}
+                      >
+                        {category.title}
+                      </h3>
+                      <p class="supports__wheel-panel-lead">
+                        {categoryDescriptions[category.id]}
+                      </p>
+                    </header>
+
+                    {(hasSite || hasApp) && (
+                      <div
+                        class="supports__formats"
+                        {...useSwitch ? { 'data-supports-tabs': '' } : {}}
+                      >
+                        <div class="supports__formats-meta">
+                          {useSwitch ? (
+                            <div
+                              class="supports__switch"
+                              role="tablist"
+                              aria-label={`Formats ${category.title}`}
+                            >
+                              <button
+                                type="button"
+                                class="supports__switch-btn is-active"
+                                id={`${tabId}-site-tab`}
+                                role="tab"
+                                aria-selected="true"
+                                aria-controls={`${tabId}-site-panel`}
+                                data-tab="site"
+                              >
+                                {labelSite}
+                              </button>
+                              <button
+                                type="button"
+                                class="supports__switch-btn"
+                                id={`${tabId}-app-tab`}
+                                role="tab"
+                                aria-selected="false"
+                                aria-controls={`${tabId}-app-panel`}
+                                data-tab="app"
+                              >
+                                {labelApp}
+                              </button>
+                            </div>
+                          ) : (
+                            <p class="supports__formats-label">
+                              {sameOnSiteAndApp
+                                ? labelBoth
+                                : hasSite
+                                  ? labelSite
+                                  : labelApp}
+                            </p>
+                          )}
+                        </div>
+
+                        <div
+                          class:list={[
+                            'supports__formats-body',
+                            { 'supports__formats-body--switch': useSwitch },
+                          ]}
+                        >
+                          {useSwitch ? (
+                            <>
+                              <div
+                                class="supports__panel is-active"
+                                id={`${tabId}-site-panel`}
+                                role="tabpanel"
+                                aria-labelledby={`${tabId}-site-tab`}
+                                data-panel="site"
+                              >
+                                <ul class="supports__tags">
+                                  {siteFormats.map((format) => (
+                                    <li>
+                                      <span class="supports__tag">{format.label}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                              <div
+                                class="supports__panel"
+                                id={`${tabId}-app-panel`}
+                                role="tabpanel"
+                                aria-labelledby={`${tabId}-app-tab`}
+                                data-panel="app"
+                                hidden
+                              >
+                                <ul class="supports__tags">
+                                  {appFormats.map((format) => (
+                                    <li>
+                                      <span class="supports__tag">{format.label}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </>
+                          ) : (
+                            <div class="supports__panel is-active">
+                              <ul class="supports__tags">
+                                {(
+                                  sameOnSiteAndApp
+                                    ? siteFormats
+                                    : hasSite
+                                      ? siteFormats
+                                      : appFormats
+                                ).map((format) => (
+                                  <li>
+                                    <span class="supports__tag">{format.label}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </article>
+                );
+              })
+            }
+          </div>
+
+          <div class="supports__wheel-ring-wrap">
+            <div class="supports__wheel-track" aria-hidden="true"></div>
+            <div class="supports__wheel-slot" aria-hidden="true"></div>
+            <div class="supports__wheel-ring" data-wheel-ring>
+              {
+                supportCategories.map((category, index) => (
+                  <button
+                    type="button"
+                    class:list={['supports__wheel-pill', { 'is-active': index === 0 }]}
+                    style={`--wheel-i: ${index}`}
+                    data-wheel-pill
+                    data-wheel-index={index}
+                    aria-label={category.title}
+                    tabindex={index === 0 ? 0 : -1}
+                  >
+                    <span class="supports__wheel-pill-inner">
+                      <i class={category.icon} aria-hidden="true"></i>
+                    </span>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initSupportsWheel } from './supports-wheel.ts';
+
+  initSupportsWheel();
+  document.addEventListener('astro:page-load', initSupportsWheel);
+</script>
