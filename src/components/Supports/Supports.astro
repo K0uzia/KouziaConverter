@@ -1,5 +1,6 @@
 ---
 import './Supports.css';
+import Titled from '../Titled/Titled.astro';
 import {
   supportCategories,
   formatsForEnv,
@@ -24,21 +25,35 @@ const categoryDescriptions: Record<SupportCategoryId, string> = {
   <div class="supports__container">
     <div class="supports__layout">
       <header class="supports__header">
-        <h2 class="supports__title" id="supports-title">Formats supportés</h2>
+        <Titled>
+          <h2 class="supports__title" id="supports-title">Formats pris en charge</h2>
+        </Titled>
         <p class="supports__intro">
-          Sur le site : images et une sélection audio. L'application desktop couvre en plus la vidéo,
-          les documents et les formats listés sous Application. Tous les formats affichés comme
-          disponibles sur le site le sont aussi dans l'application.
+          Le site et l'application desktop ne traitent pas exactement les mêmes types de fichiers. Le
+          site est plus léger et convient pour l'usage courant, tandis que l'application desktop est
+          conçue pour les fichiers plus techniques et plus volumineux.
         </p>
         <div class="supports__why">
           <h3 class="supports__why-title">
             Pourquoi certains formats sont réservés à l'application ?
           </h3>
           <ul class="supports__why-list">
-            <li>Formats RAW et appareil photo : pas de décodeur fiable dans le navigateur.</li>
-            <li>HEIC, EPS, PSD, AI : moteurs lourds inadaptés au web.</li>
-            <li>Formats ImageMagick internes : besoin du binaire desktop.</li>
-            <li>Limite mémoire du navigateur pour les fichiers volumineux.</li>
+            <li>
+              <strong>Formats RAW et fichiers d'appareil photo :</strong> les navigateurs ne peuvent
+              pas les lire de façon fiable.
+            </li>
+            <li>
+              <strong>HEIC, EPS, PSD, AI :</strong> ces formats nécessitent des moteurs de traitement
+              lourds, peu adaptés au web.
+            </li>
+            <li>
+              <strong>Certains formats d'image spécialisés :</strong> ils demandent des outils
+              présents uniquement dans l'application desktop.
+            </li>
+            <li>
+              <strong>Fichiers volumineux :</strong> la mémoire limitée du navigateur ne permet pas
+              de les traiter correctement.
+            </li>
           </ul>
         </div>
       </header>
@@ -58,6 +73,7 @@ const categoryDescriptions: Record<SupportCategoryId, string> = {
                 aria-selected={index === 0 ? 'true' : 'false'}
                 aria-controls={`supports-wheel-panel-${category.id}`}
                 aria-label={category.title}
+                title={category.title}
                 data-wheel-pill
                 data-wheel-index={index}
                 tabindex={index === 0 ? 0 : -1}
@@ -71,7 +87,6 @@ const categoryDescriptions: Record<SupportCategoryId, string> = {
         </div>
 
         <div class="supports__wheel-stage">
-          <div class="supports__wheel-envelope" aria-hidden="true"></div>
           <div class="supports__wheel-center">
             {
               supportCategories.map((category, index) => {
@@ -229,6 +244,7 @@ const categoryDescriptions: Record<SupportCategoryId, string> = {
                     data-wheel-pill
                     data-wheel-index={index}
                     aria-label={category.title}
+                    title={category.title}
                     tabindex={index === 0 ? 0 : -1}
                   >
                     <span class="supports__wheel-pill-inner">

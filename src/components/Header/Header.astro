@@ -1,16 +1,11 @@
 ---
 import './Header.css';
-
-const nav = [
-  { href: '#apropos', label: 'À propos' },
-  { href: '#formats', label: 'Formats' },
-  { href: '#convertir', label: 'Convertir' },
-];
+import { brandName, headerNav, homeSections } from '../../data/site';
 ---
 
 <header class="header">
   <div class="header__container">
-    <a href="/" class="header__logo" aria-label="Accueil ConvertAllLocal">
+    <a href="/" class="header__logo" aria-label={`Accueil ${brandName}`}>
       <svg
         class="header__logo-icon"
         viewBox="0 0 28 24"
@@ -23,14 +18,14 @@ const nav = [
           fill="currentColor"
         />
       </svg>
-      <span class="header__logo-text">ConvertAllLocal</span>
+      <span class="header__logo-text">{brandName}</span>
     </a>
 
     <div class="header__end">
       <nav class="header__nav" aria-label="Navigation principale">
         <ul class="header__nav-list">
           {
-            nav.map((item) => (
+            headerNav.map((item) => (
               <li>
                 <a href={item.href} class="header__nav-link">
                   {item.label}
@@ -40,7 +35,7 @@ const nav = [
           }
         </ul>
       </nav>
-      <a href="#convertir" class="header__cta">Convertir</a>
+      <a href={homeSections.convertir} class="header__cta">Convertir</a>
     </div>
   </div>
 </header>

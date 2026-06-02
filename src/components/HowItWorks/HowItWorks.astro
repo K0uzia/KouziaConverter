@@ -1,0 +1,91 @@
+---
+import './HowItWorks.css';
+import Titled from '../Titled/Titled.astro';
+---
+
+<section class="how" id="comment-convertir" aria-labelledby="how-title">
+  <div class="how__container">
+    <div class="how__stack">
+      <div class="how__head">
+        <Titled>
+          <h2 class="how__title" id="how-title">Comment convertir ?</h2>
+        </Titled>
+        <p class="how__lead">
+          Trois étapes simples pour convertir sur le site, sans upload et sans compte.
+        </p>
+      </div>
+
+      <div class="how__row" role="list">
+        <div class="how__step" role="listitem">
+          <div class="how__step-grid">
+            <span class="how__step-icon" aria-hidden="true">
+              <i class="fa-solid fa-file"></i>
+            </span>
+            <div class="how__step-body">
+              <h3 class="how__step-title">Choisir un fichier</h3>
+              <p class="how__step-text">
+                Sélectionnez un fichier depuis votre machine. Tout est traité localement, sans
+                téléversement.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="how__arrow" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M5.50159 6L11.5018 12.0002L5.49805 18.004M12.5016 6L18.5018 12.0002L12.498 18.004"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div class="how__step" role="listitem">
+          <div class="how__step-grid">
+            <span class="how__step-icon" aria-hidden="true">
+              <i class="fa-solid fa-sliders"></i>
+            </span>
+            <div class="how__step-body">
+              <h3 class="how__step-title">Choisir un format</h3>
+              <p class="how__step-text">
+                Sélectionnez le format de sortie et ajustez les options disponibles. Les formats varient
+                selon le type de fichier.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="how__arrow" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M5.50159 6L11.5018 12.0002L5.49805 18.004M12.5016 6L18.5018 12.0002L12.498 18.004"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div class="how__step" role="listitem">
+          <div class="how__step-grid">
+            <span class="how__step-icon" aria-hidden="true">
+              <i class="fa-solid fa-download"></i>
+            </span>
+            <div class="how__step-body">
+              <h3 class="how__step-title">Convertir et télécharger</h3>
+              <p class="how__step-text">
+                Lancez la conversion, puis téléchargez le résultat. En cas de fichiers plus techniques ou
+                volumineux, l'application desktop est plus adaptée.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

@@ -1,0 +1,107 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/pages/confidentialite.css';
+import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
+---
+
+<Layout title={`Confidentialité - ${brandName}`}>
+  <article class="privacy" aria-labelledby="privacy-title">
+    <div class="privacy__container">
+      <header class="privacy__head">
+        <h1 class="privacy__title" id="privacy-title">Politique de confidentialité</h1>
+        <p class="privacy__lead">
+          {brandName} est conçu pour traiter vos fichiers sur votre appareil, sans collecte de données
+          personnelles.
+        </p>
+      </header>
+
+      <div class="privacy__body">
+        <section class="privacy__section" aria-labelledby="privacy-summary">
+          <h2 class="privacy__heading" id="privacy-summary">Résumé</h2>
+          <p>
+            La politique de confidentialité de {brandName} est volontairement simple : nous ne
+            collectons ni ne stockons aucune donnée personnelle vous concernant. Nous n'utilisons pas
+            de cookies publicitaires ni de traceurs. Les conversions prévues sur le site s'exécutent
+            dans votre navigateur ; vos fichiers ne quittent pas votre appareil pour être convertis.
+          </p>
+          <p>
+            Cette politique décrit le site officiel du projet. Une copie auto-hébergée peut gérer les
+            données différemment selon son hébergeur.
+          </p>
+        </section>
+
+        <section class="privacy__section" aria-labelledby="privacy-conversions">
+          <h2 class="privacy__heading" id="privacy-conversions">Conversions</h2>
+          <p>
+            Sur le site, les conversions d'images (selon les formats proposés) se font entièrement
+            dans votre navigateur, à l'aide de versions WebAssembly des outils concernés (par ex.
+            bibliothèques de traitement d'image). Vos fichiers restent sur votre appareil : nous n'y
+            avons pas accès.
+          </p>
+          <p>
+            {brandName} ne propose pas de conversion vidéo sur le site : cette fonctionnalité est
+            prévue uniquement dans l'application locale, sans téléversement de vos fichiers.
+          </p>
+          <p>
+            L'application de bureau (prévue, Tauri) traitera images, vidéos et icônes localement sur
+            votre machine, entièrement hors ligne du point de vue de la conversion.
+          </p>
+        </section>
+
+        <section class="privacy__section" aria-labelledby="privacy-hosting">
+          <h2 class="privacy__heading" id="privacy-hosting">Hébergement du site</h2>
+          <p>
+            Le site est servi comme pages statiques. L'hébergeur peut enregistrer des journaux
+            techniques standards (adresse IP, user-agent, horodatage) pour la sécurité et la
+            disponibilité du service. Nous ne les utilisons pas pour vous identifier ni pour créer de
+            profils.
+          </p>
+        </section>
+
+        <section class="privacy__section" aria-labelledby="privacy-storage">
+          <h2 class="privacy__heading" id="privacy-storage">Stockage local</h2>
+          <p>
+            Lorsque l'interface de conversion sera disponible, vos préférences pourront être
+            enregistrées dans le <strong>stockage local</strong> de votre navigateur
+            (<code>localStorage</code>). Les binaires WebAssembly des outils de conversion peuvent
+            être mis en cache localement lors de votre première visite, afin d'éviter de les
+            retélécharger à chaque fois. Aucune donnée personnelle n'est transmise avec ce cache.
+          </p>
+          <p>
+            Vous pouvez consulter ou supprimer ces données à tout moment via les paramètres de
+            confidentialité de votre navigateur.
+          </p>
+        </section>
+
+        <section class="privacy__section" aria-labelledby="privacy-analytics">
+          <h2 class="privacy__heading" id="privacy-analytics">Analytique</h2>
+          <p>
+            À ce jour, nous n'utilisons pas d'outil d'analytique tiers sur ce site (pas de Google
+            Analytics, Plausible ou équivalent intégré au dépôt).
+          </p>
+        </section>
+
+        <section class="privacy__section" aria-labelledby="privacy-external">
+          <h2 class="privacy__heading" id="privacy-external">Liens externes</h2>
+          <p>
+            Le pied de page renvoie vers le dépôt
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer">GitHub du projet</a>. En
+            visitant GitHub, vous êtes soumis à la politique de confidentialité de GitHub.
+          </p>
+        </section>
+
+        <section class="privacy__section" aria-labelledby="privacy-contact">
+          <h2 class="privacy__heading" id="privacy-contact">Contact</h2>
+          <p>
+            Pour toute question sur cette politique, ouvrez une discussion sur
+            <a href={githubIssuesUrl} target="_blank" rel="noopener noreferrer">GitHub Issues</a>.
+            Si vous utilisez une instance tierce de {brandName}, contactez plutôt la personne ou
+            l'organisation qui l'héberge.
+          </p>
+        </section>
+
+        <p class="privacy__updated">Dernière mise à jour : 2 juin 2026</p>
+      </div>
+    </div>
+  </article>
+</Layout>

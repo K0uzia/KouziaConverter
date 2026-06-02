@@ -2,7 +2,7 @@ html {
   margin: 0;
   padding: 0;
   scrollbar-width: thin;
-  scrollbar-color: var(--color-line) transparent;
+  scrollbar-color: var(--color-brand) transparent;
   scroll-padding-top: var(--head);
 }
 
@@ -27,7 +27,7 @@ body {
   font-weight: var(--weight-normal);
   line-height: 1.5;
   color: var(--color-ink);
-  background: var(--color-canvas);
+  background-color: var(--color-canvas);
   transition: none;
   overflow-x: hidden;
   overflow-y: auto;
@@ -43,13 +43,14 @@ body {
 
 main {
   display: block;
+  flex: 1 0 auto;
   width: 100%;
   margin: 0;
   padding: 0;
   border-width: 0;
   font-family: var(--font-sans);
   color: inherit;
-  background: transparent;
+  background-color: var(--color-surface);
   transition: none;
   overflow: visible;
   z-index: auto;

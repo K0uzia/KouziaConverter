@@ -9,15 +9,80 @@
   --head: 64px;
   --container: 80rem;
 
-  /* Couleurs */
-  --color-canvas: #f7f8fa;
-  --color-surface: #ffffff;
-  --color-ink: #14171c;
-  --color-muted: #6b7280;
-  --color-line: #e5e7eb;
-  --color-brand: #0d9488;
-  --color-brand-hover: #0f766e;
-  --color-on-brand: #ffffff;
+/* Couleurs (tons papier légèrement chauds) */
+--color-canvas: #f0ebe3;
+--color-surface: #f9f7f2;
+--color-ink: #14171c;
+--color-muted: #2e2f31;
+--color-line: #e5e7eb;
+--color-line-strong: #cbd5e1;
+--color-brand: #280a94;
+--color-brand-hover: #1d4ed8;
+--color-on-brand: #ffffff;
+
+  /* Texture papier / grain / quadrillage millimétré */
+  --page-paper-ink: 32, 36, 44;
+  --page-noise-size: 256px;
+  --page-noise-fiber-size: 384px;
+  --page-noise-fallback-alpha: 0.09;
+  --page-noise-image: url('/grain.svg');
+  --page-noise-fiber-image: url('/grain-fiber.svg');
+  --page-paper-grid-minor: 8px;
+  --page-paper-grid-major: 40px;
+  --page-paper-line-minor-alpha: 0.07;
+  --page-paper-line-major-alpha: 0.11;
+  --page-paper-wash-alpha: 0.35;
+  --page-noise-pattern:
+    var(--page-noise-image),
+    var(--page-noise-fiber-image),
+    repeating-radial-gradient(
+      circle at 14% 18%,
+      rgba(var(--page-paper-ink), var(--page-noise-fallback-alpha)) 0 0.5px,
+      transparent 0.5px 2.25px
+    ),
+    repeating-radial-gradient(
+      circle at 78% 64%,
+      rgba(var(--page-paper-ink), calc(var(--page-noise-fallback-alpha) * 0.75)) 0 0.4px,
+      transparent 0.4px 2.75px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(var(--page-paper-ink), var(--page-paper-line-minor-alpha)) 0 1px,
+      transparent 1px var(--page-paper-grid-minor)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(var(--page-paper-ink), var(--page-paper-line-minor-alpha)) 0 1px,
+      transparent 1px var(--page-paper-grid-minor)
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(var(--page-paper-ink), var(--page-paper-line-major-alpha)) 0 1px,
+      transparent 1px var(--page-paper-grid-major)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(var(--page-paper-ink), var(--page-paper-line-major-alpha)) 0 1px,
+      transparent 1px var(--page-paper-grid-major)
+    ),
+    linear-gradient(
+      165deg,
+      rgba(255, 252, 246, var(--page-paper-wash-alpha)) 0%,
+      rgba(248, 244, 236, 0) 42%,
+      rgba(235, 228, 216, calc(var(--page-paper-wash-alpha) * 0.45)) 100%
+    );
+  --page-noise-pattern-size:
+    var(--page-noise-size) var(--page-noise-size),
+    var(--page-noise-fiber-size) var(--page-noise-fiber-size),
+    2.25px 2.25px,
+    2.75px 2.75px,
+    var(--page-paper-grid-minor) var(--page-paper-grid-minor),
+    var(--page-paper-grid-minor) var(--page-paper-grid-minor),
+    var(--page-paper-grid-major) var(--page-paper-grid-major),
+    var(--page-paper-grid-major) var(--page-paper-grid-major),
+    100% 100%;
+  --page-noise-pattern-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  --page-noise-blend-modes: normal, normal, normal, normal, normal, normal, normal, normal, soft-light;
 
   /* Typographie */
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -64,9 +129,31 @@
   --hero-btn-pad-y: calc(var(--head) / 10.667);
   --hero-btn-pad-x: calc(var(--head) / 5.12);
   --radius-btn: calc(var(--head) / 16);
+  --hero-rotate-duration: 5s;
+
+  /* Grille de points (titres de section, tailles entières pour des cercles nets) */
+  --title-dots-dot: 4px;
+  --title-dots-dot: round(calc(var(--head) / 22), 1px);
+  --title-dots-gap-x: 11px;
+  --title-dots-gap-x: round(calc(var(--head) / 8), 1px);
+  --title-dots-gap-y: 11px;
+  --title-dots-gap-y: round(calc(var(--head) / 8), 1px);
+  --title-dots-offset-x: calc(var(--head) / 2);
+  --title-dots-offset-y: calc(var(--head) / 5);
+
+  /* How it works */
+  --how-lead-size: var(--text-md);
+  --how-step-body-pad: calc(var(--head) / 4);
+  --how-step-title-size: var(--text-md);
+  --how-step-text-size: var(--text-sm);
+  --how-step-col-min: 14rem;
+  --how-step-col-vw: 24vw;
+  --how-step-col-max: 21rem;
+  --how-arrow-col: calc(var(--head) / 1.45);
+  --how-row-gap: calc(var(--head) / 1.6);
   --color-brand-muted: #e6f7f5;
   --color-brand-subtle: #f0faf9;
-  --color-icon-bg: #f3f4f6;
+  --color-icon-bg: #ebe6dc;
 
   /* Typographie technique (extensions) */
   --font-mono: ui-monospace, 'Cascadia Code', 'Segoe UI Mono', monospace;
@@ -86,7 +173,7 @@
   --supports-wheel-size: calc(var(--head) * 7.5);
   --supports-wheel-size-mobile: calc(var(--head) * 5.5);
   --supports-wheel-center-ratio: 0.58;
-  --supports-wheel-radius: calc(var(--supports-wheel-size) * 0.36);
+  --supports-wheel-radius: calc(var(--supports-wheel-size) * 0.385);
   --supports-wheel-radius-mobile: calc(var(--supports-wheel-size-mobile) * 0.42);
   --supports-wheel-pill-size: calc(var(--head) * 1.35);
   --supports-wheel-pill-icon: calc(var(--head) / 2.35);
@@ -97,8 +184,8 @@
     var(--supports-wheel-size-mobile) * var(--supports-wheel-center-ratio) + var(--head) / 4
   );
   --supports-wheel-center-pad: calc(var(--head) / 3.2);
-  --supports-wheel-duration: 0.45s;
-  --supports-wheel-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --supports-wheel-duration: 0.8s;
+  --supports-wheel-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --supports-wheel-panel-title-size: calc(var(--head) / 3.2);
   --supports-wheel-panel-lead-size: calc(var(--head) / 5.818);
   --supports-switch-track-pad: calc(var(--head) / 64);
@@ -128,6 +215,18 @@
   --supports-tag-color: var(--color-ink);
   --supports-why-size: calc(var(--head) / 4.571);
 
+  /* About */
+  --about-aside-w: calc(var(--head) * 9);
+  --about-layout-gap: calc(var(--head) / 1.25);
+  --about-head-gap: calc(var(--head) / 6.4);
+  --about-title-size: calc(var(--head) / 1.778);
+  --about-intro-size: calc(var(--head) / 3.556);
+  --about-aside-text-size: var(--text-sm);
+  --about-aside-line-height: 1.5;
+  --about-problems-indent: calc(var(--head) / 2);
+  --about-point-pad-y: calc(var(--head) / 1.6);
+  --about-points-gap: calc(var(--head) / 1.6);
+
   /* Transitions */
   --ease: 0.15s ease;
 
@@ -150,6 +249,12 @@
     --supports-why-size: var(--text-sm);
     --supports-why-title-size: calc(var(--head) / 2.667);
     --supports-formats-body-h: calc(var(--head) * 2);
+    --about-title-size: calc(var(--head) / 1.6);
+    --about-intro-size: var(--text-lead);
+    --about-aside-text-size: var(--text-md);
+    --how-lead-size: var(--text-lead);
+    --how-step-title-size: var(--text-lead);
+    --how-step-text-size: var(--text-md);
   }
 }
 
@@ -167,6 +272,18 @@
     --supports-layout-gap: var(--head);
     --supports-wheel-size: calc(var(--head) * 8.5);
     --supports-formats-body-h: calc(var(--head) * 2.35);
+    --about-title-size: calc(var(--head) / 1.454);
+    --about-intro-size: var(--text-lead-lg);
+    --about-aside-text-size: var(--text-md);
+    --about-aside-w: calc(var(--head) * 10);
+    --about-layout-gap: var(--head);
+    --about-points-gap: var(--head);
+    --how-step-title-size: calc(var(--head) / 2.667);
+    --how-step-text-size: var(--text-lead);
+    --how-step-col-max: 24rem;
+    --how-step-col-vw: 26vw;
+    --how-row-gap: var(--head);
+    --how-arrow-col: calc(var(--head) / 1.25);
   }
 }
 

@@ -1,0 +1,303 @@
+.how {
+  display: block;
+  width: 100%;
+  margin: calc(var(--head) * 1) 0;
+  padding: calc(var(--head) * 1) 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background-color: var(--color-surface);
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.how__container {
+  display: block;
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--pad-x);
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 640px) {
+  .how__container {
+    padding: 0 var(--pad-x-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .how__container {
+    padding: 0 var(--pad-x-lg);
+  }
+}
+
+.how__stack {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: calc(var(--head) * 1.6);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.how__head {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: calc(var(--head) / 6.4);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.how__title {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  font-size: calc(var(--head) / 1.6);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-tight);
+  color: var(--color-ink);
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.how__lead {
+  display: block;
+  width: 100%;
+  max-width: calc(var(--container) * 0.85);
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--how-lead-size);
+  font-weight: var(--weight-normal);
+  line-height: var(--line-relaxed);
+  color: var(--color-muted);
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.how__row {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: calc(var(--head) / 1.6);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 768px) {
+  .how__row {
+    display: grid;
+    grid-template-columns:
+      minmax(0, clamp(var(--how-step-col-min), var(--how-step-col-vw), var(--how-step-col-max)))
+      var(--how-arrow-col)
+      minmax(0, clamp(var(--how-step-col-min), var(--how-step-col-vw), var(--how-step-col-max)))
+      var(--how-arrow-col)
+      minmax(0, clamp(var(--how-step-col-min), var(--how-step-col-vw), var(--how-step-col-max)));
+    align-items: start;
+    justify-content: center;
+    justify-items: center;
+    gap: calc(var(--how-row-gap) / 2);
+  }
+}
+
+.how__step {
+  display: block;
+  flex: 0 1 auto;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.how__step-grid {
+  display: grid;
+  grid-template-columns: calc(var(--head) / 1.6) minmax(0, 1fr);
+  grid-template-rows: auto;
+  align-items: start;
+  column-gap: calc(var(--head) / 15);
+  row-gap: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 768px) {
+  .how__step {
+    justify-self: stretch;
+  }
+}
+
+.how__step-icon {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--head) / 1.6);
+  height: calc(var(--head) / 1.6);
+  margin: 0;
+  padding: 0;
+  border-width: 2px;
+  border-style: dashed;
+  border-color: var(--color-brand);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: calc(var(--head) / 2.667);
+  line-height: 1;
+  color: var(--color-brand);
+  background: transparent;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  margin-top: var(--how-step-body-pad);
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.how__step-body {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: calc(var(--head) / 16);
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: var(--how-step-body-pad);
+  font-family: var(--font-sans);
+  color: inherit;
+  background-color: transparent;
+  background-image: none;
+  grid-column: 2;
+  grid-row: 1;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.how__step-title {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--how-step-title-size);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-tight);
+  color: var(--color-ink);
+  background: transparent;
+  text-align: left;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.how__step-text {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--how-step-text-size);
+  font-weight: var(--weight-normal);
+  line-height: var(--line-relaxed);
+  color: var(--color-muted);
+  background: transparent;
+  text-align: left;
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+.how__arrow {
+  display: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0 calc(var(--head) / 10.667);
+  border-width: 0;
+  font-family: var(--font-sans);
+  color: var(--color-brand);
+  background: transparent;
+  box-sizing: content-box;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
+@media (min-width: 768px) {
+  .how__arrow {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    width: 24px;
+  }
+}
+

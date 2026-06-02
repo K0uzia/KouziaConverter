@@ -1,0 +1,59 @@
+/**
+ * Papier millimétré : grain fin, fibres, quadrillage, lavis chaud.
+ * Intégré au fond (background-image), jamais au-dessus du texte.
+ */
+
+.page-paper,
+body,
+main,
+.header,
+.footer,
+.hero,
+.how,
+.supports,
+.about,
+.privacy {
+  background-image: var(--page-noise-pattern);
+  background-repeat: repeat;
+  background-size: var(--page-noise-pattern-size);
+  background-position: var(--page-noise-pattern-position);
+  background-blend-mode: var(--page-noise-blend-modes);
+}
+
+body {
+  background-color: var(--color-canvas);
+}
+
+main,
+.header,
+.footer,
+.hero,
+.how,
+.supports,
+.about,
+.privacy {
+  background-color: var(--color-surface);
+}
+
+.supports__switch,
+.supports__tag {
+  background-color: var(--color-icon-bg);
+}
+
+@media (prefers-contrast: more) {
+  .page-paper,
+  body,
+  main,
+  .header,
+  .footer,
+  .hero,
+  .how,
+  .supports,
+  .about,
+  .privacy,
+  .supports__switch,
+  .supports__tag {
+    background-image: none;
+    background-blend-mode: normal;
+  }
+}

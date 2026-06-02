@@ -1,13 +1,27 @@
 ---
 import './Hero.css';
+import { homeSections } from '../../data/site';
 ---
 
 <section class="hero" id="convertir" aria-labelledby="hero-title">
   <div class="hero__container">
     <div class="hero__content">
       <h1 class="hero__title" id="hero-title">
-        La conversion de fichiers, enfin
-        <strong class="hero__title-accent">rapide, gratuite et privée</strong>
+        La conversion de fichiers,
+        <span class="hero__title-tail">
+          enfin
+          <span class="hero__rotate" aria-label="gratuite, locale, rapide">
+            <span class="hero__rotate-sizer hero__title-accent" aria-hidden="true">gratuite</span>
+            <strong class="hero__title-accent hero__rotate-clip" aria-hidden="true">
+              <span class="hero__rotate-track">
+                <span class="hero__rotate-word">gratuite</span>
+                <span class="hero__rotate-word">locale</span>
+                <span class="hero__rotate-word">rapide</span>
+                <span class="hero__rotate-word">gratuite</span>
+              </span>
+            </strong>
+          </span>
+        </span>
       </h1>
 
       <p class="hero__lead">
@@ -16,9 +30,37 @@ import './Hero.css';
       </p>
 
       <div class="hero__actions">
-        <a href="#convertir" class="hero__btn hero__btn--primary">Convertir maintenant</a>
-        <a href="#formats" class="hero__btn hero__btn--secondary">Voir les formats</a>
+        <a href={homeSections.convertir} class="hero__btn hero__btn--primary">Convertir maintenant</a>
+        <a href={homeSections.formats} class="hero__btn hero__btn--secondary">Voir les formats</a>
       </div>
     </div>
   </div>
+
+  <a class="hero__scroll" href={homeSections.formats} aria-label="Faire défiler vers la suite">
+    <svg
+      class="hero__scroll-ico"
+      xmlns="http://www.w3.org/2000/svg"
+      width="28"
+      height="28"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M6 9L12 15L18 9"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M6 4L12 10L18 4"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        opacity="0.55"
+      />
+    </svg>
+  </a>
 </section>

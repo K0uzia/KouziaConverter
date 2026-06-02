@@ -21,11 +21,46 @@ export function initSupportsWheel(): void {
 
   let activeIndex = 0;
   let currentRotation = 0;
+  let autoTimer: number | null = null;
+  let autoPaused = false;
+  let rotateCleanupTimer: number | null = null;
 
   const applyRingRotation = (): void => {
     if (!ring) return;
     ring.style.setProperty('--wheel-rotation', `${currentRotation}deg`);
     ring.style.transform = `rotate(${currentRotation}deg)`;
+  };
+
+  const clearRotateCleanup = (): void => {
+    if (rotateCleanupTimer !== null) {
+      window.clearTimeout(rotateCleanupTimer);
+      rotateCleanupTimer = null;
+    }
+  };
+
+  const markRotating = (): void => {
+    if (!ring || reducedMotion) return;
+    root.classList.add('is-rotating');
+    clearRotateCleanup();
+
+    const durationRaw = window.getComputedStyle(ring).transitionDuration || '';
+    const duration = durationRaw.endsWith('ms')
+      ? Number.parseFloat(durationRaw)
+      : Number.parseFloat(durationRaw) * 1000;
+    const fallbackMs = Number.isFinite(duration) ? Math.max(0, duration) + 80 : 800;
+
+    rotateCleanupTimer = window.setTimeout(() => {
+      root.classList.remove('is-rotating');
+      rotateCleanupTimer = null;
+    }, fallbackMs);
+
+    const onEnd = (event: TransitionEvent): void => {
+      if (event.propertyName !== 'transform') return;
+      ring.removeEventListener('transitionend', onEnd);
+      clearRotateCleanup();
+      root.classList.remove('is-rotating');
+    };
+    ring.addEventListener('transitionend', onEnd);
   };
 
   const activate = (index: number): void => {
@@ -34,6 +69,7 @@ export function initSupportsWheel(): void {
     if (index !== activeIndex) {
       const steps = shortestSteps(index - activeIndex, panels.length);
       currentRotation -= steps * STEP_DEG;
+      markRotating();
       applyRingRotation();
     }
 
@@ -48,12 +84,32 @@ export function initSupportsWheel(): void {
     pills.forEach((pill) => {
       const pillIndex = Number(pill.dataset.wheelIndex);
       const on = pillIndex === index;
-      pill.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (pill.getAttribute('role') === 'tab') {
+        pill.setAttribute('aria-selected', on ? 'true' : 'false');
+      } else {
+        pill.setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
       pill.classList.toggle('is-active', on);
       pill.tabIndex = on ? 0 : -1;
     });
 
     initSupportsTabs();
+  };
+
+  const stopAuto = (): void => {
+    if (autoTimer !== null) {
+      window.clearInterval(autoTimer);
+      autoTimer = null;
+    }
+  };
+
+  const startAuto = (): void => {
+    if (reducedMotion) return;
+    if (autoTimer !== null) return;
+    autoTimer = window.setInterval(() => {
+      if (autoPaused) return;
+      activate((activeIndex + 1) % panels.length);
+    }, 5000);
   };
 
   const bindPills = (): void => {
@@ -103,4 +159,35 @@ export function initSupportsWheel(): void {
   bindPills();
   applyRingRotation();
   activate(0);
+
+  // Nettoyage si la section est ré-initialisée.
+  stopAuto();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (root as any).__supportsWheelStopAuto?.();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (root as any).__supportsWheelStopAuto = stopAuto;
+
+  if (!reducedMotion) {
+    if (root.dataset.wheelAutoBound !== 'true') {
+      root.dataset.wheelAutoBound = 'true';
+
+      root.addEventListener('pointerenter', () => {
+        autoPaused = true;
+      });
+      root.addEventListener('pointerleave', () => {
+        autoPaused = false;
+      });
+      root.addEventListener('focusin', () => {
+        autoPaused = true;
+      });
+      root.addEventListener('focusout', () => {
+        autoPaused = false;
+      });
+      document.addEventListener('visibilitychange', () => {
+        autoPaused = document.hidden;
+      });
+    }
+
+    startAuto();
+  }
 }
