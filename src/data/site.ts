@@ -4,8 +4,8 @@ export const brandName = 'Convert All Local';
 /** Identifiant dépôt GitHub (sans espaces). */
 export const brandRepo = 'ConvertAllLocal';
 
-/** URL canonique de production (GitHub Pages). */
-export const siteUrl = 'https://k0uzia.github.io/ConvertAllLocal';
+/** URL canonique de production (définie au build via `site` dans astro.config). */
+export const siteUrl = import.meta.env.SITE;
 
 /** Préfixe de déploiement Astro (`/ConvertAllLocal/` sur GitHub Pages, `/` en racine). */
 export const basePath = import.meta.env.BASE_URL;
