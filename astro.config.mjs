@@ -1,10 +1,14 @@
 // @ts-check
+import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import wasm from 'vite-plugin-wasm';
 import topLevelAwait from 'vite-plugin-top-level-await';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://k0uzia.github.io/ConvertAllLocal',
+  base: '/ConvertAllLocal/',
+  integrations: [sitemap()],
   // Barre Astro en bas du navigateur : 504 "Outdated Optimize Dep" si Vite re-optimise
   // après le premier chargement de /convertir (jspdf, lamejs, etc.). Pas la toolbar du convertisseur.
   devToolbar: {

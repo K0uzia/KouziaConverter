@@ -4,7 +4,11 @@ import '../styles/pages/confidentialite.css';
 import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
 ---
 
-<Layout title={`Confidentialité - ${brandName}`}>
+<Layout
+  title={`Confidentialité - ${brandName}`}
+  description={`Politique de confidentialité de ${brandName} : traitement local des fichiers, sans collecte de données personnelles.`}
+  canonicalPath="/confidentialite/"
+>
   <article class="privacy" aria-labelledby="privacy-title">
     <div class="privacy__container">
       <header class="privacy__head">
@@ -33,18 +37,17 @@ import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
         <section class="privacy__section" aria-labelledby="privacy-conversions">
           <h2 class="privacy__heading" id="privacy-conversions">Conversions</h2>
           <p>
-            Sur le site, les conversions d'images (selon les formats proposés) se font entièrement
-            dans votre navigateur, à l'aide de versions WebAssembly des outils concernés (par ex.
-            bibliothèques de traitement d'image). Vos fichiers restent sur votre appareil : nous n'y
-            avons pas accès.
+            Sur le site, les conversions d'images, d'audio, de documents et de PDF se font
+            entièrement dans votre navigateur (WebAssembly et APIs du navigateur). Vos fichiers
+            restent sur votre appareil : nous n'y avons pas accès.
           </p>
           <p>
             {brandName} ne propose pas de conversion vidéo sur le site : cette fonctionnalité est
             prévue uniquement dans l'application locale, sans téléversement de vos fichiers.
           </p>
           <p>
-            L'application de bureau (prévue, Tauri) traitera images, vidéos et icônes localement sur
-            votre machine, entièrement hors ligne du point de vue de la conversion.
+            L'application de bureau (prévue, Tauri) couvrira aussi la vidéo, l'Office lourd et les
+            formats pro localement sur votre machine, hors ligne du point de vue de la conversion.
           </p>
         </section>
 

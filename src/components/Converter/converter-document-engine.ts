@@ -1,10 +1,13 @@
-import { marked } from 'marked';
 import type { OutputFormatOption } from '../../data/converter-output-formats.js';
 import { extensionFromFile } from '../../data/converter-limits.js';
 import { ConvertError, validateFileWeight } from './converter-errors.js';
+import { baseFilename } from './converter-filename.js';
 import type { ConvertResult, ProgressCallback } from './converter-image-engine.js';
-
-marked.setOptions({ gfm: true, breaks: true });
+import {
+  htmlToPlainText,
+  markdownToPlainText,
+  parseMarkdownToHtml,
+} from './converter-text-utils.js';
 
 async function readText(file: File): Promise<string> {
   return file.text();
@@ -100,16 +103,6 @@ function jsonToCsv(text: string): string {
   return `${lines.join('\n')}\n`;
 }
 
-function htmlToText(html: string): string {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return (doc.body?.textContent ?? '').replace(/\s+\n/g, '\n').trim();
-}
-
-async function markdownToText(md: string): Promise<string> {
-  const html = await marked.parse(md);
-  return htmlToText(html);
-}
-
 export function validateDocumentFile(file: File): void {
   validateFileWeight(file);
 }
@@ -128,10 +121,10 @@ export async function convertDocumentFile(
   let mime = output.mime;
 
   if (output.id === 'html' && ext === 'md') {
-    const body = await marked.parse(source);
+    const body = await parseMarkdownToHtml(source);
     resultText = `<!DOCTYPE html>\n<html lang="fr">\n<head><meta charset="utf-8"><title>Convert All Local</title></head>\n<body>\n${body}\n</body>\n</html>`;
   } else if (output.id === 'txt' && (ext === 'md' || ext === 'html' || ext === 'htm')) {
-    resultText = ext === 'md' ? await markdownToText(source) : htmlToText(source);
+    resultText = ext === 'md' ? await markdownToPlainText(source) : htmlToPlainText(source);
     mime = 'text/plain;charset=utf-8';
   } else if (output.id === 'json' && ext === 'csv') {
     resultText = csvToJson(source);
@@ -155,10 +148,9 @@ export async function convertDocumentFile(
   }
 
   onProgress(1);
-  const baseName = file.name.replace(/\.[^.]+$/, '') || 'converti';
   return {
     blob: new Blob([resultText], { type: mime }),
     mime,
-    filename: `${baseName}.${output.extension}`,
+    filename: `${baseFilename(file)}.${output.extension}`,
   };
 }

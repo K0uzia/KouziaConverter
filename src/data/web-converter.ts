@@ -1,9 +1,12 @@
+import type { ConverterCategory } from './converter-types.js';
+import { imageMimeForExtension } from './converter-output-formats.js';
+import { normalizeExtension } from './format-aliases.js';
 import { formatsForEnv } from './supported-formats.js';
 import { audioFormats } from './audio-formats.js';
 import { documentsFormats } from './documents-formats.js';
 import { imageFormats } from './image-formats.js';
 
-export type ConverterCategory = 'image' | 'audio' | 'document';
+export type { ConverterCategory } from './converter-types.js';
 
 const webImages = formatsForEnv(imageFormats, 'web');
 const webAudio = formatsForEnv(audioFormats, 'web');
@@ -23,34 +26,7 @@ function extList(formats: { label: string }[]): string[] {
   return formats.map((f) => f.label.replace(/^\./, '').toLowerCase());
 }
 
-const EXTENSION_ALIASES: Record<string, string> = {
-  jpg: 'jpeg',
-  tif: 'tiff',
-  htm: 'html',
-};
-
-/** Types MIME image pour le sélecteur de fichiers du navigateur. */
-const IMAGE_MIME_BY_EXT: Record<string, string> = {
-  png: 'image/png',
-  jpeg: 'image/jpeg',
-  webp: 'image/webp',
-  gif: 'image/gif',
-  svg: 'image/svg+xml',
-  avif: 'image/avif',
-  ico: 'image/x-icon',
-  bmp: 'image/bmp',
-  tiff: 'image/tiff',
-  jfif: 'image/jpeg',
-  jxl: 'image/jxl',
-  heic: 'image/heic',
-  heif: 'image/heif',
-  apng: 'image/apng',
-};
-
-export function normalizeExtension(ext: string): string {
-  const lower = ext.replace(/^\./, '').toLowerCase();
-  return EXTENSION_ALIASES[lower] ?? lower;
-}
+export { normalizeExtension } from './format-aliases.js';
 
 export function extensionFromFile(file: File): string {
   const dot = file.name.lastIndexOf('.');
@@ -95,16 +71,10 @@ export function isWebExtension(ext: string): boolean {
   return ALL_WEB_EXTENSIONS.includes(normalized);
 }
 
-export function categoryLabel(category: ConverterCategory): string {
-  if (category === 'image') return 'Image';
-  if (category === 'audio') return 'Audio';
-  return 'Document';
-}
-
 export function buildWebAcceptAttr(): string {
   const imageParts = webImages.flatMap((f) => {
     const ext = f.label.replace(/^\./, '').toLowerCase();
-    const mime = IMAGE_MIME_BY_EXT[ext];
+    const mime = imageMimeForExtension(ext);
     return mime ? [f.label, mime] : [f.label];
   });
   const parts = [

@@ -1,0 +1,17 @@
+{
+  "name": "Convert All Local",
+  "short_name": "ConvertAllLocal",
+  "description": "Conversion de fichiers 100 % locale dans le navigateur.",
+  "start_url": "/ConvertAllLocal/",
+  "display": "standalone",
+  "background_color": "#f8f7f4",
+  "theme_color": "#14171c",
+  "icons": [
+    {
+      "src": "/ConvertAllLocal/favicon/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

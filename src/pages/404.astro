@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { brandName, homeSections, pageUrl } from '../data/site';
+---
+
+<Layout
+  title={`Page introuvable - ${brandName}`}
+  description="La page demandée n'existe pas sur Convert All Local."
+  noindex={true}
+>
+  <section class="privacy" aria-labelledby="not-found-title">
+    <div class="privacy__container">
+      <h1 class="privacy__title" id="not-found-title">Page introuvable</h1>
+      <p class="privacy__lead">
+        Cette adresse ne correspond à aucune page du site.
+      </p>
+      <p>
+        <a href={homeSections.convertir}>Retour au convertisseur</a>
+        {' · '}
+        <a href={pageUrl('/')}>Accueil</a>
+      </p>
+    </div>
+  </section>
+</Layout>

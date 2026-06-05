@@ -102,15 +102,16 @@
 
 .footer__logo-icon {
   display: block;
+  flex-shrink: 0;
   width: var(--header-logo-icon);
-  height: auto;
+  height: var(--header-logo-icon);
+  min-width: var(--header-logo-icon);
+  min-height: var(--header-logo-icon);
   margin: 0;
   padding: 0;
   border-width: 0;
-  font-family: inherit;
-  color: inherit;
   background: transparent;
-  flex-shrink: 0;
+  object-fit: contain;
   overflow: clip;
   transition: none;
 }

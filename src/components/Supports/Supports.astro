@@ -5,6 +5,7 @@ import {
   formatsForEnv,
   formatsForAppColumn,
   formatsListsIdentical,
+  webExtensionLabels,
   type SupportCategoryId,
 } from '../../data/supported-formats.ts';
 
@@ -13,12 +14,10 @@ const labelApp = 'Application';
 const labelBoth = 'Site et Application';
 
 const categoryDescriptions: Record<SupportCategoryId, string> = {
-  images:
-    'PNG, JPEG, WebP, AVIF, GIF, SVG, BMP, TIFF, ICO, JXL, HEIC et APNG sur le site. RAW et formats pro (PSD, EPS…) en desktop.',
+  images: `${webExtensionLabels('images')} sur le site. RAW et formats pro (PSD, EPS…) en desktop.`,
   video: 'Conteneurs vidéo via l\'application desktop.',
-  audio:
-    'WAV, MP3, OGG, Opus, M4A, AAC : sortie WAV, MP3 ou OGG depuis toute entrée. Opus, M4A et AAC en entrée seulement (pas de sortie native).',
-  documents: 'MD, HTML, CSV, JSON, TXT et PDF (export, texte structuré, HTML fidèle) sur le site. Office lourd en desktop.',
+  audio: `${webExtensionLabels('audio')} : sortie WAV, MP3 ou OGG depuis toute entrée. Opus, M4A et AAC en entrée seulement (pas de sortie native).`,
+  documents: `${webExtensionLabels('documents')} sur le site (export, texte structuré, HTML fidèle). Office lourd en desktop.`,
 };
 ---
 

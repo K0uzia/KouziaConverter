@@ -1,4 +1,3 @@
-import './Converter.css';
 import {
   detectCategory,
   detectFormatsLabel,
@@ -17,7 +16,7 @@ import {
   filterImageOutputFormats,
   probeImageEncodeCapabilities,
 } from './converter-image-capabilities.js';
-import { convertFile } from './converter-engine.js';
+import { convertFile, resolveOutputFormat } from './converter-engine.js';
 import {
   ConvertError,
   formatConversionError,
@@ -266,11 +265,15 @@ function outputOptionsForFile(file: File): typeof imageOutputFormats {
 
 function resolveOutputFormatId(file: File, preferred?: string): string {
   const category = detectCategory(file) ?? 'image';
-  const options = outputOptionsForFile(file);
-  if (preferred && options.some((o) => o.id === preferred)) return preferred;
   const stored = getOutputFormat(category);
-  if (options.some((o) => o.id === stored)) return stored;
-  return options[0]?.id ?? stored;
+  const candidate = preferred && outputOptionsForFile(file).some((o) => o.id === preferred)
+    ? preferred
+    : stored;
+  try {
+    return resolveOutputFormat(file, candidate).id;
+  } catch {
+    return outputOptionsForFile(file)[0]?.id ?? candidate;
+  }
 }
 
 function applyStoredDefaultsToQueuedItems(category?: ConverterCategory): boolean {
@@ -333,6 +336,8 @@ function isPersistableQueueItem(item: QueueItem): boolean {
   return item.status === 'queued' || item.status === 'error';
 }
 
+let persistQueueTimer: ReturnType<typeof setTimeout> | null = null;
+
 async function persistQueue(): Promise<void> {
   const items: StoredQueueItem[] = [];
   for (const item of queue) {
@@ -362,6 +367,14 @@ async function persistQueue(): Promise<void> {
     hasStartedConversion: false,
     items,
   });
+}
+
+function schedulePersistQueue(): void {
+  if (persistQueueTimer) clearTimeout(persistQueueTimer);
+  persistQueueTimer = setTimeout(() => {
+    persistQueueTimer = null;
+    void persistQueue();
+  }, 300);
 }
 
 async function restoreQueueFromStore(): Promise<void> {
@@ -399,6 +412,11 @@ async function restoreQueueFromStore(): Promise<void> {
 
 export async function initConverterUi(): Promise<void> {
   await probeImageEncodeCapabilities();
+
+  const batchMo = Math.round(getWebBatchLimitBytes() / (1024 * 1024));
+  for (const el of document.querySelectorAll<HTMLElement>('[data-converter-batch-mo]')) {
+    el.textContent = String(batchMo);
+  }
 
   const root = document.querySelector<HTMLElement>('[data-converter]');
   if (!root) return;
@@ -449,7 +467,7 @@ export async function initConverterUi(): Promise<void> {
   onOutputFormatDefaultsChanged = (category) => {
     if (applyStoredDefaultsToQueuedItems(category)) {
       refreshDropzone();
-      void persistQueue();
+      schedulePersistQueue();
     }
   };
 
@@ -462,7 +480,7 @@ export async function initConverterUi(): Promise<void> {
       dropzoneFooter,
       dropzoneAddMore,
       refreshDropzone,
-      () => void persistQueue(),
+      () => schedulePersistQueue(),
     );
     updateFilesLive(filesLive);
     updateDropzoneZipButton();
@@ -508,7 +526,7 @@ export async function initConverterUi(): Promise<void> {
     }
     updateMeta();
     refreshDropzone();
-    void persistQueue();
+    schedulePersistQueue();
   };
 
   input.addEventListener('change', () => {
@@ -634,7 +652,7 @@ export async function initConverterUi(): Promise<void> {
         const result = await convertFile(item.file, outputFormat, (ratio) => {
           item.progress = ratio;
           updateFileProgress(item.id, item.progress);
-          refreshDropzone();
+          updateFilesLive(filesLive);
         });
         item.status = 'success';
         item.progress = 1;
@@ -800,7 +818,16 @@ function renderDropzoneFiles(
       downloadText.className = 'converter__dropzone-file-download-text';
       downloadText.textContent = 'Télécharger';
       link.append(downloadIcon, downloadText);
-      link.addEventListener('click', (e) => e.stopPropagation());
+      link.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.setTimeout(() => {
+          if (!item.downloadUrl) return;
+          URL.revokeObjectURL(item.downloadUrl);
+          item.downloadUrl = item.resultBlob
+            ? URL.createObjectURL(item.resultBlob)
+            : undefined;
+        }, 2000);
+      });
       link.addEventListener('keydown', (e) => e.stopPropagation());
       downloadSlot.append(link);
     }

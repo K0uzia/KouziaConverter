@@ -97,6 +97,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: var(--gap-header-end);
+  position: relative;
   width: auto;
   height: auto;
   margin: 0;
@@ -128,6 +129,105 @@
   transition: none;
   overflow: visible;
   z-index: auto;
+}
+
+.header__menu-btn {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--head) / 2);
+  height: calc(var(--head) / 2);
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-brand);
+  border-radius: calc(var(--radius-md) * 3);
+  font-family: var(--font-sans);
+  color: var(--color-brand);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color var(--ease), color var(--ease);
+}
+
+.header__menu-btn:hover {
+  border-color: var(--color-brand-hover);
+  color: var(--color-brand-hover);
+}
+
+.header__menu-btn:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.header__menu-icon {
+  font-size: var(--text-md);
+  line-height: 1;
+}
+
+.header__menu-icon--close {
+  display: none;
+}
+
+.header__menu-btn--open .header__menu-icon--open {
+  display: none;
+}
+
+.header__menu-btn--open .header__menu-icon--close {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .header__menu-btn {
+    display: none;
+  }
+}
+
+.header__mobile-nav {
+  display: block;
+  position: absolute;
+  top: var(--head);
+  right: var(--pad-x);
+  left: var(--pad-x);
+  margin: 0;
+  padding: calc(var(--head) / 6);
+  border: 1px solid var(--color-brand);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  color: inherit;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  z-index: 50;
+}
+
+@media (min-width: 768px) {
+  .header__mobile-nav {
+    display: none;
+  }
+}
+
+.header__mobile-nav-list {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  gap: calc(var(--head) / 10);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.header__mobile-nav-link {
+  display: block;
+  padding: calc(var(--head) / 12) calc(var(--head) / 8);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.header__mobile-nav-link:hover {
+  color: var(--color-brand);
+  background-color: var(--color-canvas);
 }
 
 .header__nav-list {

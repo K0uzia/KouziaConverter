@@ -13,10 +13,12 @@ import {
   encodeTiff,
   wrapPngAsApng,
 } from './converter-image-encoders.js';
+import { normalizeExtension } from '../../data/format-aliases.js';
 import {
   extensionFromFile,
   isWebInputExtension,
 } from '../../data/converter-limits.js';
+import { baseFilename } from './converter-filename.js';
 
 export { ConvertError } from './converter-errors.js';
 
@@ -45,6 +47,8 @@ const BITMAP_DECODE_EXTENSIONS = new Set([
 
 const SVG_RASTER_MAX = 4096;
 const SVG_RASTER_DEFAULT = 512;
+/** Plafond mémoire raster (width × height) avant downscale automatique. */
+const MAX_IMAGE_PIXELS = 32_000_000;
 /** Rasterisation haute résolution avant vectorisation (logos 80×74, etc.). */
 const SVG_TRACE_RASTER_MIN = 1024;
 
@@ -109,6 +113,30 @@ function loadHtmlImage(src: string): Promise<HTMLImageElement> {
     img.onerror = () => reject(ConvertError.svgUnreadable());
     img.src = src;
   });
+}
+
+function constrainImagePixels(imageData: ImageData): ImageData {
+  const pixels = imageData.width * imageData.height;
+  if (pixels <= MAX_IMAGE_PIXELS) return imageData;
+
+  const scale = Math.sqrt(MAX_IMAGE_PIXELS / pixels);
+  const width = Math.max(1, Math.round(imageData.width * scale));
+  const height = Math.max(1, Math.round(imageData.height * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw ConvertError.browserCanvas();
+  const source = document.createElement('canvas');
+  source.width = imageData.width;
+  source.height = imageData.height;
+  const sourceCtx = source.getContext('2d');
+  if (!sourceCtx) throw ConvertError.browserCanvas();
+  sourceCtx.putImageData(imageData, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(source, 0, 0, width, height);
+  return ctx.getImageData(0, 0, width, height);
 }
 
 function imageDataFromCanvas(canvas: HTMLCanvasElement): ImageData {
@@ -338,11 +366,10 @@ async function tryPassthroughVectorSvg(
   ) {
     return null;
   }
-  const baseName = file.name.replace(/\.[^.]+$/, '') || 'converti';
   return {
     blob: new Blob([svgText], { type: output.mime }),
     mime: output.mime,
-    filename: `${baseName}.${output.extension}`,
+    filename: `${baseFilename(file)}.${output.extension}`,
   };
 }
 
@@ -365,13 +392,13 @@ export async function convertImageFile(
   } else {
     imageData = await decodeToImageData(file);
   }
+  imageData = constrainImagePixels(imageData);
   onProgress(0.45);
   const encoded = await encodeImageData(imageData, output.id);
   onProgress(1);
-  const baseName = file.name.replace(/\.[^.]+$/, '') || 'converti';
   return {
     blob: new Blob([encoded], { type: output.mime }),
     mime: output.mime,
-    filename: `${baseName}.${output.extension}`,
+    filename: `${baseFilename(file)}.${output.extension}`,
   };
 }

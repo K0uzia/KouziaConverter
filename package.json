@@ -10,13 +10,14 @@
     "dev": "astro dev",
     "dev:clean": "rm -rf node_modules/.vite node_modules/.vite-convertalllocal node_modules/.astro && astro dev",
     "build": "astro build",
+    "test": "vitest run",
     "preview": "astro preview",
     "astro": "astro",
     "dev:npx": "npx pnpm@10.12.1 dev",
-    "build:npx": "npx pnpm@10.12.1 build",
-    "postinstall": "node scripts/sync-pdf-worker.mjs"
+    "build:npx": "npx pnpm@10.12.1 build"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
     "@breezystack/lamejs": "1.2.7",
     "@fortawesome/fontawesome-free": "^7.2.0",
     "@jsquash/avif": "^2.1.1",
@@ -38,6 +39,7 @@
   "packageManager": "pnpm@10.12.1",
   "devDependencies": {
     "vite-plugin-top-level-await": "^1.6.0",
-    "vite-plugin-wasm": "^3.6.0"
+    "vite-plugin-wasm": "^3.6.0",
+    "vitest": "^4.1.8"
   }
 }

@@ -8,12 +8,9 @@ import {
   extensionFromFile,
   type ConverterCategory,
 } from '../../data/converter-limits.js';
-import { convertAudioFile } from './converter-audio-engine.js';
 import { filterImageOutputFormats } from './converter-image-capabilities.js';
-import { convertDocumentFile } from './converter-document-engine.js';
 import { ConvertError } from './converter-errors.js';
-import { convertImageFile, type ConvertResult, type ProgressCallback } from './converter-image-engine.js';
-import { convertFileToPdfOutput, convertPdfFile } from './converter-pdf-engine.js';
+import type { ConvertResult, ProgressCallback } from './converter-image-engine.js';
 
 export { ConvertError } from './converter-errors.js';
 export type { ConvertResult, ProgressCallback } from './converter-image-engine.js';
@@ -34,6 +31,9 @@ export function resolveOutputFormat(file: File, outputId: string) {
   const chosen = outputFormatById(outputId);
   if (!chosen || !allowed.some((o) => o.id === chosen.id)) {
     const fallbackId = defaultOutputByCategory[category];
+    const fromDefault = allowed.find((o) => o.id === fallbackId);
+    if (fromDefault) return fromDefault;
+    if (allowed[0]) return allowed[0];
     const fallback = outputFormatById(fallbackId);
     if (!fallback) throw ConvertError.encodeFailed(outputId);
     return fallback;
@@ -52,20 +52,25 @@ export async function convertFile(
 
   if (output.id === 'pdf') {
     if (category === 'image' || category === 'document') {
+      const { convertFileToPdfOutput } = await import('./converter-pdf-engine.js');
       return convertFileToPdfOutput(file, category, onProgress);
     }
     throw ConvertError.unsupportedConversion(inputExt ? `.${inputExt}` : 'fichier', output.label);
   }
 
   if (category === 'document' && inputExt === 'pdf') {
+    const { convertPdfFile } = await import('./converter-pdf-engine.js');
     return convertPdfFile(file, output, onProgress);
   }
 
   if (category === 'image') {
+    const { convertImageFile } = await import('./converter-image-engine.js');
     return convertImageFile(file, output, onProgress);
   }
   if (category === 'audio') {
+    const { convertAudioFile } = await import('./converter-audio-engine.js');
     return convertAudioFile(file, output, onProgress);
   }
+  const { convertDocumentFile } = await import('./converter-document-engine.js');
   return convertDocumentFile(file, output, onProgress);
 }

@@ -1,3 +1,27 @@
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  margin: 0;
+  padding: calc(var(--head) / 8) calc(var(--head) / 5);
+  border: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  text-decoration: none;
+  transform: translateY(-120%);
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
 html {
   margin: 0;
   padding: 0;

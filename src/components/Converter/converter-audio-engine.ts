@@ -1,6 +1,6 @@
-import { Mp3Encoder } from '@breezystack/lamejs';
 import type { OutputFormatOption } from '../../data/converter-output-formats.js';
 import { ConvertError, validateFileWeight } from './converter-errors.js';
+import { baseFilename } from './converter-filename.js';
 import type { ConvertResult, ProgressCallback } from './converter-image-engine.js';
 
 const MP3_SAMPLE_RATES = [44100, 48000, 32000, 22050, 24000, 16000, 12000, 11025, 8000] as const;
@@ -59,14 +59,22 @@ function isOggVorbisInput(file: File): boolean {
   return mime === 'audio/ogg' || mime === 'application/ogg';
 }
 
+let sharedAudioContext: AudioContext | null = null;
+
+function getSharedAudioContext(): AudioContext {
+  if (!sharedAudioContext || sharedAudioContext.state === 'closed') {
+    sharedAudioContext = new AudioContext();
+  }
+  return sharedAudioContext;
+}
+
 function pcmToAudioBuffer(channelData: Float32Array[], samplesDecoded: number, sampleRate: number): AudioBuffer {
   const channels = channelData.length;
-  const ctx = new AudioContext();
+  const ctx = getSharedAudioContext();
   const buffer = ctx.createBuffer(channels, samplesDecoded, sampleRate);
   for (let ch = 0; ch < channels; ch += 1) {
     buffer.copyToChannel(channelData[ch].subarray(0, samplesDecoded), ch);
   }
-  void ctx.close();
   return buffer;
 }
 
@@ -128,13 +136,9 @@ async function decodeOggContainer(file: File): Promise<AudioBuffer> {
 }
 
 async function decodeWithWebAudio(file: File): Promise<AudioBuffer> {
-  const context = new AudioContext();
-  try {
-    const buffer = await file.arrayBuffer();
-    return await context.decodeAudioData(buffer.slice(0));
-  } finally {
-    await context.close();
-  }
+  const context = getSharedAudioContext();
+  const buffer = await file.arrayBuffer();
+  return context.decodeAudioData(buffer.slice(0));
 }
 
 async function decodeAudio(file: File): Promise<AudioBuffer> {
@@ -166,11 +170,10 @@ function downmixToStereo(audioBuffer: AudioBuffer): AudioBuffer {
   const channels = audioBuffer.numberOfChannels;
   if (channels <= 2) return audioBuffer;
 
-  const ctx = new AudioContext();
+  const ctx = getSharedAudioContext();
   const out = ctx.createBuffer(2, audioBuffer.length, audioBuffer.sampleRate);
   out.copyToChannel(audioBuffer.getChannelData(0), 0);
   out.copyToChannel(audioBuffer.getChannelData(1), 1);
-  void ctx.close();
   return out;
 }
 
@@ -195,6 +198,7 @@ async function resampleForMp3(audioBuffer: AudioBuffer): Promise<AudioBuffer> {
 }
 
 async function encodeMp3(audioBuffer: AudioBuffer): Promise<ArrayBuffer> {
+  const { Mp3Encoder } = await import('@breezystack/lamejs');
   const stereo = downmixToStereo(audioBuffer);
   const prepared = await resampleForMp3(stereo);
   const channels = Math.min(prepared.numberOfChannels, 2);
@@ -316,10 +320,9 @@ export async function convertAudioFile(
   }
 
   onProgress(1);
-  const baseName = file.name.replace(/\.[^.]+$/, '') || 'converti';
   return {
     blob: new Blob([encoded], { type: output.mime }),
     mime: output.mime,
-    filename: `${baseName}.${output.extension}`,
+    filename: `${baseFilename(file)}.${output.extension}`,
   };
 }

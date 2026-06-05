@@ -25,7 +25,8 @@ Les limites sur le web ne sont **pas** une version d'essai ou un modèle payant 
 ## État du projet
 
 - **Fait** : site Astro, architecture modulaire (composants + CSS par module), Font Awesome en local (npm, hors ligne)
-- **En cours** : UI convertisseur, moteurs de conversion (FFmpeg, images, icônes)
+- **Fait (web)** : convertisseur navigateur (images, audio, documents, PDF), file d'attente locale
+- **En cours** : application desktop Tauri (vidéo, Office, OCR)
 - **Prévu** : application desktop Tauri 2 (léger, sans Electron)
 
 ## Installation en mode développement (local)
@@ -149,8 +150,8 @@ public/
 
 ## Formats convertibles
 
-**Site (navigateur)** : images, audio, documents texte et PDF limité, **24 Mo max par lot** (16 Mo par fichier image/audio/PDF, 8 Mo pour le texte), traitement local sans upload.  
-**Application** : vidéo, Office, icônes, sans limite navigateur (moteurs à intégrer).
+**Site (navigateur)** : images, audio, documents texte et PDF limité, **24 Mo max par lot** (16 Mo par fichier image/audio/PDF, 8 Mo pour le texte), traitement local sans upload. Détail sur le site : [Documentations](https://k0uzia.github.io/ConvertAllLocal/documentation/) (Web → [Conversions navigateur](https://k0uzia.github.io/ConvertAllLocal/documentation/web/conversions/)).  
+**Application** : vidéo, Office, icônes, sans limite navigateur (moteurs à intégrer). Voir [Application desktop](https://k0uzia.github.io/ConvertAllLocal/documentation/application/apercu/).
 
 ### Vidéo
 
@@ -172,7 +173,7 @@ public/
 | **AVIF** | Standard moderne | ✅ (lot 24 Mo) | ✅ |
 | **GIF** | Animations courtes | ✅ (lot 24 Mo) | ✅ |
 | **SVG** | UI responsive, icônes | ✅ (lot 24 Mo) | ✅ |
-| **ICO** | Favicons, apps Windows | ❌ | ✅ |
+| **ICO** | Favicons, apps Windows | ✅ (lot 24 Mo) | ✅ |
 | **ICNS** | Icônes apps macOS | ❌ | ✅ |
 | **PNG 256×256** | Icônes apps Linux | ❌ | ✅ |
 

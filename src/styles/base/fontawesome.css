@@ -1,5 +1,6 @@
 /**
  * Font Awesome 7 (npm, bundlé au build : fonctionne hors ligne).
- * Ne pas charger depuis un CDN.
+ * Solid uniquement : toutes les icônes du site sont fa-solid.
  */
-@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import '@fortawesome/fontawesome-free/css/fontawesome.min.css';
+@import '@fortawesome/fontawesome-free/css/solid.min.css';

@@ -2,11 +2,39 @@
 import Layout from '../layouts/Layout.astro';
 import Converter from '../components/Converter/Converter.astro';
 import ConverterSettings from '../components/Converter/ConverterSettings.astro';
-import { brandName } from '../data/site';
+import { brandName, pageUrl, siteUrl } from '../data/site';
 import '../styles/pages/convertir.css';
+
+const pageTitle = `Convertir - ${brandName}`;
+const pageDescription =
+  'Convertisseur web local : images, audio, documents et PDF. Traitement dans le navigateur, sans upload ni compte.';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: brandName,
+      url: siteUrl,
+    },
+    {
+      '@type': 'WebApplication',
+      name: `${brandName} Convertisseur`,
+      url: `${siteUrl}/convertir/`,
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      description: pageDescription,
+    },
+  ],
+};
 ---
 
-<Layout title={`Convertir - ${brandName}`}>
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalPath="/convertir/"
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
   <div class="convertir-page">
     <div class="convertir-page__container">
       <header class="convertir-page__head">
@@ -15,8 +43,9 @@ import '../styles/pages/convertir.css';
           <span>Convertir</span>
         </h1>
         <p class="convertir-page__lead">
-          Conversion locale d'images, d'audio, de documents et de PDF dans votre navigateur. 24 Mo max
-          par lot, sans envoi sur un serveur : vos fichiers restent sur votre appareil.
+          Conversion locale d'images, d'audio, de documents et de PDF dans votre navigateur.
+          <span data-converter-batch-mo>24</span> Mo max par lot, sans envoi sur un serveur : vos fichiers
+          restent sur votre appareil.
         </p>
       </header>
       <Converter />
@@ -36,7 +65,7 @@ import '../styles/pages/convertir.css';
           <div class="convertir-page__limits-item">
             <dt class="convertir-page__limits-term">Lot</dt>
             <dd class="convertir-page__limits-detail">
-              <strong>24 Mo</strong>
+              <strong><span data-converter-batch-mo>24</span> Mo</strong>
               <span class="convertir-page__limits-detail-extra">
                 (32 Mo si le navigateur signale au moins 8 Go de mémoire)
               </span>
@@ -78,6 +107,12 @@ import '../styles/pages/convertir.css';
             </ul>
           </div>
         </div>
+
+        <p class="convertir-page__limits-lead">
+          <a href={pageUrl('documentation/web/conversions/')} class="convertir-page__doc-link">
+            Voir la documentation des conversions navigateur
+          </a>
+        </p>
       </section>
     </div>
   </div>

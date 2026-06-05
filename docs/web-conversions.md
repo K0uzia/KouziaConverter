@@ -1,5 +1,7 @@
 # Conversions web (navigateur)
 
+> Version mise en forme sur le site : [Documentations](https://k0uzia.github.io/ConvertAllLocal/documentation/) (catégorie Web → [Conversions navigateur](https://k0uzia.github.io/ConvertAllLocal/documentation/web/conversions/)).
+
 Traitement 100 % local sur `/convertir`. Limites : **24 Mo par lot** (32 Mo si le navigateur signale ≥ 8 Go de RAM), **16 Mo** par fichier image/audio/PDF, **8 Mo** par fichier texte.
 
 ## Images

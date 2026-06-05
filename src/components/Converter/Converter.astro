@@ -1,4 +1,5 @@
 ---
+import './Converter.css';
 import { WEB_ACCEPT_ATTR } from '../../data/converter-limits';
 ---
 
@@ -29,8 +30,8 @@ import { WEB_ACCEPT_ATTR } from '../../data/converter-limits';
         ></p>
         <div class="converter__dropzone-empty" data-converter-dropzone-empty>
           <p class="converter__dropzone-hint" id="converter-upload-label">
-            Images, audio, documents et PDF, en local. 24 Mo max par lot. Vidéo et Office : application
-            desktop.
+            Images, audio, documents et PDF, en local. <span data-converter-batch-mo>24</span> Mo max par lot.
+            Vidéo et Office : application desktop.
           </p>
         </div>
         <ul class="converter__dropzone-files" data-converter-dropzone-files hidden></ul>
@@ -89,10 +90,12 @@ import { WEB_ACCEPT_ATTR } from '../../data/converter-limits';
 <script>
   import { initConverterUi, resetConverterQueue } from './converter-ui.ts';
 
-  void initConverterUi();
-  document.addEventListener('astro:page-load', () => {
+  const bootConverterUi = (): void => {
     void initConverterUi();
-  });
+  };
+
+  bootConverterUi();
+  document.addEventListener('astro:page-load', bootConverterUi);
   document.addEventListener('cal:storage-cleared', () => {
     void (async () => {
       await resetConverterQueue();

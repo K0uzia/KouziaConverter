@@ -1,15 +1,27 @@
 ---
 import './Header.css';
-import { brandName, headerNav, homeSections } from '../../data/site';
+import { assetUrl, brandName, headerNav, homeSections, pageUrl } from '../../data/site';
 ---
 
 <header class="header">
   <div class="header__container">
-    <a href="/" class="header__logo" aria-label={`Accueil ${brandName}`}>
-      <img class="header__logo-icon" src="/logo.svg" alt="" decoding="async" />
+    <a href={pageUrl('/')} class="header__logo" aria-label={`Accueil ${brandName}`}>
+      <img class="header__logo-icon" src={assetUrl('logo.svg')} alt="" decoding="async" />
     </a>
 
     <div class="header__end">
+      <button
+        type="button"
+        class="header__menu-btn"
+        data-header-menu-btn
+        aria-expanded="false"
+        aria-controls="header-mobile-nav"
+        aria-label="Ouvrir le menu"
+      >
+        <i class="fa-solid fa-bars header__menu-icon header__menu-icon--open" aria-hidden="true"></i>
+        <i class="fa-solid fa-xmark header__menu-icon header__menu-icon--close" aria-hidden="true"></i>
+      </button>
+
       <nav class="header__nav" aria-label="Navigation principale">
         <ul class="header__nav-list">
           {
@@ -23,6 +35,27 @@ import { brandName, headerNav, homeSections } from '../../data/site';
           }
         </ul>
       </nav>
+
+      <nav
+        id="header-mobile-nav"
+        class="header__mobile-nav"
+        data-header-mobile-nav
+        aria-label="Navigation mobile"
+        hidden
+      >
+        <ul class="header__mobile-nav-list">
+          {
+            headerNav.map((item) => (
+              <li>
+                <a href={item.href} class="header__mobile-nav-link">
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
       <a href={homeSections.convertir} class="header__cta">
         Convertir
         <i class="header__cta-icon fa-solid fa-arrow-right-long" aria-hidden="true"></i>
@@ -32,8 +65,13 @@ import { brandName, headerNav, homeSections } from '../../data/site';
 </header>
 
 <script>
+  import { initHeaderMenu } from './header-menu.ts';
   import { initHeaderScroll } from './header-scroll.ts';
 
   initHeaderScroll();
-  document.addEventListener('astro:page-load', initHeaderScroll);
+  initHeaderMenu();
+  document.addEventListener('astro:page-load', () => {
+    initHeaderScroll();
+    initHeaderMenu();
+  });
 </script>

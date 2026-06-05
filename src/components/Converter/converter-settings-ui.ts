@@ -82,7 +82,6 @@ function refreshOutputPickerValues(root: HTMLElement, onChange: () => void): voi
 }
 
 export async function initConverterSettings(): Promise<void> {
-  await probeImageEncodeCapabilities();
   bindFormatPickerGlobalListeners();
 
   const root = document.querySelector<HTMLElement>('[data-converter-settings]');
@@ -130,18 +129,23 @@ export async function initConverterSettings(): Promise<void> {
     }
   };
 
-  bindOutputPickers(root, () => {
+  const onPickerChange = (): void => {
     void refresh();
-  });
+  };
+
+  bindOutputPickers(root, onPickerChange);
 
   if (root.dataset.settingsBound === 'true') {
-    refreshOutputPickerValues(root, () => {
-      void refresh();
-    });
+    await probeImageEncodeCapabilities();
+    mountOutputPicker(root, 'image', onPickerChange);
+    refreshOutputPickerValues(root, onPickerChange);
     void refresh();
     return;
   }
   root.dataset.settingsBound = 'true';
+
+  await probeImageEncodeCapabilities();
+  mountOutputPicker(root, 'image', onPickerChange);
 
   for (const category of SETTINGS_CATEGORIES) {
     const resetBtn = root.querySelector<HTMLButtonElement>(

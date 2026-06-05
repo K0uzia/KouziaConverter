@@ -113,8 +113,10 @@ import './ConverterSettings.css';
 <script>
   import { initConverterSettings } from './converter-settings-ui.ts';
 
-  void initConverterSettings();
-  document.addEventListener('astro:page-load', () => {
+  const bootConverterSettings = (): void => {
     void initConverterSettings();
-  });
+  };
+
+  bootConverterSettings();
+  document.addEventListener('astro:page-load', bootConverterSettings);
 </script>

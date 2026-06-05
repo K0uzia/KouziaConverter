@@ -4,15 +4,39 @@ export const brandName = 'Convert All Local';
 /** Identifiant dépôt GitHub (sans espaces). */
 export const brandRepo = 'ConvertAllLocal';
 
+/** URL canonique de production (GitHub Pages). */
+export const siteUrl = 'https://k0uzia.github.io/ConvertAllLocal';
+
+/** Préfixe de déploiement Astro (`/ConvertAllLocal/` sur GitHub Pages, `/` en racine). */
+export const basePath = import.meta.env.BASE_URL;
+
+/** URL d'un asset dans `public/` (grain, logo, favicon…). */
+export function assetUrl(path: string): string {
+  const slug = path.replace(/^\//, '');
+  return `${basePath}${slug}`;
+}
+
+/** URL interne du site (pages et ancres d'accueil). */
+export function pageUrl(path: string): string {
+  if (!path || path === '/') return basePath;
+  if (path.startsWith('/#')) return `${basePath.replace(/\/$/, '')}${path}`;
+  if (path.startsWith('#')) return `${basePath}${path}`;
+  const slug = path.replace(/^\//, '');
+  return `${basePath}${slug}`;
+}
+
+export const defaultDescription =
+  'Convertisseur de fichiers 100 % local dans le navigateur : images, audio, documents et PDF. Gratuit, open source, sans envoi sur un serveur.';
+
 export const githubUrl = `https://github.com/K0uzia/${brandRepo}`;
 export const githubIssuesUrl = `${githubUrl}/issues`;
 
-/** Ancres de la page d'accueil (chemins absolus pour les pages secondaires). */
+/** Ancres de la page d'accueil (préfixées par `base` pour GitHub Pages). */
 export const homeSections = {
-  convertir: '/convertir',
-  comment: '/#comment-convertir',
-  formats: '/#formats',
-  apropos: '/#apropos',
+  convertir: pageUrl('convertir/'),
+  comment: pageUrl('/#comment-convertir'),
+  formats: pageUrl('/#formats'),
+  apropos: pageUrl('/#apropos'),
 } as const;
 
 export const headerNav = [

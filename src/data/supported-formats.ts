@@ -91,17 +91,17 @@ export function formatsListsIdentical(
   return labels(a) === labels(b);
 }
 
-export function statsForCategory(id: SupportCategoryId) {
-  switch (id) {
-    case 'images':
-      return imageFormatStats;
-    case 'audio':
-      return audioFormatStats;
-    case 'video':
-      return videoFormatStats;
-    case 'documents':
-      return documentsFormatStats;
-    default:
-      return null;
-  }
+/** Libellés des extensions web pour une catégorie (affichage UI). */
+export function webExtensionLabels(id: SupportCategoryId): string {
+  const formats = formatsForEnv(
+    id === 'images'
+      ? imageFormats
+      : id === 'audio'
+        ? audioFormats
+        : id === 'documents'
+          ? documentsFormats
+          : videoFormats,
+    'web',
+  );
+  return formats.map((f) => f.label.replace(/^\./, '').toUpperCase()).join(', ');
 }

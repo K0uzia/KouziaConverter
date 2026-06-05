@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://k0uzia.github.io/ConvertAllLocal/sitemap-index.xml

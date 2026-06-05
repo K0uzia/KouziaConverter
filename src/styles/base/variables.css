@@ -29,8 +29,7 @@
   --page-noise-size: 256px;
   --page-noise-fiber-size: 384px;
   --page-noise-fallback-alpha: 0.09;
-  --page-noise-image: url('/grain.svg');
-  --page-noise-fiber-image: url('/grain-fiber.svg');
+  /* --page-noise-image et --page-noise-fiber-image : définis dans Layout.astro (base Astro) */
   --page-paper-wash-alpha: 0.35;
   --page-noise-pattern:
     var(--page-noise-image),

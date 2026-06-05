@@ -16,9 +16,6 @@ export const WEB_MAX_FILE_BYTES = 16 * 1024 * 1024;
 /** Limite par fichier document texte (md, html, csv, json, txt). */
 export const WEB_MAX_TEXT_BYTES = 8 * 1024 * 1024;
 
-/** @deprecated Utiliser WEB_MAX_BATCH_BYTES ou getMaxBytesForFile. */
-export const WEB_MAX_FILE_BYTES_LEGACY = WEB_MAX_BATCH_BYTES;
-
 export const WEB_ACCEPT_ATTR = buildWebAcceptAttr();
 
 export { detectCategory, extensionFromFile, normalizeExtension, type ConverterCategory };
@@ -36,7 +33,11 @@ export function getWebBatchLimitBytes(): number {
 }
 
 export function formatWebBatchLimit(): string {
-  return formatBytes(WEB_MAX_BATCH_BYTES);
+  return formatBytes(getWebBatchLimitBytes());
+}
+
+export function webBatchLimitMoLabel(): number {
+  return Math.round(getWebBatchLimitBytes() / (1024 * 1024));
 }
 
 export function getMaxBytesForFile(file: File): number {
@@ -45,10 +46,6 @@ export function getMaxBytesForFile(file: File): number {
   const category = detectCategory(file);
   if (category === 'document') return WEB_MAX_TEXT_BYTES;
   return WEB_MAX_FILE_BYTES;
-}
-
-export function formatMaxBytesForFile(file: File): string {
-  return formatBytes(getMaxBytesForFile(file));
 }
 
 export function formatBytes(bytes: number): string {

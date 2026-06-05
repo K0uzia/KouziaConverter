@@ -1,12 +1,11 @@
-import { marked } from 'marked';
 import pdfjsWorkerSrc from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 import type { OutputFormatOption } from '../../data/converter-output-formats.js';
 import { extensionFromFile } from '../../data/converter-limits.js';
 import { pageItemsToLayoutText } from './converter-pdf-layout.js';
 import { ConvertError, validateFileWeight } from './converter-errors.js';
+import { baseFilename } from './converter-filename.js';
 import { decodeFileToImageData, type ConvertResult, type ProgressCallback } from './converter-image-engine.js';
-
-marked.setOptions({ gfm: true, breaks: true });
+import { htmlToPlainText, markdownToPlainText } from './converter-text-utils.js';
 
 const PDF_MAX_PAGES = 50;
 const PDF_PAGE_RENDER_SCALE = 1.5;
@@ -67,16 +66,6 @@ function imageDataToPngDataUrl(imageData: ImageData): string {
   if (!ctx) throw ConvertError.browserCanvas();
   ctx.putImageData(imageData, 0, 0);
   return canvas.toDataURL('image/png');
-}
-
-function htmlToPlainText(html: string): string {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return (doc.body?.textContent ?? '').replace(/\s+\n/g, '\n').trim();
-}
-
-async function markdownToPlainText(md: string): Promise<string> {
-  const html = await marked.parse(md);
-  return htmlToPlainText(html);
 }
 
 async function plainTextFromDocumentFile(file: File): Promise<string> {
@@ -146,10 +135,6 @@ async function buildPdfBlob(
     if (err instanceof ConvertError) throw err;
     throw ConvertError.pdfBuildFailed();
   }
-}
-
-function baseFilename(file: File): string {
-  return file.name.replace(/\.[^.]+$/, '') || 'converti';
 }
 
 export async function convertImageFileToPdf(
@@ -245,7 +230,7 @@ async function renderPagePreview(page: PdfJsPage): Promise<{
   await task.promise;
 
   return {
-    dataUrl: canvas.toDataURL('image/png'),
+    dataUrl: canvas.toDataURL('image/jpeg', 0.72),
     width: canvas.width,
     height: canvas.height,
   };

@@ -221,7 +221,7 @@
 
 .converter-settings__row-format [data-settings-output-picker] {
   width: 100%;
-  min-width: 0;
+  min-width: 6.5rem;
 }
 
 .converter-settings__format-menu {
@@ -294,6 +294,7 @@
   padding: calc(var(--head) / 8) calc(var(--head) / 10);
   text-align: center;
   vertical-align: middle;
+  overflow: visible;
 }
 
 .converter-settings__action-slot {

@@ -18,20 +18,21 @@ ConvertAllLocal is a **free and open source** (MIT) local conversion tool for th
 |---|------------------------|--------------------------|
 | Access | Convert on the website | Download (Tauri, Linux/Windows) |
 | Data | Stays in your browser | Stays on your machine |
-| Limits | Images only, ≤ 12 MB per file | Video, batch, icons, large files |
+| Limits | Images, audio, docs, PDF: 24 MB batch, 16 MB file (text 8 MB) | Video, Office, OCR, large files |
 
 Web limits are **not** a trial or paywall: **same tool**, browser technical constraints.
 
 ## Project status
 
 - **Done**: Astro site, modular components/CSS, Font Awesome bundled locally (npm, offline)
-- **In progress**: converter UI, conversion engines (FFmpeg, images, icons)
+- **Done (web)**: browser converter (images, audio, documents, PDF), local queue
+- **In progress**: Tauri desktop app (video, Office, OCR)
 - **Planned**: Tauri 2 desktop app (no Electron)
 
 ## Supported formats
 
-**Website (browser)** : images only, **12 MB max** per file, local processing, no upload.  
-**Desktop app** : video, images, icons, no browser size cap (engines coming soon).
+**Website (browser)** : images, audio, documents, PDF. **24 MB** batch max (32 MB if browser reports ≥ 8 GB RAM), **16 MB** per image/audio/PDF file, **8 MB** text. Local processing, no upload. See [documentation/web/conversions](https://k0uzia.github.io/ConvertAllLocal/documentation/web/conversions/) on the site.  
+**Desktop app** : video, Office, OCR, large files (coming soon).
 
 ### Video
 
@@ -47,13 +48,13 @@ Web limits are **not** a trial or paywall: **same tool**, browser technical cons
 
 | Format | Main use | Website (browser) | Desktop app |
 |--------|----------|-------------------|-------------|
-| **JPEG** | Photos | ✅ (≤12 MB) | ✅ |
-| **PNG** | Logos, graphics, icons | ✅ (≤12 MB) | ✅ |
-| **WebP** | Modern optimized | ✅ (≤12 MB) | ✅ |
-| **AVIF** | Modern standard | ✅ (≤12 MB) | ✅ |
-| **GIF** | Short animations | ✅ (≤12 MB) | ✅ |
-| **SVG** | Responsive UI, icons | ✅ (≤12 MB) | ✅ |
-| **ICO** | Favicons, Windows apps | ❌ | ✅ |
+| **JPEG** | Photos | ✅ (24 MB batch) | ✅ |
+| **PNG** | Logos, graphics, icons | ✅ (24 MB batch) | ✅ |
+| **WebP** | Modern optimized | ✅ (24 MB batch) | ✅ |
+| **AVIF** | Modern standard | ✅ (24 MB batch) | ✅ |
+| **GIF** | Short animations | ✅ (24 MB batch) | ✅ |
+| **SVG** | Responsive UI, icons | ✅ (24 MB batch) | ✅ |
+| **ICO** | Favicons, Windows apps | ✅ (24 MB batch) | ✅ |
 | **ICNS** | macOS app icons | ❌ | ✅ |
 | **PNG 256×256** | Linux app icons | ❌ | ✅ |
 

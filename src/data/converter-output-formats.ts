@@ -1,4 +1,5 @@
-import type { ConverterCategory } from './web-converter.js';
+import type { ConverterCategory } from './converter-types.js';
+import { normalizeExtension } from './format-aliases.js';
 
 export interface OutputFormatOption {
   id: string;
@@ -92,7 +93,7 @@ export const allOutputFormats: OutputFormatOption[] = [
 export const defaultOutputByCategory: Record<ConverterCategory, string> = {
   image: 'webp',
   audio: 'wav',
-  document: 'json',
+  document: 'html',
 };
 
 export function outputFormatById(id: string): OutputFormatOption | undefined {
@@ -115,9 +116,9 @@ export function outputFormatsForCategory(
   });
 }
 
-/** Formats de sortie image équivalents à l'extension d'entrée (jpeg/jpg/jfif, tiff/tif). */
-export function normalizeImageFormatId(ext: string): string {
-  if (ext === 'jpg' || ext === 'jfif') return 'jpeg';
-  if (ext === 'tif') return 'tiff';
-  return ext;
+/** MIME image pour une extension d'entrée web (accept, détection). */
+export function imageMimeForExtension(ext: string): string | undefined {
+  const normalized = normalizeExtension(ext);
+  const meta = IMAGE_OUTPUT_FORMAT_META[normalized];
+  return meta?.mime;
 }

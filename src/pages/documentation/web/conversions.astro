@@ -1,0 +1,188 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import '../../../styles/pages/documentation.css';
+import { categoryById } from '../../../data/documentation';
+import { brandName, pageUrl } from '../../../data/site';
+
+const category = categoryById('web');
+const docsIndex = pageUrl('documentation/');
+const updated = '2026-06-05';
+---
+
+<Layout
+  title={`Conversions navigateur - Documentation - ${brandName}`}
+  description="Formats, limites et matrices de conversion du convertisseur web ConvertAllLocal : images, audio, documents et PDF, 100 % local."
+  canonicalPath="/documentation/web/conversions/"
+>
+  <article class="docs">
+    <div class="docs__container">
+      <nav class="docs-article__nav" aria-label="Fil d'Ariane">
+        <a href={docsIndex}>Documentation</a>
+        <span class="docs-article__nav-sep" aria-hidden="true">/</span>
+        <span>{category?.title ?? 'Web'}</span>
+        <span class="docs-article__nav-sep" aria-hidden="true">/</span>
+        <span>Conversions navigateur</span>
+      </nav>
+
+      <header class="docs-article__head">
+        <span class="docs-article__tag">Web</span>
+        <h1 class="docs-article__title">Conversions navigateur</h1>
+        <p class="docs-article__lead">
+          Traitement 100 % local sur <a href={pageUrl('convertir/')}>/convertir</a>. Aucun fichier
+          n'est envoyé sur un serveur.
+        </p>
+      </header>
+
+      <div class="docs-article__body">
+        <section class="docs-article__section" aria-labelledby="doc-web-limits">
+          <h2 class="docs-article__heading" id="doc-web-limits">Limites de taille</h2>
+          <div class="docs-callout">
+            <strong>24 Mo</strong> par lot (32 Mo si le navigateur signale au moins 8 Go de RAM),
+            <strong>16 Mo</strong> par fichier image, audio ou PDF, <strong>8 Mo</strong> par fichier
+            texte.
+          </div>
+          <p>
+            Ces plafonds protègent la mémoire de l'onglet et le stockage local (IndexedDB), pas un
+            modèle d'abonnement.
+          </p>
+        </section>
+
+        <section class="docs-article__section" aria-labelledby="doc-web-images">
+          <h2 class="docs-article__heading" id="doc-web-images">Images</h2>
+          <p>
+            <strong>Entrées web :</strong> PNG, JPEG, WebP, AVIF, GIF, SVG, BMP, TIFF, ICO, JXL, HEIC,
+            HEIF, APNG (décodage selon le navigateur pour JXL et HEIC).
+          </p>
+          <p>Conversion de l'un vers l'autre (matrice complète) et export PDF.</p>
+          <div class="docs-table-wrap">
+            <table class="docs-table">
+              <thead>
+                <tr>
+                  <th scope="col">Sorties image</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    WebP, PNG, JPEG, AVIF, GIF, SVG, BMP, TIFF, ICO, JXL, HEIC, HEIF, APNG, PDF
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            <strong>HEIC / HEIF en sortie :</strong> proposés seulement si le navigateur sait les
+            encoder (Safari principalement).
+          </p>
+          <p>
+            <strong>SVG en sortie :</strong> vectorisation via
+            <a href="https://github.com/visioncortex/vtracer" target="_blank" rel="noopener noreferrer"
+              >VTracer</a
+            > (WASM, 100 % local). Courbes lisses, transparence conservée. Un SVG qui n'embarque qu'une
+            image PNG est re-vectorisé depuis le raster source. Les photos complexes restent une
+            approximation.
+          </p>
+          <p>
+            <strong>APNG :</strong> image fixe (1 frame), libellé « APNG (image fixe) » dans
+            l'interface.
+          </p>
+        </section>
+
+        <section class="docs-article__section" aria-labelledby="doc-web-audio">
+          <h2 class="docs-article__heading" id="doc-web-audio">Audio</h2>
+          <p>
+            <strong>Entrées web :</strong> WAV, MP3, OGG, Opus, M4A, AAC.
+            <strong>Sorties :</strong> WAV, MP3, OGG (matrice complète entre ces trois formats, depuis
+            toute entrée).
+          </p>
+          <p>
+            Opus, M4A et AAC ne sont pas disponibles en sortie (limitation des encodeurs navigateur).
+            Ils se convertissent vers WAV, MP3 ou OGG.
+          </p>
+        </section>
+
+        <section class="docs-article__section" aria-labelledby="doc-web-documents">
+          <h2 class="docs-article__heading" id="doc-web-documents">Documents texte</h2>
+          <div class="docs-table-wrap">
+            <table class="docs-table">
+              <thead>
+                <tr>
+                  <th scope="col">Entrée</th>
+                  <th scope="col">Sortie</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Markdown</td>
+                  <td>HTML, Texte, PDF</td>
+                </tr>
+                <tr>
+                  <td>HTML</td>
+                  <td>Texte, PDF</td>
+                </tr>
+                <tr>
+                  <td>TXT</td>
+                  <td>PDF</td>
+                </tr>
+                <tr>
+                  <td>CSV</td>
+                  <td>JSON</td>
+                </tr>
+                <tr>
+                  <td>JSON</td>
+                  <td>CSV, JSON (formaté)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="docs-article__section" aria-labelledby="doc-web-pdf">
+          <h2 class="docs-article__heading" id="doc-web-pdf">PDF</h2>
+          <div class="docs-table-wrap">
+            <table class="docs-table">
+              <thead>
+                <tr>
+                  <th scope="col">Sens</th>
+                  <th scope="col">Détail</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Entrée</td>
+                  <td>PDF avec couche texte vers <strong>TXT</strong> (max 50 pages, pas d'OCR)</td>
+                </tr>
+                <tr>
+                  <td>Sortie</td>
+                  <td>Images vers PDF ; MD / HTML / TXT vers PDF (texte sélectionnable, paginé)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="docs-article__section" aria-labelledby="doc-web-desktop">
+          <h2 class="docs-article__heading" id="doc-web-desktop">Réservé à l'application desktop</h2>
+          <p>
+            Vidéo, Office (DOCX, ODT…), EPUB, RTF, PDF scannés (OCR), conversions PDF avancées (Word,
+            images de toutes les pages). Voir
+            <a href={pageUrl('documentation/application/apercu/')}>Application desktop</a>.
+          </p>
+        </section>
+
+        <p class="docs-article__updated">
+          Dernière mise à jour :{' '}
+          {new Date(updated).toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })}
+        </p>
+        <a class="docs-article__back" href={docsIndex}>
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+          Retour à la documentation
+        </a>
+      </div>
+    </div>
+  </article>
+</Layout>

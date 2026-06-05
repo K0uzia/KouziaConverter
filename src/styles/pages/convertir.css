@@ -241,3 +241,14 @@
 .convertir-page__limits-scope-list li + li {
   margin-top: calc(var(--head) / 20);
 }
+
+.convertir-page__doc-link {
+  font-weight: var(--weight-medium);
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.convertir-page__doc-link:hover {
+  color: var(--color-brand-hover);
+}
