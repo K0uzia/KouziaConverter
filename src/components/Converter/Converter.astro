@@ -18,7 +18,7 @@ import { WEB_ACCEPT_ATTR } from '../../data/converter-limits';
         data-converter-dropzone
         role="button"
         tabindex="0"
-        aria-labelledby="converter-upload-label converter-upload-hint converter-dropzone-alert"
+        aria-labelledby="converter-upload-label converter-dropzone-alert"
       >
         <p
           class="converter__dropzone-alert"
@@ -28,20 +28,16 @@ import { WEB_ACCEPT_ATTR } from '../../data/converter-limits';
           hidden
         ></p>
         <div class="converter__dropzone-empty" data-converter-dropzone-empty>
-          <p class="converter__dropzone-title" id="converter-upload-label">
-            Déposer des fichiers ou cliquer pour parcourir
-          </p>
-          <p class="converter__dropzone-hint" id="converter-upload-hint">
-            Images, audio, documents et PDF, en local dans le navigateur. 24 Mo max par lot (16 Mo
-            par fichier image/audio/PDF, 8 Mo pour le texte). Vidéo et Office lourd : application
+          <p class="converter__dropzone-hint" id="converter-upload-label">
+            Images, audio, documents et PDF, en local. 24 Mo max par lot. Vidéo et Office : application
             desktop.
           </p>
         </div>
         <ul class="converter__dropzone-files" data-converter-dropzone-files hidden></ul>
         <div class="converter__dropzone-footer" data-converter-dropzone-footer hidden>
-          <p class="converter__dropzone-more" data-converter-dropzone-more>
+          <button type="button" class="converter__dropzone-more" data-converter-dropzone-more>
             Cliquer ou déposer pour ajouter d'autres fichiers
-          </p>
+          </button>
           <div class="converter__dropzone-footer-actions">
             <button type="button" class="converter__dropzone-clear" data-converter-clear-all>
               Effacer tout

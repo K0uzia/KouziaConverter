@@ -93,3 +93,14 @@ export async function clearQueueStore(): Promise<void> {
     /* ignore */
   }
 }
+
+/** Supprime toute la base IndexedDB du convertisseur (file et fichiers mémorisés). */
+export async function deleteQueueDatabase(): Promise<void> {
+  if (typeof indexedDB === 'undefined') return;
+  await new Promise<void>((resolve) => {
+    const request = indexedDB.deleteDatabase(DB_NAME);
+    request.onsuccess = () => resolve();
+    request.onerror = () => resolve();
+    request.onblocked = () => resolve();
+  });
+}

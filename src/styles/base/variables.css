@@ -24,17 +24,13 @@
 --color-success: #15803d;
 --color-error: #b91c1c;
 
-  /* Texture papier / grain / quadrillage millimétré */
+  /* Texture papier : grain fin, fibres, lavis chaud */
   --page-paper-ink: 32, 36, 44;
   --page-noise-size: 256px;
   --page-noise-fiber-size: 384px;
   --page-noise-fallback-alpha: 0.09;
   --page-noise-image: url('/grain.svg');
   --page-noise-fiber-image: url('/grain-fiber.svg');
-  --page-paper-grid-minor: 8px;
-  --page-paper-grid-major: 40px;
-  --page-paper-line-minor-alpha: 0.07;
-  --page-paper-line-major-alpha: 0.11;
   --page-paper-wash-alpha: 0.35;
   --page-noise-pattern:
     var(--page-noise-image),
@@ -49,26 +45,6 @@
       rgba(var(--page-paper-ink), calc(var(--page-noise-fallback-alpha) * 0.75)) 0 0.4px,
       transparent 0.4px 2.75px
     ),
-    repeating-linear-gradient(
-      0deg,
-      rgba(var(--page-paper-ink), var(--page-paper-line-minor-alpha)) 0 1px,
-      transparent 1px var(--page-paper-grid-minor)
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(var(--page-paper-ink), var(--page-paper-line-minor-alpha)) 0 1px,
-      transparent 1px var(--page-paper-grid-minor)
-    ),
-    repeating-linear-gradient(
-      0deg,
-      rgba(var(--page-paper-ink), var(--page-paper-line-major-alpha)) 0 1px,
-      transparent 1px var(--page-paper-grid-major)
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(var(--page-paper-ink), var(--page-paper-line-major-alpha)) 0 1px,
-      transparent 1px var(--page-paper-grid-major)
-    ),
     linear-gradient(
       165deg,
       rgba(255, 252, 246, var(--page-paper-wash-alpha)) 0%,
@@ -80,13 +56,9 @@
     var(--page-noise-fiber-size) var(--page-noise-fiber-size),
     2.25px 2.25px,
     2.75px 2.75px,
-    var(--page-paper-grid-minor) var(--page-paper-grid-minor),
-    var(--page-paper-grid-minor) var(--page-paper-grid-minor),
-    var(--page-paper-grid-major) var(--page-paper-grid-major),
-    var(--page-paper-grid-major) var(--page-paper-grid-major),
     100% 100%;
-  --page-noise-pattern-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
-  --page-noise-blend-modes: normal, normal, normal, normal, normal, normal, normal, normal, soft-light;
+  --page-noise-pattern-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+  --page-noise-blend-modes: normal, normal, normal, normal, soft-light;
 
   /* Typographie */
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -238,6 +210,15 @@
   --converter-bar-pad: calc(var(--head) / 6.4);
   --converter-file-border: 1px;
   --converter-file-bg: var(--color-surface);
+  --converter-file-row-bg: #d9d3c7;
+  --converter-file-row-bg-hover: #d0c9bc;
+  --converter-file-row-fg-secondary: rgba(32, 36, 44, 0.78);
+  --converter-file-row-fg-label: rgba(32, 36, 44, 0.62);
+  --converter-file-row-separator: rgba(32, 36, 44, 0.22);
+  --converter-file-row-inset-bg: rgba(240, 235, 227, 0.72);
+  --converter-file-row-success-bg: #cfd8c8;
+  --converter-file-row-error-bg: #dccfcc;
+  --converter-file-row-converting-bg: #ccc6d4;
   --converter-file-border-color: var(--color-line);
   --converter-file-pad-y: calc(var(--head) / 9.6);
   --converter-file-pad-x: calc(var(--head) / 8);

@@ -13,9 +13,11 @@ const labelApp = 'Application';
 const labelBoth = 'Site et Application';
 
 const categoryDescriptions: Record<SupportCategoryId, string> = {
-  images: 'Photos et graphiques, du web au RAW professionnel.',
+  images:
+    'PNG, JPEG, WebP, AVIF, GIF, SVG, BMP, TIFF, ICO, JXL, HEIC et APNG sur le site. RAW et formats pro (PSD, EPS…) en desktop.',
   video: 'Conteneurs vidéo via l\'application desktop.',
-  audio: 'WAV, MP3, OGG, Opus, M4A, AAC : conversion locale vers WAV, MP3 ou OGG (depuis MP3/WAV).',
+  audio:
+    'WAV, MP3, OGG, Opus, M4A, AAC : sortie WAV, MP3 ou OGG depuis toute entrée. Opus, M4A et AAC en entrée seulement (pas de sortie native).',
   documents: 'MD, HTML, CSV, JSON, TXT et PDF (export, texte structuré, HTML fidèle) sur le site. Office lourd en desktop.',
 };
 ---
@@ -29,9 +31,9 @@ const categoryDescriptions: Record<SupportCategoryId, string> = {
           <span>Formats pris en charge</span>
         </h2>
         <p class="supports__intro">
-          Le site et l'application desktop ne traitent pas exactement les mêmes types de fichiers. Le
-          site est plus léger et convient pour l'usage courant, tandis que l'application desktop est
-          conçue pour les fichiers plus techniques et plus volumineux.
+          Sur le site : images, audio, documents et PDF, en local (24 Mo max par lot). L'application
+          desktop prend le relais pour la vidéo, Office lourd et les formats plus techniques ou plus
+          volumineux.
         </p>
         <div class="supports__why">
           <h3 class="supports__why-title">
@@ -43,8 +45,12 @@ const categoryDescriptions: Record<SupportCategoryId, string> = {
               pas les lire de façon fiable.
             </li>
             <li>
-              <strong>HEIC, EPS, PSD, AI :</strong> ces formats nécessitent des moteurs de traitement
-              lourds, peu adaptés au web.
+              <strong>HEIC, JXL :</strong> pris en charge sur le site si le navigateur sait les lire ;
+              sinon, utilisez l'application desktop.
+            </li>
+            <li>
+              <strong>EPS, PSD, AI :</strong> ces formats nécessitent des moteurs de traitement lourds,
+              réservés à l'application desktop.
             </li>
             <li>
               <strong>Certains formats d'image spécialisés :</strong> ils demandent des outils

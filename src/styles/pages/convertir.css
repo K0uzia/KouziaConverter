@@ -195,16 +195,6 @@
   color: var(--color-muted);
 }
 
-.convertir-page__limits-note {
-  margin: 0 0 calc(var(--head) / 8) 0;
-  padding: calc(var(--head) / 10.24) 0 0 0;
-  border-top: 1px solid var(--color-brand);
-  font-size: var(--text-xs);
-  line-height: var(--line-relaxed);
-  color: var(--color-muted);
-  text-wrap: pretty;
-}
-
 .convertir-page__limits-scope {
   display: grid;
   grid-template-columns: 1fr;

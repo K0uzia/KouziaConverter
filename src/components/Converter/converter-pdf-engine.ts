@@ -15,10 +15,6 @@ const PDF_MARGIN_MM = 12;
 const PDF_TEXT_FONT_SIZE = 10;
 const PDF_TEXT_LINE_HEIGHT_MM = 5;
 const PDF_TEXT_PARAGRAPH_GAP_MM = 2.5;
-const PDF_TEXT_FONT_FAMILY = 'Helvetica, Arial, sans-serif';
-const PDF_TEXT_CANVAS_SCALE = 2;
-const PDF_TEXT_LINE_HEIGHT_RATIO = 1.45;
-const MM_TO_PX = 96 / 25.4;
 const PX_TO_MM = 0.264583;
 
 type JsPDFConstructor = typeof import('jspdf').jsPDF;
@@ -100,152 +96,41 @@ function normalizeTextForPdf(text: string): string {
     .replace(/[\u200b-\u200d\ufeff]/g, '');
 }
 
-function createPdfTextMeasurer(maxWidthPx: number, fontSizePt: number): {
-  width: (line: string) => number;
-  maxWidthPx: number;
-} {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw ConvertError.browserCanvas();
-  ctx.font = `${fontSizePt}pt ${PDF_TEXT_FONT_FAMILY}`;
-
-  return {
-    maxWidthPx,
-    width: (line: string) => ctx.measureText(line).width,
-  };
-}
-
-function breakWordToLines(word: string, measure: (line: string) => number, maxWidthPx: number): string[] {
-  const lines: string[] = [];
-  let current = '';
-
-  for (const char of word) {
-    const next = current + char;
-    if (measure(next) > maxWidthPx && current) {
-      lines.push(current);
-      current = char;
-    } else {
-      current = next;
-    }
-  }
-
-  if (current) lines.push(current);
-  return lines;
-}
-
-function wrapParagraphToLines(
-  paragraph: string,
-  measure: (line: string) => number,
-  maxWidthPx: number,
-): string[] {
-  const words = paragraph.split(/\s+/).filter(Boolean);
-  const lines: string[] = [];
-  let current = '';
-
-  for (const word of words) {
-    const trial = current ? `${current} ${word}` : word;
-    if (measure(trial) <= maxWidthPx) {
-      current = trial;
-      continue;
-    }
-
-    if (current) {
-      lines.push(current);
-      current = '';
-    }
-
-    if (measure(word) <= maxWidthPx) {
-      current = word;
-    } else {
-      const chunks = breakWordToLines(word, measure, maxWidthPx);
-      lines.push(...chunks.slice(0, -1));
-      current = chunks.at(-1) ?? '';
-    }
-  }
-
-  if (current) lines.push(current);
-  return lines;
-}
-
-function layoutTextLines(text: string, maxWidthPx: number, fontSizePt: number): string[] {
-  const measure = createPdfTextMeasurer(maxWidthPx, fontSizePt);
-  const paragraphs = normalizeTextForPdf(text).split('\n');
-  const lines: string[] = [];
-
-  for (let i = 0; i < paragraphs.length; i += 1) {
-    if (i > 0) lines.push('');
-    const paragraph = paragraphs[i];
-    if (!paragraph) continue;
-    lines.push(...wrapParagraphToLines(paragraph, measure.width, measure.maxWidthPx));
-  }
-
-  return lines;
-}
-
-function pxToMm(px: number): number {
-  return (px * 25.4) / 96;
-}
-
-function renderTextPageCanvas(
-  pageLines: string[],
-  contentWidthPx: number,
-  lineHeightPx: number,
-  fontSizePt: number,
-): HTMLCanvasElement {
-  const scale = PDF_TEXT_CANVAS_SCALE;
-  const canvas = document.createElement('canvas');
-  const widthPx = Math.ceil(contentWidthPx);
-  const heightPx = Math.max(Math.ceil(pageLines.length * lineHeightPx + 2), 1);
-  canvas.width = widthPx * scale;
-  canvas.height = heightPx * scale;
-
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw ConvertError.browserCanvas();
-
-  ctx.scale(scale, scale);
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, widthPx, heightPx);
-  ctx.fillStyle = '#000000';
-  ctx.font = `${fontSizePt}pt ${PDF_TEXT_FONT_FAMILY}`;
-  ctx.textBaseline = 'top';
-
-  for (let i = 0; i < pageLines.length; i += 1) {
-    ctx.fillText(pageLines[i], 0, i * lineHeightPx);
-  }
-
-  return canvas;
-}
-
 function writeTextToPdf(pdf: InstanceType<JsPDFConstructor>, text: string): void {
   const margin = PDF_MARGIN_MM;
   const pageW = pdf.internal.pageSize.getWidth();
   const pageH = pdf.internal.pageSize.getHeight();
-  const contentWmm = pageW - margin * 2;
-  const contentHmm = pageH - margin * 2;
-  const contentWidthPx = contentWmm * MM_TO_PX;
-  const fontSizePx = PDF_TEXT_FONT_SIZE * (96 / 72);
-  const lineHeightPx = fontSizePx * PDF_TEXT_LINE_HEIGHT_RATIO;
-  const linesPerPage = Math.max(1, Math.floor((contentHmm * MM_TO_PX) / lineHeightPx));
+  const maxWidth = pageW - margin * 2;
+  const lineHeight = PDF_TEXT_LINE_HEIGHT_MM;
 
-  const lines = layoutTextLines(text, contentWidthPx, PDF_TEXT_FONT_SIZE);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(PDF_TEXT_FONT_SIZE);
 
-  for (let start = 0; start < lines.length; start += linesPerPage) {
-    if (start > 0) pdf.addPage();
+  const paragraphs = normalizeTextForPdf(text).split('\n');
+  let y = margin;
 
-    const pageLines = lines.slice(start, start + linesPerPage);
-    const canvas = renderTextPageCanvas(pageLines, contentWidthPx, lineHeightPx, PDF_TEXT_FONT_SIZE);
-    const imgHmm = pxToMm(canvas.height / PDF_TEXT_CANVAS_SCALE);
+  const ensureSpace = (needed: number): void => {
+    if (y + needed > pageH - margin) {
+      pdf.addPage();
+      y = margin;
+    }
+  };
 
-    pdf.addImage(
-      canvas.toDataURL('image/png'),
-      'PNG',
-      margin,
-      margin,
-      contentWmm,
-      Math.min(imgHmm, contentHmm),
-      undefined,
-      'FAST',
-    );
+  for (let p = 0; p < paragraphs.length; p += 1) {
+    if (p > 0) {
+      ensureSpace(PDF_TEXT_PARAGRAPH_GAP_MM);
+      y += PDF_TEXT_PARAGRAPH_GAP_MM;
+    }
+
+    const paragraph = paragraphs[p];
+    if (!paragraph) continue;
+
+    const lines = pdf.splitTextToSize(paragraph, maxWidth) as string[];
+    for (const line of lines) {
+      ensureSpace(lineHeight);
+      pdf.text(line, margin, y, { baseline: 'top' });
+      y += lineHeight;
+    }
   }
 }
 

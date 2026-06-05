@@ -1,5 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import wasm from 'vite-plugin-wasm';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,6 +11,7 @@ export default defineConfig({
     enabled: false,
   },
   vite: {
+    plugins: [wasm(), topLevelAwait()],
     // Cache dédié (évite les conflits si plusieurs projets Vite tournent en parallèle)
     cacheDir: 'node_modules/.vite-convertalllocal',
     css: {
@@ -24,8 +27,10 @@ export default defineConfig({
         '@jsquash/jpeg',
         '@jsquash/webp',
         '@jsquash/avif',
+        '@jsquash/jxl',
         'pdfjs-dist',
         'wasm-media-encoders',
+        'wasm_vtracer',
         '@wasm-audio-decoders/ogg-vorbis',
         'ogg-opus-decoder',
       ],

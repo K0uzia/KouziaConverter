@@ -9,6 +9,7 @@ import {
   type ConverterCategory,
 } from '../../data/converter-limits.js';
 import { convertAudioFile } from './converter-audio-engine.js';
+import { filterImageOutputFormats } from './converter-image-capabilities.js';
 import { convertDocumentFile } from './converter-document-engine.js';
 import { ConvertError } from './converter-errors.js';
 import { convertImageFile, type ConvertResult, type ProgressCallback } from './converter-image-engine.js';
@@ -28,7 +29,8 @@ export function getCategoryForFile(file: File): ConverterCategory {
 export function resolveOutputFormat(file: File, outputId: string) {
   const category = getCategoryForFile(file);
   const inputExt = extensionFromFile(file);
-  const allowed = outputFormatsForCategory(category, inputExt);
+  let allowed = outputFormatsForCategory(category, inputExt);
+  if (category === 'image') allowed = filterImageOutputFormats(allowed);
   const chosen = outputFormatById(outputId);
   if (!chosen || !allowed.some((o) => o.id === chosen.id)) {
     const fallbackId = defaultOutputByCategory[category];

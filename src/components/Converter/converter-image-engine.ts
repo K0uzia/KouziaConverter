@@ -4,6 +4,16 @@ import {
   validateFileWeight,
 } from './converter-errors.js';
 import {
+  encodeBmp,
+  encodeGif,
+  encodeHeic,
+  encodeHeif,
+  encodeIco,
+  encodeSvg,
+  encodeTiff,
+  wrapPngAsApng,
+} from './converter-image-encoders.js';
+import {
   extensionFromFile,
   isWebInputExtension,
 } from '../../data/converter-limits.js';
@@ -18,10 +28,25 @@ export interface ConvertResult {
   filename: string;
 }
 
-const WASM_DECODE_EXTENSIONS = new Set(['png', 'jpeg', 'jpg', 'jfif', 'webp', 'avif']);
+const WASM_DECODE_EXTENSIONS = new Set(['png', 'jpeg', 'jpg', 'jfif', 'webp', 'avif', 'jxl']);
+
+/** Décodage via createImageBitmap (GIF, SVG, BMP, TIFF, ICO, HEIC…). */
+const BITMAP_DECODE_EXTENSIONS = new Set([
+  'gif',
+  'svg',
+  'bmp',
+  'tiff',
+  'tif',
+  'ico',
+  'heic',
+  'heif',
+  'apng',
+]);
 
 const SVG_RASTER_MAX = 4096;
 const SVG_RASTER_DEFAULT = 512;
+/** Rasterisation haute résolution avant vectorisation (logos 80×74, etc.). */
+const SVG_TRACE_RASTER_MIN = 1024;
 
 async function decodeWithWasm(ext: string, buffer: ArrayBuffer): Promise<ImageData> {
   const normalized = ext === 'jpg' || ext === 'jfif' ? 'jpeg' : ext;
@@ -39,6 +64,10 @@ async function decodeWithWasm(ext: string, buffer: ArrayBuffer): Promise<ImageDa
   }
   if (normalized === 'avif') {
     const { default: decode } = await import('@jsquash/avif/decode');
+    return decode(buffer);
+  }
+  if (normalized === 'jxl') {
+    const { decode } = await import('@jsquash/jxl/decode');
     return decode(buffer);
   }
   throw ConvertError.unsupportedImageFormat(ext);
@@ -94,7 +123,7 @@ function imageDataFromCanvas(canvas: HTMLCanvasElement): ImageData {
   return data;
 }
 
-async function decodeSvgToImageData(file: File): Promise<ImageData> {
+async function decodeSvgToImageData(file: File, forTracing = false): Promise<ImageData> {
   const svgText = await file.text();
   const parsed = parseSvgRasterSize(svgText);
   const url = URL.createObjectURL(
@@ -111,6 +140,15 @@ async function decodeSvgToImageData(file: File): Promise<ImageData> {
       height = parsed?.height ?? SVG_RASTER_DEFAULT;
     }
 
+    if (forTracing) {
+      const maxDim = Math.max(width, height);
+      if (maxDim < SVG_TRACE_RASTER_MIN) {
+        const ratio = SVG_TRACE_RASTER_MIN / maxDim;
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+    }
+
     width = clampSvgDimension(width);
     height = clampSvgDimension(height);
 
@@ -121,6 +159,8 @@ async function decodeSvgToImageData(file: File): Promise<ImageData> {
     if (!ctx) {
       throw ConvertError.browserCanvas();
     }
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(img, 0, 0, width, height);
     return imageDataFromCanvas(canvas);
   } finally {
@@ -147,6 +187,45 @@ async function decodeWithBitmap(file: File): Promise<ImageData> {
   }
 }
 
+async function decodeBufferWithWasm(mime: string, buffer: ArrayBuffer): Promise<ImageData> {
+  if (mime.includes('png')) {
+    const { default: decode } = await import('@jsquash/png/decode');
+    return decode(buffer);
+  }
+  if (mime.includes('jpeg') || mime.includes('jpg')) {
+    const { default: decode } = await import('@jsquash/jpeg/decode');
+    return decode(buffer);
+  }
+  if (mime.includes('webp')) {
+    const { default: decode } = await import('@jsquash/webp/decode');
+    return decode(buffer);
+  }
+  const blob = new Blob([buffer], { type: mime });
+  return decodeWithBitmap(new File([blob], 'embedded', { type: mime }));
+}
+
+/** Extrait le raster embarqué d'un SVG « conteneur » (data URI dans `<image>`). */
+async function decodeEmbeddedRasterFromSvg(file: File): Promise<ImageData | null> {
+  const svgText = await file.text();
+  const match = svgText.match(
+    /<image\b[^>]*\b(?:href|xlink:href)\s*=\s*["'](data:image\/([^;]+);base64,([^"']+))["']/i,
+  );
+  if (!match) return null;
+
+  const mime = `image/${match[2]!.toLowerCase()}`;
+  const binary = atob(match[3]!);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  try {
+    return await decodeBufferWithWasm(mime, bytes.buffer);
+  } catch {
+    return null;
+  }
+}
+
 async function decodeToImageData(file: File): Promise<ImageData> {
   const ext = extensionFromFile(file);
   if (ext === 'svg') {
@@ -159,10 +238,14 @@ async function decodeToImageData(file: File): Promise<ImageData> {
   return decodeWithBitmap(file);
 }
 
+async function encodePng(imageData: ImageData): Promise<ArrayBuffer> {
+  const { default: encode } = await import('@jsquash/png/encode');
+  return encode(imageData);
+}
+
 async function encodeImageData(imageData: ImageData, formatId: string): Promise<ArrayBuffer> {
   if (formatId === 'png') {
-    const { default: encode } = await import('@jsquash/png/encode');
-    return encode(imageData);
+    return encodePng(imageData);
   }
   if (formatId === 'jpeg') {
     const { default: encode } = await import('@jsquash/jpeg/encode');
@@ -176,6 +259,35 @@ async function encodeImageData(imageData: ImageData, formatId: string): Promise<
     const { default: encode } = await import('@jsquash/avif/encode');
     return encode(imageData, { quality: 50 });
   }
+  if (formatId === 'jxl') {
+    const { encode } = await import('@jsquash/jxl/encode');
+    return encode(imageData, { quality: 85 });
+  }
+  if (formatId === 'bmp') {
+    return encodeBmp(imageData);
+  }
+  if (formatId === 'tiff') {
+    return encodeTiff(imageData);
+  }
+  if (formatId === 'ico') {
+    return encodeIco(imageData);
+  }
+  if (formatId === 'gif') {
+    return encodeGif(imageData);
+  }
+  if (formatId === 'svg') {
+    return encodeSvg(imageData);
+  }
+  if (formatId === 'apng') {
+    const png = await encodePng(imageData);
+    return wrapPngAsApng(png, imageData.width, imageData.height);
+  }
+  if (formatId === 'heic') {
+    return encodeHeic(imageData);
+  }
+  if (formatId === 'heif') {
+    return encodeHeif(imageData);
+  }
   throw ConvertError.encodeFailed(formatId);
 }
 
@@ -183,17 +295,55 @@ export function validateImageFile(file: File): void {
   validateFileWeight(file);
   const ext = extensionFromFile(file);
   const dotted = ext ? `.${ext}` : '';
-  if (ext && !isWebInputExtension(dotted) && !WASM_DECODE_EXTENSIONS.has(ext)) {
-    const rasterFallback = ['gif', 'svg', 'bmp', 'tiff', 'tif', 'ico'];
-    if (!rasterFallback.includes(ext)) {
-      throw ConvertError.unsupportedImageFormat(ext);
-    }
+  if (
+    ext &&
+    !isWebInputExtension(dotted) &&
+    !WASM_DECODE_EXTENSIONS.has(ext) &&
+    !BITMAP_DECODE_EXTENSIONS.has(ext)
+  ) {
+    throw ConvertError.unsupportedImageFormat(ext);
   }
 }
 
 /** Décodage image partagé (ex. export PDF). */
 export async function decodeFileToImageData(file: File): Promise<ImageData> {
   return decodeToImageData(file);
+}
+
+function isEmbeddedRasterSvg(svgText: string): boolean {
+  return /<image\b/i.test(svgText) || /\bhref\s*=\s*["']data:/i.test(svgText);
+}
+
+function hasVectorShapes(svgText: string): boolean {
+  return /<(?:path|polygon|circle|rect|line|polyline|ellipse)\b/i.test(svgText);
+}
+
+function isAutoTracedSvg(svgText: string): boolean {
+  return (
+    /desc=["']Created with imagetracer/i.test(svgText) ||
+    /Generator:\s*visioncortex VTracer/i.test(svgText)
+  );
+}
+
+async function tryPassthroughVectorSvg(
+  file: File,
+  output: OutputFormatOption,
+): Promise<ConvertResult | null> {
+  if (output.id !== 'svg' || extensionFromFile(file) !== 'svg') return null;
+  const svgText = await file.text();
+  if (
+    isEmbeddedRasterSvg(svgText) ||
+    !hasVectorShapes(svgText) ||
+    isAutoTracedSvg(svgText)
+  ) {
+    return null;
+  }
+  const baseName = file.name.replace(/\.[^.]+$/, '') || 'converti';
+  return {
+    blob: new Blob([svgText], { type: output.mime }),
+    mime: output.mime,
+    filename: `${baseName}.${output.extension}`,
+  };
 }
 
 export async function convertImageFile(
@@ -203,7 +353,18 @@ export async function convertImageFile(
 ): Promise<ConvertResult> {
   validateImageFile(file);
   onProgress(0.05);
-  const imageData = await decodeToImageData(file);
+  const passthrough = await tryPassthroughVectorSvg(file, output);
+  if (passthrough) {
+    onProgress(1);
+    return passthrough;
+  }
+  let imageData: ImageData;
+  if (output.id === 'svg' && extensionFromFile(file) === 'svg') {
+    const embedded = await decodeEmbeddedRasterFromSvg(file);
+    imageData = embedded ?? (await decodeSvgToImageData(file, true));
+  } else {
+    imageData = await decodeToImageData(file);
+  }
   onProgress(0.45);
   const encoded = await encodeImageData(imageData, output.id);
   onProgress(1);

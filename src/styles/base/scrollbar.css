@@ -1,31 +1,38 @@
 /**
  * Scrollbar du site : scroll sur body, styles sur body.
  * Piste transparente (fond html visible), curseur brand.
+ * .site-scrollbar réutilise le même rendu sur les zones scrollables internes.
  */
 
-body {
+body,
+.site-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-body::-webkit-scrollbar {
+body::-webkit-scrollbar,
+.site-scrollbar::-webkit-scrollbar {
   width: var(--scrollbar-size);
   height: var(--scrollbar-size);
   background-color: var(--scrollbar-track);
 }
 
 body::-webkit-scrollbar-track,
-body::-webkit-scrollbar-track-piece {
+body::-webkit-scrollbar-track-piece,
+.site-scrollbar::-webkit-scrollbar-track,
+.site-scrollbar::-webkit-scrollbar-track-piece {
   background-color: var(--scrollbar-track);
   border-width: 0;
 }
 
-body::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb,
+.site-scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar-thumb);
   border-width: 0;
   border-radius: var(--scrollbar-size);
 }
 
-body::-webkit-scrollbar-corner {
+body::-webkit-scrollbar-corner,
+.site-scrollbar::-webkit-scrollbar-corner {
   background-color: var(--scrollbar-track);
 }

@@ -25,7 +25,26 @@ function extList(formats: { label: string }[]): string[] {
 
 const EXTENSION_ALIASES: Record<string, string> = {
   jpg: 'jpeg',
+  tif: 'tiff',
   htm: 'html',
+};
+
+/** Types MIME image pour le sélecteur de fichiers du navigateur. */
+const IMAGE_MIME_BY_EXT: Record<string, string> = {
+  png: 'image/png',
+  jpeg: 'image/jpeg',
+  webp: 'image/webp',
+  gif: 'image/gif',
+  svg: 'image/svg+xml',
+  avif: 'image/avif',
+  ico: 'image/x-icon',
+  bmp: 'image/bmp',
+  tiff: 'image/tiff',
+  jfif: 'image/jpeg',
+  jxl: 'image/jxl',
+  heic: 'image/heic',
+  heif: 'image/heif',
+  apng: 'image/apng',
 };
 
 export function normalizeExtension(ext: string): string {
@@ -37,9 +56,17 @@ export function extensionFromFile(file: File): string {
   const dot = file.name.lastIndexOf('.');
   if (dot > 0) return normalizeExtension(file.name.slice(dot + 1));
   const mime = file.type.toLowerCase();
-  if (mime === 'image/jpeg') return 'jpeg';
+  if (mime === 'image/jpeg' || mime === 'image/pjpeg') return 'jpeg';
   if (mime === 'image/svg+xml') return 'svg';
-  if (mime.startsWith('image/')) return mime.slice(6);
+  if (mime === 'image/x-icon' || mime === 'image/vnd.microsoft.icon') return 'ico';
+  if (mime === 'image/x-ms-bmp' || mime === 'image/bmp') return 'bmp';
+  if (mime === 'image/tiff' || mime === 'image/x-tiff') return 'tiff';
+  if (mime === 'image/heic' || mime === 'image/heif' || mime === 'image/heic-sequence') {
+    return mime.includes('heif') ? 'heif' : 'heic';
+  }
+  if (mime === 'image/jxl') return 'jxl';
+  if (mime === 'image/apng') return 'apng';
+  if (mime.startsWith('image/')) return normalizeExtension(mime.slice(6));
   if (mime === 'audio/mpeg') return 'mp3';
   if (mime === 'audio/mp4' || mime === 'audio/x-m4a') return 'm4a';
   if (mime === 'audio/wav' || mime === 'audio/wave' || mime === 'audio/x-wav') return 'wav';
@@ -75,8 +102,14 @@ export function categoryLabel(category: ConverterCategory): string {
 }
 
 export function buildWebAcceptAttr(): string {
+  const imageParts = webImages.flatMap((f) => {
+    const ext = f.label.replace(/^\./, '').toLowerCase();
+    const mime = IMAGE_MIME_BY_EXT[ext];
+    return mime ? [f.label, mime] : [f.label];
+  });
   const parts = [
-    ...webImages.map((f) => f.label),
+    'image/*',
+    ...imageParts,
     ...webAudio.map((f) => `audio/${f.label.replace(/^\./, '')}`),
     'audio/mpeg',
     'audio/wav',

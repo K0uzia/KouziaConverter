@@ -31,64 +31,78 @@ import './ConverterSettings.css';
         <tr class="converter-settings__row-format">
           <th scope="row">Image</th>
           <td>
-            <label class="converter-settings__field" for="settings-output-image">
-              <span class="converter-settings__field-hint">WebP, PNG, JPEG, AVIF ou PDF</span>
-              <select
-                id="settings-output-image"
-                class="converter-settings__select"
-                data-settings-output="image"
-                aria-label="Format de sortie par défaut pour les images"
-              ></select>
-            </label>
+            <span class="converter-settings__field-hint">Tous les formats image web + PDF</span>
           </td>
-          <td class="converter-settings__action-cell" rowspan="3">
-            <p class="converter-settings__summary">
-              <span class="converter-settings__summary-label">Résumé</span>
-              <strong data-settings-output-value>Image: WebP, Audio: WAV, Document: JSON</strong>
-            </p>
-            <button type="button" class="converter-settings__btn" data-settings-reset-output>
-              Réinitialiser les formats
-            </button>
+          <td class="converter-settings__action-cell">
+            <div class="converter-settings__action-slot">
+              <div data-settings-output-picker="image"></div>
+              <button
+                type="button"
+                class="converter-settings__btn"
+                data-settings-reset-output="image"
+                aria-label="Réinitialiser le format image par défaut"
+              >
+                Réinitialiser
+              </button>
+            </div>
           </td>
         </tr>
         <tr class="converter-settings__row-format">
           <th scope="row">Audio</th>
           <td>
-            <label class="converter-settings__field" for="settings-output-audio">
-              <span class="converter-settings__field-hint">WAV, MP3 ou OGG (selon l'entrée)</span>
-              <select
-                id="settings-output-audio"
-                class="converter-settings__select"
-                data-settings-output="audio"
-                aria-label="Format de sortie par défaut pour l'audio"
-              ></select>
-            </label>
+            <span class="converter-settings__field-hint">WAV, MP3 ou OGG (toutes entrées audio web)</span>
+          </td>
+          <td class="converter-settings__action-cell">
+            <div class="converter-settings__action-slot">
+              <div data-settings-output-picker="audio"></div>
+              <button
+                type="button"
+                class="converter-settings__btn"
+                data-settings-reset-output="audio"
+                aria-label="Réinitialiser le format audio par défaut"
+              >
+                Réinitialiser
+              </button>
+            </div>
           </td>
         </tr>
         <tr class="converter-settings__row-format">
           <th scope="row">Document</th>
           <td>
-            <label class="converter-settings__field" for="settings-output-document">
-              <span class="converter-settings__field-hint">HTML, texte, JSON, CSV ou PDF (selon l'entrée)</span>
-              <select
-                id="settings-output-document"
-                class="converter-settings__select"
-                data-settings-output="document"
-                aria-label="Format de sortie par défaut pour les documents"
-              ></select>
-            </label>
+            <span class="converter-settings__field-hint">HTML, texte, JSON, CSV ou PDF (selon l'entrée)</span>
+          </td>
+          <td class="converter-settings__action-cell">
+            <div class="converter-settings__action-slot">
+              <div data-settings-output-picker="document"></div>
+              <button
+                type="button"
+                class="converter-settings__btn"
+                data-settings-reset-output="document"
+                aria-label="Réinitialiser le format document par défaut"
+              >
+                Réinitialiser
+              </button>
+            </div>
           </td>
         </tr>
         <tr>
-          <th scope="row">Données locales</th>
+          <th scope="row">Mémoire</th>
           <td>
-            Clés <code>cal:*</code> dans <code>localStorage</code> :
-            <strong data-settings-keys-count>0</strong>
+            <p class="converter-settings__storage-desc" data-settings-storage-status aria-live="polite">
+              Rien d'enregistré
+            </p>
           </td>
-          <td>
-            <button type="button" class="converter-settings__btn" data-settings-clear-storage>
-              Tout effacer
-            </button>
+          <td class="converter-settings__action-cell">
+            <div class="converter-settings__action-slot">
+              <button
+                type="button"
+                class="converter-settings__btn"
+                data-settings-clear-storage
+                aria-label="Effacer toutes les données mémorisées par ConvertAllLocal sur cet appareil"
+              >
+                Tout effacer
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -99,6 +113,8 @@ import './ConverterSettings.css';
 <script>
   import { initConverterSettings } from './converter-settings-ui.ts';
 
-  initConverterSettings();
-  document.addEventListener('astro:page-load', initConverterSettings);
+  void initConverterSettings();
+  document.addEventListener('astro:page-load', () => {
+    void initConverterSettings();
+  });
 </script>

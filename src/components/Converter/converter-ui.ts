@@ -9,7 +9,14 @@ import {
   getWebBatchLimitBytes,
   type ConverterCategory,
 } from '../../data/converter-limits.js';
-import { outputFormatsForCategory } from '../../data/converter-output-formats.js';
+import {
+  imageOutputFormats,
+  outputFormatsForCategory,
+} from '../../data/converter-output-formats.js';
+import {
+  filterImageOutputFormats,
+  probeImageEncodeCapabilities,
+} from './converter-image-capabilities.js';
 import { convertFile } from './converter-engine.js';
 import {
   ConvertError,
@@ -24,7 +31,11 @@ import {
   saveQueueSnapshot,
   type StoredQueueItem,
 } from './converter-queue-store.js';
-import { outputWeightDisplay } from './converter-size-estimate.js';
+import {
+  bindFormatPickerGlobalListeners,
+  createFormatPickerField,
+} from './converter-format-picker.js';
+import { outputWeightDisplay, type OutputWeightDisplay } from './converter-size-estimate.js';
 import { getOutputFormat, setOutputFormat } from './converter-storage.js';
 import {
   buildZipBlob,
@@ -54,7 +65,11 @@ let hasStartedConversion = false;
 
 const META_BRAND_CLASS = 'converter__meta-value-brand';
 
-const FILE_ROW_GAP = 'var(--converter-file-gap)';
+const FILE_CATEGORY_ICONS: Record<ConverterCategory, string> = {
+  image: 'fa-image',
+  audio: 'fa-music',
+  document: 'fa-file-lines',
+};
 
 const FILE_STATUS_UI = {
   queued: { label: 'En attente', icon: 'fa-clock' },
@@ -79,7 +94,20 @@ function fillDropzoneFileStatus(el: HTMLElement, kind: keyof typeof FILE_STATUS_
   const iconEl = document.createElement('i');
   iconEl.className = `converter__dropzone-file-status-icon fa-solid ${icon}${spin ? ' fa-spin' : ''}`;
   iconEl.setAttribute('aria-hidden', 'true');
-  el.append(iconEl);
+  const textEl = document.createElement('span');
+  textEl.className = 'converter__dropzone-file-status-text';
+  textEl.textContent = label;
+  el.append(iconEl, textEl);
+}
+
+function fileCategoryIcon(file: File): string {
+  const category = detectCategory(file) ?? 'image';
+  return FILE_CATEGORY_ICONS[category];
+}
+
+function fileExtensionLabel(file: File): string {
+  const ext = extensionFromFile(file);
+  return ext ? ext.toUpperCase().slice(0, 5) : 'FICHIER';
 }
 
 /** Affichage dropzone : les échecs en fin de liste (ordre relatif conservé). */
@@ -91,47 +119,6 @@ function queueItemsForDisplay(items: QueueItem[]): QueueItem[] {
     else leading.push(item);
   }
   return [...leading, ...failed];
-}
-
-/** Styles de ligne en JS (complète le CSS global). */
-function applyDropzoneFileRowLayout(
-  body: HTMLElement,
-  name: HTMLElement,
-  outputGroup: HTMLElement,
-): void {
-  Object.assign(body.style, {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    width: '100%',
-    minWidth: '0',
-    gap: FILE_ROW_GAP,
-    padding: '0',
-    margin: '0',
-    overflow: 'visible',
-    textAlign: 'left',
-  });
-  Object.assign(name.style, {
-    flex: '1 1 auto',
-    minWidth: '0',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    textAlign: 'left',
-  });
-  Object.assign(outputGroup.style, {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    flex: '0 0 auto',
-    flexShrink: '0',
-    marginLeft: 'auto',
-    gap: FILE_ROW_GAP,
-    textAlign: 'right',
-    overflow: 'visible',
-  });
 }
 
 function splitFormatBytes(formatted: string): { value: string; unit: string } {
@@ -271,9 +258,15 @@ function revokeDownloadUrls(): void {
   }
 }
 
+function outputOptionsForFile(file: File): typeof imageOutputFormats {
+  const category = detectCategory(file) ?? 'image';
+  if (category === 'image') return filterImageOutputFormats(imageOutputFormats);
+  return outputFormatsForCategory(category, extensionFromFile(file));
+}
+
 function resolveOutputFormatId(file: File, preferred?: string): string {
   const category = detectCategory(file) ?? 'image';
-  const options = outputFormatsForCategory(category, extensionFromFile(file));
+  const options = outputOptionsForFile(file);
   if (preferred && options.some((o) => o.id === preferred)) return preferred;
   const stored = getOutputFormat(category);
   if (options.some((o) => o.id === stored)) return stored;
@@ -302,43 +295,33 @@ document.addEventListener('cal:output-format-changed', (e) => {
   onOutputFormatDefaultsChanged?.(detail?.category);
 });
 
-function createFileOutputSelect(
+function createFileOutputPicker(
   item: QueueItem,
   onPersist: () => void,
   onFormatChange?: (item: QueueItem) => void,
-): HTMLSelectElement {
-  const category = detectCategory(item.file) ?? 'image';
-  const options = outputFormatsForCategory(category, extensionFromFile(item.file));
-  const select = document.createElement('select');
-  select.className = 'converter__dropzone-file-output';
-  select.setAttribute('data-converter-dropzone-output', item.id);
-  select.setAttribute('aria-label', `Format de sortie pour ${item.file.name}`);
-
-  for (const opt of options) {
-    const el = document.createElement('option');
-    el.value = opt.id;
-    el.textContent = opt.label;
-    select.append(el);
-  }
-
-  select.value = resolveOutputFormatId(item.file, item.outputFormatId);
-  item.outputFormatId = select.value;
-
+): HTMLElement {
+  const options = outputOptionsForFile(item.file);
+  const currentId = resolveOutputFormatId(item.file, item.outputFormatId);
+  item.outputFormatId = currentId;
   const locked = item.status === 'converting' || item.status === 'success';
-  select.disabled = locked;
 
-  if (!locked) {
-    select.addEventListener('change', () => {
-      item.outputFormatId = select.value;
-      setOutputFormat(category, select.value);
+  return createFormatPickerField({
+    id: `converter-output-${item.id}`,
+    labelText: 'Sortie',
+    ariaLabel: `Format de sortie pour ${item.file.name} (${options.length} formats)`,
+    listAriaLabel: `Formats de sortie pour ${item.file.name}`,
+    options: options.map((opt) => ({ id: opt.id, label: opt.label })),
+    value: currentId,
+    locked,
+    menuDataset: { converterDropzoneOutput: item.id },
+    onChange: (nextId) => {
+      item.outputFormatId = nextId;
+      const category = detectCategory(item.file) ?? 'image';
+      setOutputFormat(category, nextId);
       onFormatChange?.(item);
       onPersist();
-    });
-    select.addEventListener('click', (e) => e.stopPropagation());
-    select.addEventListener('keydown', (e) => e.stopPropagation());
-  }
-
-  return select;
+    },
+  });
 }
 
 function statusForStore(status: FileStatus): StoredQueueItem['status'] {
@@ -346,16 +329,17 @@ function statusForStore(status: FileStatus): StoredQueueItem['status'] {
   return status;
 }
 
-async function persistQueue(): Promise<void> {
-  if (queue.length === 0) {
-    await clearQueueStore();
-    return;
-  }
+function isPersistableQueueItem(item: QueueItem): boolean {
+  return item.status === 'queued' || item.status === 'error';
+}
 
+async function persistQueue(): Promise<void> {
   const items: StoredQueueItem[] = [];
   for (const item of queue) {
+    if (!isPersistableQueueItem(item)) continue;
+
     const sourceBuffer = await item.file.arrayBuffer();
-    const stored: StoredQueueItem = {
+    items.push({
       id: item.id,
       name: item.file.name,
       type: item.file.type,
@@ -365,18 +349,17 @@ async function persistQueue(): Promise<void> {
       progress: item.progress,
       message: item.message,
       sourceBuffer,
-    };
-    if (item.status === 'success' && item.resultBlob) {
-      stored.resultBuffer = await item.resultBlob.arrayBuffer();
-      stored.resultMime = item.resultBlob.type;
-      stored.resultFilename = item.downloadName ?? item.file.name;
-    }
-    items.push(stored);
+    });
+  }
+
+  if (items.length === 0) {
+    await clearQueueStore();
+    return;
   }
 
   await saveQueueSnapshot({
     nextId,
-    hasStartedConversion,
+    hasStartedConversion: false,
     items,
   });
 }
@@ -389,6 +372,8 @@ async function restoreQueueFromStore(): Promise<void> {
   if (!snapshot?.items.length) return;
 
   for (const stored of snapshot.items) {
+    if (stored.status === 'success' || stored.status === 'converting') continue;
+
     const file = new File([stored.sourceBuffer], stored.name, {
       type: stored.type,
       lastModified: stored.lastModified,
@@ -396,33 +381,25 @@ async function restoreQueueFromStore(): Promise<void> {
 
     if (!isSupportedWebFile(file)) continue;
 
-    const status: FileStatus =
-      stored.status === 'converting' ? 'queued' : (stored.status as FileStatus);
+    const status: FileStatus = stored.status === 'error' ? 'error' : 'queued';
 
-    const item: QueueItem = {
+    queue.push({
       id: stored.id,
       file,
       outputFormatId: resolveOutputFormatId(file, stored.outputFormatId),
       status,
       progress: stored.progress,
       message: stored.message,
-    };
-
-    if (stored.resultBuffer && stored.resultMime) {
-      item.resultBlob = new Blob([stored.resultBuffer], { type: stored.resultMime });
-      item.downloadUrl = URL.createObjectURL(item.resultBlob);
-      item.downloadName = stored.resultFilename ?? stored.name;
-    }
-
-    queue.push(item);
+    });
   }
 
   syncNextIdFromQueue();
-  hasStartedConversion =
-    snapshot.hasStartedConversion && queue.some((i) => i.status !== 'queued');
+  hasStartedConversion = false;
 }
 
 export async function initConverterUi(): Promise<void> {
+  await probeImageEncodeCapabilities();
+
   const root = document.querySelector<HTMLElement>('[data-converter]');
   if (!root) return;
 
@@ -436,6 +413,7 @@ export async function initConverterUi(): Promise<void> {
   const dropzoneEmpty = root.querySelector<HTMLElement>('[data-converter-dropzone-empty]');
   const dropzoneFiles = root.querySelector<HTMLElement>('[data-converter-dropzone-files]');
   const dropzoneFooter = root.querySelector<HTMLElement>('[data-converter-dropzone-footer]');
+  const dropzoneAddMore = root.querySelector<HTMLElement>('[data-converter-dropzone-more]');
   const dropzoneAlert = root.querySelector<HTMLElement>('[data-converter-dropzone-alert]');
   const clearAllBtn = root.querySelector<HTMLButtonElement>('[data-converter-clear-all]');
   const downloadZipBtn = root.querySelector<HTMLButtonElement>('[data-converter-download-zip]');
@@ -482,6 +460,7 @@ export async function initConverterUi(): Promise<void> {
       dropzoneEmpty,
       dropzoneFiles,
       dropzoneFooter,
+      dropzoneAddMore,
       refreshDropzone,
       () => void persistQueue(),
     );
@@ -497,6 +476,8 @@ export async function initConverterUi(): Promise<void> {
 
   await restoreQueueFromStore();
   root.dataset.converterBound = 'true';
+
+  bindFormatPickerGlobalListeners();
 
   const addFiles = (files: FileList | File[]): void => {
     const all = Array.from(files);
@@ -541,8 +522,13 @@ export async function initConverterUi(): Promise<void> {
       target.closest('[data-converter-dropzone-remove]') ||
       target.closest('[data-converter-clear-all]') ||
       target.closest('[data-converter-dropzone-output]') ||
-      target.closest('[data-converter-download-zip]')
+      target.closest('[data-converter-download-zip]') ||
+      target.closest('.converter__dropzone-file-download')
     ) {
+      return;
+    }
+    const filled = dropzone.classList.contains('converter__dropzone--filled');
+    if (filled && !target.closest('[data-converter-dropzone-more]')) {
       return;
     }
     input.click();
@@ -570,6 +556,7 @@ export async function initConverterUi(): Promise<void> {
   });
 
   dropzone.addEventListener('keydown', (e) => {
+    if (dropzone.classList.contains('converter__dropzone--filled')) return;
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       input.click();
@@ -599,6 +586,9 @@ export async function initConverterUi(): Promise<void> {
       refreshDropzone();
     });
   });
+  clearAllBtn?.addEventListener('keydown', (e) => e.stopPropagation());
+
+  downloadZipBtn?.addEventListener('keydown', (e) => e.stopPropagation());
 
   submitBtn.addEventListener('click', async () => {
     if (queue.length === 0) {
@@ -678,11 +668,33 @@ async function removeQueueItem(id: string): Promise<void> {
   await persistQueue();
 }
 
+function updateDropzoneInteractionState(
+  dropzone: HTMLElement,
+  addMoreEl: HTMLElement | null,
+  filled: boolean,
+): void {
+  if (filled) {
+    dropzone.removeAttribute('role');
+    dropzone.removeAttribute('tabindex');
+    dropzone.removeAttribute('aria-labelledby');
+    addMoreEl?.setAttribute('aria-label', 'Ajouter d\'autres fichiers');
+  } else {
+    dropzone.setAttribute('role', 'button');
+    dropzone.setAttribute('tabindex', '0');
+    dropzone.setAttribute(
+      'aria-labelledby',
+      'converter-upload-label converter-dropzone-alert',
+    );
+    addMoreEl?.removeAttribute('aria-label');
+  }
+}
+
 function renderDropzoneFiles(
   dropzone: HTMLElement,
   emptyBlock: HTMLElement | null,
   listEl: HTMLElement | null,
   footerEl: HTMLElement | null,
+  addMoreEl: HTMLElement | null,
   onRemove?: () => void,
   onOutputPersist?: () => void,
 ): void {
@@ -695,13 +707,7 @@ function renderDropzoneFiles(
     emptyBlock?.classList.remove('converter__dropzone-empty--hidden');
     footerEl?.setAttribute('hidden', '');
     dropzone.classList.remove('converter__dropzone--filled');
-    dropzone.style.removeProperty('align-items');
-    dropzone.style.removeProperty('text-align');
-    dropzone.style.removeProperty('padding');
-    listEl.style.removeProperty('width');
-    listEl.style.removeProperty('text-align');
-    listEl.style.removeProperty('margin');
-    listEl.style.removeProperty('padding');
+    updateDropzoneInteractionState(dropzone, addMoreEl, false);
     return;
   }
 
@@ -709,56 +715,51 @@ function renderDropzoneFiles(
   emptyBlock?.classList.add('converter__dropzone-empty--hidden');
   footerEl?.removeAttribute('hidden');
   dropzone.classList.add('converter__dropzone--filled');
+  updateDropzoneInteractionState(dropzone, addMoreEl, true);
 
   for (const item of queueItemsForDisplay(queue)) {
     const li = document.createElement('li');
     li.className = 'converter__dropzone-file';
-    li.style.width = '100%';
     if (item.status === 'success') li.classList.add('converter__dropzone-file--success');
     if (item.status === 'error') li.classList.add('converter__dropzone-file--error');
+    if (item.status === 'converting') li.classList.add('converter__dropzone-file--converting');
 
-    const body = document.createElement('div');
-    body.className = 'converter__dropzone-file-body';
+    const row = document.createElement('div');
+    row.className = 'converter__dropzone-file-row';
+
+    const iconWrap = document.createElement('div');
+    iconWrap.className = 'converter__dropzone-file-icon';
+    iconWrap.setAttribute('aria-hidden', 'true');
+    const icon = document.createElement('i');
+    icon.className = `converter__dropzone-file-icon-glyph fa-solid ${fileCategoryIcon(item.file)}`;
+    const extBadge = document.createElement('span');
+    extBadge.className = 'converter__dropzone-file-ext';
+    extBadge.textContent = fileExtensionLabel(item.file);
+    iconWrap.append(icon, extBadge);
+
+    const info = document.createElement('div');
+    info.className = 'converter__dropzone-file-info';
 
     const name = document.createElement('span');
     name.className = 'converter__dropzone-file-name';
     name.textContent = item.file.name;
     name.title = item.file.name;
 
-    const inputWeight = document.createElement('span');
-    inputWeight.className = 'converter__dropzone-file-in-weight';
-    inputWeight.textContent = formatBytes(item.file.size);
+    const weight = document.createElement('div');
+    weight.className = 'converter__dropzone-file-weight';
+    weight.setAttribute('data-file-weight', item.id);
+    fillFileWeightSlot(weight, item);
 
-    const outputLabel = document.createElement('label');
-    outputLabel.className = 'converter__dropzone-file-output-label';
-    outputLabel.textContent = 'Sortie';
+    info.append(name, weight);
 
-    const outputSelect = createFileOutputSelect(
+    const controls = document.createElement('div');
+    controls.className = 'converter__dropzone-file-controls';
+
+    const outputPicker = createFileOutputPicker(
       item,
       () => onOutputPersist?.(),
       (changed) => updateFileOutputSize(changed),
     );
-    const outputSelectId = `converter-output-${item.id}`;
-    outputSelect.id = outputSelectId;
-    outputLabel.setAttribute('for', outputSelectId);
-
-    const resultBytes =
-      item.status === 'success' && item.resultBlob ? item.resultBlob.size : undefined;
-    const sizeDisplay = outputWeightDisplay(item.file, item.outputFormatId, resultBytes);
-
-    const outSizeLabel = document.createElement('span');
-    outSizeLabel.className = 'converter__dropzone-file-out-size-label';
-    outSizeLabel.setAttribute('data-file-output-size-label', item.id);
-    outSizeLabel.textContent = sizeDisplay.label;
-    outSizeLabel.hidden = sizeDisplay.label.length === 0;
-
-    const outSizeValue = document.createElement('span');
-    outSizeValue.className = 'converter__dropzone-file-out-size-value';
-    if (sizeDisplay.approximate) {
-      outSizeValue.classList.add('converter__dropzone-file-out-size-value--approx');
-    }
-    outSizeValue.setAttribute('data-file-output-size-value', item.id);
-    outSizeValue.textContent = sizeDisplay.value;
 
     const status = document.createElement('span');
     status.className = 'converter__dropzone-file-status';
@@ -795,24 +796,18 @@ function renderDropzoneFiles(
       const downloadIcon = document.createElement('i');
       downloadIcon.className = 'converter__dropzone-file-download-icon fa-solid fa-download';
       downloadIcon.setAttribute('aria-hidden', 'true');
-      link.append(downloadIcon);
+      const downloadText = document.createElement('span');
+      downloadText.className = 'converter__dropzone-file-download-text';
+      downloadText.textContent = 'Télécharger';
+      link.append(downloadIcon, downloadText);
       link.addEventListener('click', (e) => e.stopPropagation());
+      link.addEventListener('keydown', (e) => e.stopPropagation());
       downloadSlot.append(link);
     }
 
-    const outputGroup = document.createElement('div');
-    outputGroup.className = 'converter__dropzone-file-out-group';
-    outputGroup.append(
-      outputLabel,
-      outputSelect,
-      outSizeLabel,
-      outSizeValue,
-      status,
-      progressSlot,
-      downloadSlot,
-    );
+    controls.append(outputPicker, status, progressSlot, downloadSlot);
 
-    body.append(inputWeight, name, outputGroup);
+    row.append(iconWrap, info, controls);
 
     if (item.status !== 'converting') {
       const removeBtn = document.createElement('button');
@@ -820,16 +815,19 @@ function renderDropzoneFiles(
       removeBtn.className = 'converter__dropzone-file-remove';
       removeBtn.setAttribute('data-converter-dropzone-remove', item.id);
       removeBtn.setAttribute('aria-label', `Retirer ${item.file.name}`);
-      removeBtn.textContent = '×';
+      const removeIcon = document.createElement('i');
+      removeIcon.className = 'converter__dropzone-file-remove-icon fa-solid fa-xmark';
+      removeIcon.setAttribute('aria-hidden', 'true');
+      removeBtn.append(removeIcon);
       removeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         void removeQueueItem(item.id).then(() => onRemove?.());
       });
-      body.append(removeBtn);
+      removeBtn.addEventListener('keydown', (e) => e.stopPropagation());
+      row.append(removeBtn);
     }
 
-    applyDropzoneFileRowLayout(body, name, outputGroup);
-    li.append(body);
+    li.append(row);
 
     if (item.status === 'error' && item.message) {
       const errorMsg = document.createElement('p');
@@ -840,15 +838,6 @@ function renderDropzoneFiles(
     }
 
     listEl.append(li);
-  }
-
-  dropzone.style.alignItems = 'stretch';
-  dropzone.style.textAlign = 'left';
-  if (listEl) {
-    listEl.style.width = '100%';
-    listEl.style.textAlign = 'left';
-    listEl.style.margin = '0';
-    listEl.style.padding = '0';
   }
 }
 
@@ -890,18 +879,54 @@ function updateFileProgress(id: string, progress: number): void {
   if (bar) bar.value = progress;
 }
 
-function updateFileOutputSize(item: QueueItem): void {
-  const labelEl = document.querySelector<HTMLElement>(`[data-file-output-size-label="${item.id}"]`);
-  const valueEl = document.querySelector<HTMLElement>(`[data-file-output-size-value="${item.id}"]`);
-  if (!labelEl || !valueEl) return;
+function fillOutputSizeValue(el: HTMLElement, display: OutputWeightDisplay): void {
+  el.replaceChildren();
+  if (!display.visible) return;
 
+  const before = document.createElement('span');
+  before.className = 'converter__dropzone-file-size-before';
+  before.textContent = display.before;
+
+  const arrow = document.createElement('span');
+  arrow.className = 'converter__dropzone-file-size-arrow';
+  arrow.setAttribute('aria-hidden', 'true');
+  arrow.textContent = '→';
+
+  const after = document.createElement('span');
+  after.className = 'converter__dropzone-file-size-after';
+  after.textContent = display.after;
+
+  el.append(before, arrow, after);
+  el.setAttribute('aria-label', display.value);
+}
+
+function fillFileWeightSlot(container: HTMLElement, item: QueueItem): void {
   const resultBytes =
     item.status === 'success' && item.resultBlob ? item.resultBlob.size : undefined;
   const display = outputWeightDisplay(item.file, item.outputFormatId, resultBytes);
-  labelEl.textContent = display.label;
-  labelEl.hidden = display.label.length === 0;
-  valueEl.textContent = display.value;
-  valueEl.classList.toggle('converter__dropzone-file-out-size-value--approx', display.approximate);
+
+  container.replaceChildren();
+
+  if (display.visible) {
+    const comparison = document.createElement('span');
+    comparison.className = 'converter__dropzone-file-size-value';
+    comparison.setAttribute('data-file-output-size-value', item.id);
+    fillOutputSizeValue(comparison, display);
+    container.append(comparison);
+    return;
+  }
+
+  const sourceSize = document.createElement('span');
+  sourceSize.className = 'converter__dropzone-file-size-text';
+  sourceSize.setAttribute('data-file-source-size-value', item.id);
+  sourceSize.textContent = formatBytes(item.file.size);
+  container.append(sourceSize);
+}
+
+function updateFileOutputSize(item: QueueItem): void {
+  const weightEl = document.querySelector<HTMLElement>(`[data-file-weight="${item.id}"]`);
+  if (!weightEl) return;
+  fillFileWeightSlot(weightEl, item);
 }
 
 export async function resetConverterQueue(): Promise<void> {
@@ -917,12 +942,19 @@ export async function resetConverterQueue(): Promise<void> {
     const dropzoneEmpty = root.querySelector<HTMLElement>('[data-converter-dropzone-empty]');
     const dropzoneFiles = root.querySelector<HTMLElement>('[data-converter-dropzone-files]');
     const dropzoneFooter = root.querySelector<HTMLElement>('[data-converter-dropzone-footer]');
+    const dropzoneAddMore = root.querySelector<HTMLElement>('[data-converter-dropzone-more]');
     const filesLive = root.querySelector<HTMLElement>('[data-converter-files-live]');
     const formatEl = root.querySelector<HTMLElement>('[data-converter-format]');
     const weightEl = root.querySelector<HTMLElement>('[data-converter-weight]');
     const metaEl = root.querySelector<HTMLElement>('[data-converter-meta]');
     if (dropzone) {
-      renderDropzoneFiles(dropzone, dropzoneEmpty, dropzoneFiles, dropzoneFooter);
+      renderDropzoneFiles(
+        dropzone,
+        dropzoneEmpty,
+        dropzoneFiles,
+        dropzoneFooter,
+        dropzoneAddMore,
+      );
     }
     if (formatEl && weightEl && metaEl) {
       syncMeta(formatEl, weightEl, metaEl);

@@ -8,6 +8,7 @@ ConvertAllLocal est sous licence MIT (voir [LICENSE](LICENSE)).
 |------------|---------|--------|
 | [Astro](https://astro.build/) | MIT | Framework du site |
 | [Font Awesome Free](https://fontawesome.com/) | Icons: CC BY 4.0 ; Fonts: SIL OFL 1.1 ; Code: MIT | Icônes UI (package npm, bundlé localement) |
+| [VTracer](https://github.com/visioncortex/vtracer) | MIT | Vectorisation raster → SVG (via `wasm_vtracer`, WASM local) |
 
 Les polices et CSS Font Awesome sont installées via `@fortawesome/fontawesome-free` et incluses au build (pas de chargement CDN).
 

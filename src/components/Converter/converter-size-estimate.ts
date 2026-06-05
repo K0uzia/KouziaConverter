@@ -26,12 +26,21 @@ export function estimateOutputBytes(file: File, outputFormatId: string): number 
 }
 
 function imageOutputRatio(outputId: string, inputExt: string): number {
-  const isPhoto = ['jpg', 'jpeg', 'jfif', 'webp', 'avif', 'heic'].includes(inputExt);
+  const isPhoto = ['jpg', 'jpeg', 'jfif', 'webp', 'avif', 'heic', 'heif', 'jxl'].includes(inputExt);
   const ratios: Record<string, number> = {
     webp: isPhoto ? 0.72 : 0.85,
     jpeg: isPhoto ? 0.82 : 0.95,
     png: inputExt === 'png' ? 1.05 : isPhoto ? 1.35 : 1.15,
     avif: isPhoto ? 0.5 : 0.65,
+    gif: 0.75,
+    svg: 1.4,
+    bmp: 2.8,
+    tiff: 2.5,
+    ico: 0.08,
+    jxl: isPhoto ? 0.55 : 0.7,
+    heic: isPhoto ? 0.6 : 0.75,
+    heif: isPhoto ? 0.6 : 0.75,
+    apng: inputExt === 'apng' ? 1.05 : 1.2,
     pdf: 0.95,
   };
   return ratios[outputId] ?? 0.85;
@@ -71,28 +80,31 @@ function documentOutputRatio(outputId: string, inputExt: string): number {
 }
 
 export interface OutputWeightDisplay {
-  label: string;
+  before: string;
+  after: string;
   value: string;
-  approximate: boolean;
+  visible: boolean;
+}
+
+export function formatSizeComparison(inputBytes: number, outputBytes: number): string {
+  return `${formatBytes(inputBytes)} → ${formatBytes(outputBytes)}`;
 }
 
 export function outputWeightDisplay(
   file: File,
-  outputFormatId: string,
+  _outputFormatId: string,
   resultBytes?: number,
 ): OutputWeightDisplay {
-  if (resultBytes !== undefined && resultBytes >= 0) {
-    return {
-      label: '',
-      value: `~${formatBytes(resultBytes)}`,
-      approximate: true,
-    };
+  if (resultBytes === undefined || resultBytes < 0) {
+    return { before: '', after: '', value: '', visible: false };
   }
 
-  const estimated = estimateOutputBytes(file, outputFormatId);
+  const before = formatBytes(file.size);
+  const after = formatBytes(resultBytes);
   return {
-    label: '',
-    value: `~${formatBytes(estimated)}`,
-    approximate: true,
+    before,
+    after,
+    value: `${before} → ${after}`,
+    visible: true,
   };
 }

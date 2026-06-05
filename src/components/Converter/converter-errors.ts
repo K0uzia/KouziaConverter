@@ -72,6 +72,13 @@ export class ConvertError extends Error {
     );
   }
 
+  static svgVectorizeUnavailable(): ConvertError {
+    return new ConvertError(
+      'svg_vectorize',
+      'Vectorisation SVG : moteur WASM indisponible. Rechargez la page ou relancez le serveur de dev.',
+    );
+  }
+
   static imageUnreadable(): ConvertError {
     return new ConvertError(
       'image_decode',
@@ -119,6 +126,14 @@ export class ConvertError extends Error {
     return new ConvertError(
       'encode_failed',
       `Conversion : impossible de produire un fichier ${outputLabel}.`,
+    );
+  }
+
+  static imageEncodeUnavailable(mime: string): ConvertError {
+    const label = mime.replace('image/', '').toUpperCase();
+    return new ConvertError(
+      'encode_unavailable',
+      `Encodage ${label} indisponible dans ce navigateur. Essayez AVIF, WebP, PNG ou JPEG.`,
     );
   }
 
