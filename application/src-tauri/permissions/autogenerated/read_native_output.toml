@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-read-native-output"
+description = "Enables the read_native_output command without any pre-configured scope."
+commands.allow = ["read_native_output"]
+
+[[permission]]
+identifier = "deny-read-native-output"
+description = "Denies the read_native_output command without any pre-configured scope."
+commands.deny = ["read_native_output"]

@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&family=Mallanna&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+  <body>
+    <main id="main">
+      <div class="convertir-page">
+        <div class="convertir-page__container">
+          <header class="convertir-page__head">
+            <h1 class="convertir-page__title">
+              <i class="convertir-page__title-icon fa-solid fa-shuffle" aria-hidden="true"></i>
+              <span>Convertir</span>
+            </h1>
+            <p class="convertir-page__lead">
+              Vidéo, Office, images, audio et PDF sur votre machine, sans envoi sur un serveur.
+            </p>
+          </header>
+
+          <section class="converter" data-converter aria-labelledby="converter-upload-label">
+            <div class="converter__upload-block">
+              <div class="converter__upload">
+                <input
+                  type="file"
+                  id="converter-file-input"
+                  class="converter__input"
+                  multiple
+                  data-converter-input
+                />
+                <div
+                  class="converter__dropzone"
+                  data-converter-dropzone
+                  role="button"
+                  tabindex="0"
+                  aria-labelledby="converter-upload-label converter-dropzone-alert"
+                >
+                  <p
+                    class="converter__dropzone-alert"
+                    id="converter-dropzone-alert"
+                    data-converter-dropzone-alert
+                    role="alert"
+                    hidden
+                  ></p>
+                  <div class="converter__dropzone-empty" data-converter-dropzone-empty>
+                    <p class="converter__dropzone-hint" id="converter-upload-label">
+                      Vidéo, Office, images, audio et PDF, en local.
+                    </p>
+                  </div>
+                  <ul class="converter__dropzone-files" data-converter-dropzone-files hidden></ul>
+                  <div class="converter__dropzone-footer" data-converter-dropzone-footer hidden>
+                    <button
+                      type="button"
+                      class="btn btn--secondary converter__dropzone-more"
+                      data-converter-dropzone-more
+                    >
+                      Cliquer ou déposer pour ajouter d'autres fichiers
+                    </button>
+                    <div class="converter__dropzone-footer-actions">
+                      <button
+                        type="button"
+                        class="btn btn--secondary converter__dropzone-clear"
+                        data-converter-clear-all
+                      >
+                        Effacer tout
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn--primary converter__dropzone-zip"
+                        data-converter-download-zip
+                        hidden
+                      >
+                        Tout télécharger (ZIP)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="converter__toolbar">
+              <div class="converter__meta" data-converter-meta>
+                <div class="converter__meta-row">
+                  <span class="converter__meta-label">Formats détectés</span>
+                  <span class="converter__meta-value" data-converter-format>Non détecté</span>
+                </div>
+                <div class="converter__meta-row">
+                  <span class="converter__meta-label">Poids</span>
+                  <span class="converter__meta-value" data-converter-weight>0 o</span>
+                </div>
+                <div class="converter__meta-row converter__meta-row--queue">
+                  <span class="converter__meta-label">File</span>
+                  <span
+                    class="converter__meta-value converter__files-live"
+                    data-converter-files-live
+                    aria-live="polite"
+                  ></span>
+                </div>
+              </div>
+
+              <div class="converter__controls">
+                <button
+                  type="button"
+                  class="btn btn--secondary converter__settings-btn"
+                  data-app-settings-open
+                  aria-controls="app-settings-modal"
+                  aria-haspopup="dialog"
+                >
+                  <i class="converter__settings-btn-icon fa-solid fa-sliders" aria-hidden="true"></i>
+                  <span class="converter__settings-btn-label">Paramètres</span>
+                </button>
+                <button type="button" class="converter__submit" data-converter-submit>
+                  <span class="converter__submit-inner">
+                    <span class="converter__submit-label">Convertir</span>
+                    <span class="converter__submit-icon-wrap" aria-hidden="true">
+                      <i class="converter__submit-icon fa-solid fa-shuffle" aria-hidden="true"></i>
+                    </span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <dialog
+            class="app-settings-modal"
+            id="app-settings-modal"
+            data-app-settings-modal
+            aria-labelledby="converter-settings-title"
+          >
+            <div class="app-settings-modal__panel">
+              <div class="app-settings-modal__head">
+                <h2 class="converter-settings__title" id="converter-settings-title">
+                  <i class="converter-settings__title-icon fa-solid fa-sliders" aria-hidden="true"></i>
+                  <span>Paramètres locaux</span>
+                </h2>
+                <button
+                  type="button"
+                  class="btn btn--secondary app-settings-modal__close"
+                  data-app-settings-close
+                  aria-label="Fermer les paramètres"
+                >
+                  <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+              </div>
+              <div class="app-settings-modal__body">
+                <section class="converter-settings" data-converter-settings aria-labelledby="converter-settings-title">
+                  <p class="converter-settings__lead">
+              Ces réglages sont enregistrés uniquement dans le stockage local de l'application. Aucune donnée
+              n'est envoyée sur un serveur. Les formats par défaut s'appliquent aux nouveaux fichiers ajoutés
+              et aux fichiers encore en attente dans la file.
+                  </p>
+
+                  <div class="converter-settings__table-wrap">
+              <table class="converter-settings__table">
+                <colgroup>
+                  <col class="converter-settings__col-param" />
+                  <col class="converter-settings__col-desc" />
+                  <col class="converter-settings__col-action" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">Paramètre</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="converter-settings__row-format">
+                    <th scope="row">Image</th>
+                    <td>
+                      <span class="converter-settings__field-hint">Tous les formats image + PDF</span>
+                    </td>
+                    <td class="converter-settings__action-cell">
+                      <div class="converter-settings__action-slot">
+                        <div data-settings-output-picker="image"></div>
+                        <button
+                          type="button"
+                          class="btn btn--secondary converter-settings__btn"
+                          data-settings-reset-output="image"
+                          aria-label="Réinitialiser le format image par défaut"
+                        >
+                          Réinitialiser
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="converter-settings__row-format">
+                    <th scope="row">Audio</th>
+                    <td>
+                      <span class="converter-settings__field-hint">WAV, MP3 ou OGG</span>
+                    </td>
+                    <td class="converter-settings__action-cell">
+                      <div class="converter-settings__action-slot">
+                        <div data-settings-output-picker="audio"></div>
+                        <button
+                          type="button"
+                          class="btn btn--secondary converter-settings__btn"
+                          data-settings-reset-output="audio"
+                          aria-label="Réinitialiser le format audio par défaut"
+                        >
+                          Réinitialiser
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="converter-settings__row-format">
+                    <th scope="row">Document</th>
+                    <td>
+                      <span class="converter-settings__field-hint">HTML, texte, JSON, CSV ou PDF (selon l'entrée)</span>
+                    </td>
+                    <td class="converter-settings__action-cell">
+                      <div class="converter-settings__action-slot">
+                        <div data-settings-output-picker="document"></div>
+                        <button
+                          type="button"
+                          class="btn btn--secondary converter-settings__btn"
+                          data-settings-reset-output="document"
+                          aria-label="Réinitialiser le format document par défaut"
+                        >
+                          Réinitialiser
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="converter-settings__row-format">
+                    <th scope="row">Vidéo</th>
+                    <td>
+                      <span class="converter-settings__field-hint">MP4, MKV, WebM…</span>
+                    </td>
+                    <td class="converter-settings__action-cell">
+                      <div class="converter-settings__action-slot">
+                        <div data-settings-output-picker="video"></div>
+                        <button
+                          type="button"
+                          class="btn btn--secondary converter-settings__btn"
+                          data-settings-reset-output="video"
+                          aria-label="Réinitialiser le format vidéo par défaut"
+                        >
+                          Réinitialiser
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="converter-settings__row-format">
+                    <th scope="row">Office / pro</th>
+                    <td>
+                      <span class="converter-settings__field-hint">DOCX, XLSX, PSD, RAW…</span>
+                    </td>
+                    <td class="converter-settings__action-cell">
+                      <div class="converter-settings__action-slot">
+                        <div data-settings-output-picker="office"></div>
+                        <button
+                          type="button"
+                          class="btn btn--secondary converter-settings__btn"
+                          data-settings-reset-output="office"
+                          aria-label="Réinitialiser le format Office par défaut"
+                        >
+                          Réinitialiser
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Mémoire</th>
+                    <td>
+                      <p class="converter-settings__storage-desc" data-settings-storage-status aria-live="polite">
+                        Rien d'enregistré
+                      </p>
+                    </td>
+                    <td class="converter-settings__action-cell">
+                      <div class="converter-settings__action-slot">
+                        <button
+                          type="button"
+                          class="btn btn--secondary converter-settings__btn"
+                          data-settings-clear-storage
+                          aria-label="Effacer toutes les données mémorisées par Converter sur cet appareil"
+                        >
+                          Tout effacer
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+                  </div>
+
+                  <dialog
+                    class="converter-settings__modal"
+                    data-settings-clear-modal
+              aria-labelledby="converter-settings-clear-title"
+              aria-describedby="converter-settings-clear-desc"
+            >
+              <div class="converter-settings__modal-panel">
+                <h3 class="converter-settings__modal-title" id="converter-settings-clear-title">
+                  <i class="converter-settings__modal-icon fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                  <span>Effacer la mémoire locale ?</span>
+                </h3>
+                <p class="converter-settings__modal-text" id="converter-settings-clear-desc">
+                  Tous les réglages et la file mémorisés par Converter sur cet appareil seront supprimés. Cette
+                  action est irréversible.
+                </p>
+                <div class="converter-settings__modal-actions">
+                  <button
+                    type="button"
+                    class="btn btn--secondary converter-settings__btn converter-settings__modal-btn"
+                    data-settings-clear-cancel
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn--secondary converter-settings__btn converter-settings__btn--danger converter-settings__modal-btn"
+                    data-settings-clear-confirm
+                  >
+                    Effacer tout
+                  </button>
+                </div>
+              </div>
+                  </dialog>
+                </section>
+              </div>
+            </div>
+          </dialog>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

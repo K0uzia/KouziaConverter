@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-stat-local-paths"
+description = "Enables the stat_local_paths command without any pre-configured scope."
+commands.allow = ["stat_local_paths"]
+
+[[permission]]
+identifier = "deny-stat-local-paths"
+description = "Denies the stat_local_paths command without any pre-configured scope."
+commands.deny = ["stat_local_paths"]

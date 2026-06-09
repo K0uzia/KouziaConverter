@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-read-local-paths"
+description = "Enables the read_local_paths command without any pre-configured scope."
+commands.allow = ["read_local_paths"]
+
+[[permission]]
+identifier = "deny-read-local-paths"
+description = "Denies the read_local_paths command without any pre-configured scope."
+commands.deny = ["read_local_paths"]

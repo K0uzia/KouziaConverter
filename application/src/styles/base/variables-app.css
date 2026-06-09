@@ -1,0 +1,42 @@
+/**
+ * Tokens responsive propres à la fenêtre desktop (complètent variables.css du site).
+ */
+
+:root {
+  --app-pad-x: var(--pad-x-md);
+  --app-pad-top: calc(var(--head) / 2);
+  --app-pad-bottom: calc(var(--head) / 2);
+  --app-content-max: var(--converter-max-width);
+  --app-settings-modal-max-width: min(calc(var(--container) * 0.85), calc(100vw - var(--app-pad-x) * 2));
+  --app-settings-modal-pad: calc(var(--head) / 4);
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --app-content-max: min(var(--converter-max-width), 100%);
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --app-pad-x: var(--pad-x);
+    --app-pad-top: calc(var(--head) / 2.5);
+    --app-pad-bottom: calc(var(--head) / 2);
+  }
+}
+
+@media (max-width: 639px) {
+  :root {
+    --app-pad-x: var(--pad-x);
+    --app-pad-top: calc(var(--head) / 3);
+    --app-pad-bottom: calc(var(--head) / 2.5);
+  }
+}
+
+@media (max-width: 479px) {
+  :root {
+    --app-pad-x: calc(var(--pad-x) * 0.85);
+    --app-pad-top: calc(var(--head) / 3.5);
+    --app-pad-bottom: calc(var(--head) / 3);
+  }
+}

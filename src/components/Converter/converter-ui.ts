@@ -44,6 +44,42 @@ import {
   type ZipEntry,
 } from './converter-zip.js';
 
+declare const __DESKTOP_APP__: boolean | undefined;
+
+const isDesktopApp = typeof __DESKTOP_APP__ !== 'undefined' && __DESKTOP_APP__;
+
+export type DesktopFileDropRegistrar = (
+  addFiles: (files: FileList | File[]) => void,
+  dropzone: HTMLElement,
+) => void;
+
+let desktopFileDropRegistrar: DesktopFileDropRegistrar | null = null;
+
+/** Branche le dépôt natif Tauri (app desktop uniquement). */
+export function setDesktopFileDropRegistrar(registrar: DesktopFileDropRegistrar): void {
+  desktopFileDropRegistrar = registrar;
+}
+
+export interface DesktopRestoredFileMeta {
+  path: string;
+  name: string;
+  type: string;
+  size: number;
+  lastModified: number;
+}
+
+export type DesktopQueueBridge = {
+  getSourcePath: (file: File) => string | undefined;
+  restoreDesktopFile: (meta: DesktopRestoredFileMeta) => File;
+};
+
+let desktopQueueBridge: DesktopQueueBridge | null = null;
+
+/** Branche la persistance file desktop (chemins disque, formats image canvas). */
+export function setDesktopQueueBridge(bridge: DesktopQueueBridge): void {
+  desktopQueueBridge = bridge;
+}
+
 type FileStatus = 'queued' | 'converting' | 'success' | 'error';
 
 interface QueueItem {
@@ -53,9 +89,24 @@ interface QueueItem {
   status: FileStatus;
   progress: number;
   message: string;
+  /** Chemin disque Tauri (stubs sans contenu en mémoire). */
+  desktopSourcePath?: string;
+  /** Taille source affichée et validée pour les stubs desktop. */
+  sourceByteSize?: number;
   downloadUrl?: string;
   downloadName?: string;
   resultBlob?: Blob;
+}
+
+function getItemSourceByteSize(item: QueueItem): number {
+  if (item.sourceByteSize != null && item.sourceByteSize > 0) return item.sourceByteSize;
+  return item.file.size;
+}
+
+function resolveDesktopSourcePath(file: File, storedPath?: string): string | undefined {
+  if (storedPath) return storedPath;
+  if (!isDesktopApp || !desktopQueueBridge) return undefined;
+  return desktopQueueBridge.getSourcePath(file);
 }
 
 let queue: QueueItem[] = [];
@@ -64,10 +115,12 @@ let hasStartedConversion = false;
 
 const META_BRAND_CLASS = 'converter__meta-value-brand';
 
-const FILE_CATEGORY_ICONS: Record<ConverterCategory, string> = {
+const FILE_CATEGORY_ICONS: Record<string, string> = {
   image: 'fa-image',
   audio: 'fa-music',
   document: 'fa-file-lines',
+  video: 'fa-film',
+  office: 'fa-file-word',
 };
 
 const FILE_STATUS_UI = {
@@ -176,12 +229,17 @@ function setMetaWeightValue(
   limitBytes: number,
 ): void {
   const current = splitFormatBytes(formatBytes(currentBytes));
-  const limit = formatBytes(limitBytes);
   weightEl.replaceChildren();
   const brand = document.createElement('span');
   brand.className = META_BRAND_CLASS;
   brand.textContent = current.unit ? `${current.value} ${current.unit}` : current.value;
-  weightEl.append(brand, document.createTextNode(` / ${limit}`));
+  const showLimit =
+    Number.isFinite(limitBytes) && limitBytes > 0 && limitBytes < Number.MAX_SAFE_INTEGER / 2;
+  if (showLimit) {
+    weightEl.append(brand, document.createTextNode(` / ${formatBytes(limitBytes)}`));
+    return;
+  }
+  weightEl.append(brand);
 }
 
 const DROPZONE_REJECT_ALERT_MS = 3000;
@@ -275,7 +333,7 @@ function syncNextIdFromQueue(): void {
 }
 
 function totalBytes(): number {
-  return queue.reduce((sum, item) => sum + item.file.size, 0);
+  return queue.reduce((sum, item) => sum + getItemSourceByteSize(item), 0);
 }
 
 function revokeDownloadUrls(): void {
@@ -370,6 +428,25 @@ async function persistQueue(): Promise<void> {
   for (const item of queue) {
     if (!isPersistableQueueItem(item)) continue;
 
+    const desktopSourcePath = resolveDesktopSourcePath(item.file, item.desktopSourcePath);
+    const sourceByteSize = getItemSourceByteSize(item);
+
+    if (desktopSourcePath) {
+      items.push({
+        id: item.id,
+        name: item.file.name,
+        type: item.file.type,
+        lastModified: item.file.lastModified,
+        outputFormatId: item.outputFormatId,
+        status: statusForStore(item.status),
+        progress: item.progress,
+        message: item.message,
+        desktopSourcePath,
+        sourceByteSize: sourceByteSize > 0 ? sourceByteSize : undefined,
+      });
+      continue;
+    }
+
     const sourceBuffer = await item.file.arrayBuffer();
     items.push({
       id: item.id,
@@ -381,6 +458,7 @@ async function persistQueue(): Promise<void> {
       progress: item.progress,
       message: item.message,
       sourceBuffer,
+      sourceByteSize: sourceByteSize > 0 ? sourceByteSize : undefined,
     });
   }
 
@@ -414,10 +492,29 @@ async function restoreQueueFromStore(): Promise<void> {
   for (const stored of snapshot.items) {
     if (stored.status === 'success' || stored.status === 'converting') continue;
 
-    const file = new File([stored.sourceBuffer], stored.name, {
-      type: stored.type,
-      lastModified: stored.lastModified,
-    });
+    let file: File;
+    let desktopSourcePath: string | undefined;
+    let sourceByteSize: number | undefined = stored.sourceByteSize;
+
+    if (stored.desktopSourcePath && isDesktopApp && desktopQueueBridge) {
+      desktopSourcePath = stored.desktopSourcePath;
+      file = desktopQueueBridge.restoreDesktopFile({
+        path: stored.desktopSourcePath,
+        name: stored.name,
+        type: stored.type,
+        size: stored.sourceByteSize ?? 0,
+        lastModified: stored.lastModified,
+      });
+      sourceByteSize = stored.sourceByteSize ?? file.size;
+    } else {
+      const buffer = stored.sourceBuffer;
+      if (!buffer || buffer.byteLength === 0) continue;
+
+      file = new File([buffer], stored.name, {
+        type: stored.type,
+        lastModified: stored.lastModified,
+      });
+    }
 
     if (!isSupportedWebFile(file)) continue;
 
@@ -430,6 +527,8 @@ async function restoreQueueFromStore(): Promise<void> {
       status,
       progress: stored.progress,
       message: stored.message,
+      desktopSourcePath,
+      sourceByteSize,
     });
   }
 
@@ -486,7 +585,9 @@ export async function initConverterUi(): Promise<void> {
     formatEl.textContent = detectFormatsLabel(queue.map((item) => item.file));
     const current = totalBytes();
     const batchLimit = getWebBatchLimitBytes();
-    const over = current > batchLimit;
+    const hasBatchLimit =
+      Number.isFinite(batchLimit) && batchLimit > 0 && batchLimit < Number.MAX_SAFE_INTEGER / 2;
+    const over = hasBatchLimit && current > batchLimit;
     setMetaWeightValue(weightEl, current, batchLimit);
     metaEl.classList.toggle('converter__meta--over', over);
   };
@@ -542,6 +643,8 @@ export async function initConverterUi(): Promise<void> {
     if (list.length === 0) return;
 
     for (const file of list) {
+      const desktopSourcePath = resolveDesktopSourcePath(file);
+      const sourceByteSize = desktopSourcePath && file.size > 0 ? file.size : undefined;
       queue.push({
         id: makeId(),
         file,
@@ -549,12 +652,18 @@ export async function initConverterUi(): Promise<void> {
         status: 'queued',
         progress: 0,
         message: '',
+        desktopSourcePath,
+        sourceByteSize,
       });
     }
     updateMeta();
     refreshDropzone();
     schedulePersistQueue();
   };
+
+  if (isDesktopApp && desktopFileDropRegistrar) {
+    desktopFileDropRegistrar(addFiles, dropzone);
+  }
 
   input.addEventListener('change', () => {
     if (input.files) addFiles(input.files);
@@ -608,20 +717,22 @@ export async function initConverterUi(): Promise<void> {
     }
   });
 
-  dropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropzone.classList.add('converter__dropzone--active');
-  });
+  if (!isDesktopApp) {
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('converter__dropzone--active');
+    });
 
-  dropzone.addEventListener('dragleave', () => {
-    dropzone.classList.remove('converter__dropzone--active');
-  });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('converter__dropzone--active');
+    });
 
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('converter__dropzone--active');
-    if (e.dataTransfer?.files) addFiles(e.dataTransfer.files);
-  });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('converter__dropzone--active');
+      if (e.dataTransfer?.files) addFiles(e.dataTransfer.files);
+    });
+  }
 
   clearAllBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -659,46 +770,70 @@ export async function initConverterUi(): Promise<void> {
     submitBtn.disabled = true;
     submitBtn.classList.add('converter__submit--busy');
 
-    for (const item of queue) {
-      if (item.status === 'success') continue;
-      if (item.downloadUrl) {
-        URL.revokeObjectURL(item.downloadUrl);
-        item.downloadUrl = undefined;
+    try {
+      for (const item of queue) {
+        if (item.status === 'success') continue;
+        if (item.downloadUrl) {
+          URL.revokeObjectURL(item.downloadUrl);
+          item.downloadUrl = undefined;
+        }
+        item.resultBlob = undefined;
+        item.status = 'converting';
+        item.progress = 0;
+        item.message = '';
+        refreshDropzone();
+
+        const outputFormat = resolveOutputFormatId(item.file, item.outputFormatId);
+        item.outputFormatId = outputFormat;
+
+        try {
+          validateFileWeight(item.file);
+          const result = await convertFile(
+            item.file,
+            outputFormat,
+            (ratio) => {
+              item.progress = ratio;
+              updateFileProgress(item.id, item.progress);
+              updateFilesLive(filesLive);
+            },
+            item.desktopSourcePath,
+          );
+          item.status = 'success';
+          item.progress = 1;
+          item.message = 'Converti';
+          item.resultBlob = result.blob;
+          item.downloadUrl = URL.createObjectURL(result.blob);
+          item.downloadName = result.filename;
+        } catch (err) {
+          item.status = 'error';
+          item.progress = 1;
+          item.message = formatConversionError(err, item.file);
+        }
+        refreshDropzone();
+        await persistQueue();
+        if (isDesktopApp) {
+          await new Promise<void>((resolve) => {
+            window.setTimeout(resolve, 0);
+          });
+        }
       }
-      item.resultBlob = undefined;
-      item.status = 'converting';
-      item.progress = 0;
-      item.message = '';
-      refreshDropzone();
-
-      const outputFormat = resolveOutputFormatId(item.file, item.outputFormatId);
-      item.outputFormatId = outputFormat;
-
-      try {
-        validateFileWeight(item.file);
-        const result = await convertFile(item.file, outputFormat, (ratio) => {
-          item.progress = ratio;
-          updateFileProgress(item.id, item.progress);
-          updateFilesLive(filesLive);
-        });
-        item.status = 'success';
-        item.progress = 1;
-        item.message = 'Converti';
-        item.resultBlob = result.blob;
-        item.downloadUrl = URL.createObjectURL(result.blob);
-        item.downloadName = result.filename;
-      } catch (err) {
-        item.status = 'error';
-        item.progress = 1;
-        item.message = formatConversionError(err, item.file);
+      await persistQueue();
+    } catch (err) {
+      console.error('Lot de conversion interrompu', err);
+      const message = formatConversionError(err);
+      for (const item of queue) {
+        if (item.status === 'converting') {
+          item.status = 'error';
+          item.progress = 1;
+          item.message = message;
+        }
       }
       refreshDropzone();
       await persistQueue();
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('converter__submit--busy');
     }
-
-    submitBtn.disabled = false;
-    submitBtn.classList.remove('converter__submit--busy');
-    await persistQueue();
   });
 
   updateMeta();
@@ -903,7 +1038,9 @@ function syncMeta(
   const current = totalBytes();
   const batchLimit = getWebBatchLimitBytes();
   setMetaWeightValue(weightEl, current, batchLimit);
-  metaEl.classList.toggle('converter__meta--over', current > batchLimit);
+  const hasBatchLimit =
+    Number.isFinite(batchLimit) && batchLimit > 0 && batchLimit < Number.MAX_SAFE_INTEGER / 2;
+  metaEl.classList.toggle('converter__meta--over', hasBatchLimit && current > batchLimit);
 }
 
 function updateFileProgress(id: string, progress: number): void {
@@ -951,7 +1088,7 @@ function fillFileWeightSlot(container: HTMLElement, item: QueueItem): void {
   const sourceSize = document.createElement('span');
   sourceSize.className = 'converter__dropzone-file-size-text';
   sourceSize.setAttribute('data-file-source-size-value', item.id);
-  sourceSize.textContent = formatBytes(item.file.size);
+  sourceSize.textContent = formatBytes(getItemSourceByteSize(item));
   container.append(sourceSize);
 }
 

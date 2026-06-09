@@ -9,7 +9,12 @@ export interface StoredQueueItem {
   status: StoredFileStatus;
   progress: number;
   message: string;
-  sourceBuffer: ArrayBuffer;
+  /** Vide pour les stubs desktop : le chemin disque est dans desktopSourcePath. */
+  sourceBuffer?: ArrayBuffer;
+  /** Chemin absolu (application desktop Tauri). */
+  desktopSourcePath?: string;
+  /** Taille source connue quand le fichier n'est pas chargé en mémoire. */
+  sourceByteSize?: number;
   resultBuffer?: ArrayBuffer;
   resultMime?: string;
   resultFilename?: string;

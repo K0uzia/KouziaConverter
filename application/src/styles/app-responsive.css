@@ -1,0 +1,115 @@
+/**
+ * Adaptation de l'UI à la taille de la fenêtre Tauri.
+ */
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+main {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+  padding: var(--app-pad-top) var(--app-pad-x) var(--app-pad-bottom) var(--app-pad-x);
+}
+
+.convertir-page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.convertir-page__container {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--app-content-max);
+  min-width: 0;
+}
+
+.convertir-page__head,
+.converter {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.convertir-page__title {
+  min-width: 0;
+}
+
+.convertir-page__lead {
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+.converter__upload-block,
+.converter__upload,
+.converter__dropzone,
+.converter__toolbar,
+.converter__meta {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  .convertir-page__title {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .convertir-page__title span {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 639px) {
+  .converter__dropzone {
+    padding: calc(var(--head) / 2.5);
+  }
+
+  .converter__dropzone--filled {
+    padding: var(--converter-dropzone-filled-pad);
+  }
+
+  .converter__meta-value {
+    max-width: 58%;
+    text-align: right;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 479px) {
+  .converter__controls {
+    flex-flow: column nowrap;
+    width: 100%;
+  }
+
+  .converter__submit {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .converter__submit-inner {
+    justify-content: center;
+  }
+}

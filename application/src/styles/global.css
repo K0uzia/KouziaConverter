@@ -1,0 +1,14 @@
+@import './base/fontawesome.css';
+@import '@site-styles/base/variables.css';
+@import './base/variables-app.css';
+@import '@site-styles/base/typography.css';
+@import '@site-styles/base/theme.css';
+@import '@site-styles/base/buttons.css';
+@import '@site-styles/base/reset.css';
+@import '@site-styles/base/scrollbar.css';
+@import './app-shell.css';
+@import './pages/convertir.css';
+@import './components/Converter.css';
+@import './components/ConverterSettings.css';
+@import './components/app-settings-modal.css';
+@import './app-responsive.css';

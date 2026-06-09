@@ -7,7 +7,10 @@ import { baseFilename } from './converter-filename.js';
 import { decodeFileToImageData, type ConvertResult, type ProgressCallback } from './converter-image-engine.js';
 import { htmlToPlainText, markdownToPlainText } from './converter-text-utils.js';
 
-const PDF_MAX_PAGES = 50;
+declare const __DESKTOP_APP__: boolean | undefined;
+
+const PDF_MAX_PAGES =
+  typeof __DESKTOP_APP__ !== 'undefined' && __DESKTOP_APP__ ? 500 : 50;
 const PDF_PAGE_RENDER_SCALE = 1.5;
 const PDF_PAGE_RENDER_MAX_PX = 2400;
 const PDF_MARGIN_MM = 12;

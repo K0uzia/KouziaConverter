@@ -1,0 +1,11 @@
+[[permission]]
+identifier = "converter-commands"
+description = "Commandes natives du convertisseur (fichiers locaux, FFmpeg)."
+commands.allow = [
+  "stat_local_paths",
+  "read_local_paths",
+  "stage_native_input",
+  "read_native_output",
+  "remove_native_path",
+  "convert_native_file",
+]

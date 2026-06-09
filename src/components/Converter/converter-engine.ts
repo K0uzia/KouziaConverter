@@ -45,6 +45,7 @@ export async function convertFile(
   file: File,
   outputFormatId: string,
   onProgress: ProgressCallback,
+  _sourcePath?: string,
 ): Promise<ConvertResult> {
   const category = getCategoryForFile(file);
   const output = resolveOutputFormat(file, outputFormatId);

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-convert-native-file"
+description = "Enables the convert_native_file command without any pre-configured scope."
+commands.allow = ["convert_native_file"]
+
+[[permission]]
+identifier = "deny-convert-native-file"
+description = "Denies the convert_native_file command without any pre-configured scope."
+commands.deny = ["convert_native_file"]

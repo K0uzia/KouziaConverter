@@ -3,12 +3,7 @@ import {
   formatBytes,
   getMaxBytesForFile,
   getWebBatchLimitBytes,
-  isAppOnlyExtension,
-} from '../../data/converter-limits.js';
-
-function webBatchMoLabel(): string {
-  return String(Math.round(getWebBatchLimitBytes() / (1024 * 1024)));
-}
+} from '../data/app-converter-limits.ts';
 
 export class ConvertError extends Error {
   readonly code: string;
@@ -23,7 +18,7 @@ export class ConvertError extends Error {
   }
 
   static fileTooHeavy(file?: File): ConvertError {
-    const limit = file ? formatBytes(getMaxBytesForFile(file)) : '16 Mo';
+    const limit = file ? formatBytes(getMaxBytesForFile(file)) : 'la limite applicative';
     return new ConvertError(
       'file_too_heavy',
       `Poids : ce fichier dépasse la limite (${limit} max selon le type).`,
@@ -33,21 +28,21 @@ export class ConvertError extends Error {
   static batchTooHeavy(totalLabel: string): ConvertError {
     return new ConvertError(
       'batch_too_heavy',
-      `Poids : ${totalLabel} au total. Maximum ${webBatchMoLabel()} Mo pour l'ensemble des fichiers.`,
+      `Poids : ${totalLabel} au total. Limite du lot dépassée.`,
     );
   }
 
   static unsupportedFile(): ConvertError {
     return new ConvertError(
       'unsupported_format',
-      'Format : ce type de fichier n\'est pas pris en charge sur le web.',
+      'Format : ce type de fichier n\'est pas pris en charge.',
     );
   }
 
   static unsupportedImageFormat(ext: string): ConvertError {
     return new ConvertError(
       'unsupported_format',
-      `Format : .${ext} n'est pas pris en charge pour les images sur le web.`,
+      `Format : .${ext} n'est pas pris en charge pour les images.`,
     );
   }
 
@@ -61,7 +56,7 @@ export class ConvertError extends Error {
   static svgUnreadable(): ConvertError {
     return new ConvertError(
       'svg_decode',
-      'Format SVG : fichier illisible ou invalide pour le navigateur.',
+      'Format SVG : fichier illisible ou invalide.',
     );
   }
 
@@ -75,14 +70,14 @@ export class ConvertError extends Error {
   static svgVectorizeUnavailable(): ConvertError {
     return new ConvertError(
       'svg_vectorize',
-      'Vectorisation SVG : moteur WASM indisponible. Rechargez la page ou relancez le serveur de dev.',
+      'Vectorisation SVG : moteur WASM indisponible. Relancez l\'application.',
     );
   }
 
   static imageUnreadable(): ConvertError {
     return new ConvertError(
       'image_decode',
-      'Format image : le navigateur n\'a pas pu décoder ce fichier.',
+      'Format image : impossible de décoder ce fichier.',
     );
   }
 
@@ -96,7 +91,7 @@ export class ConvertError extends Error {
   static audioUnreadable(): ConvertError {
     return new ConvertError(
       'audio_decode',
-      'Format audio : lecture impossible ici. Essayez WAV ou MP3.',
+      'Format audio : lecture impossible. Essayez WAV ou MP3.',
     );
   }
 
@@ -125,7 +120,7 @@ export class ConvertError extends Error {
   static browserCanvas(): ConvertError {
     return new ConvertError(
       'browser',
-      'Navigateur : la conversion image nécessite le canvas (non disponible).',
+      'Conversion image : le canvas n\'est pas disponible.',
     );
   }
 
@@ -136,11 +131,18 @@ export class ConvertError extends Error {
     );
   }
 
+  static desktopEncodeUnavailable(outputLabel: string): ConvertError {
+    return new ConvertError(
+      'encode_unavailable',
+      `Application desktop : sortie ${outputLabel} non disponible. Choisissez WebP, PNG ou JPEG.`,
+    );
+  }
+
   static imageEncodeUnavailable(mime: string): ConvertError {
     const label = mime.replace('image/', '').toUpperCase();
     return new ConvertError(
       'encode_unavailable',
-      `Encodage ${label} indisponible dans ce navigateur. Essayez AVIF, WebP, PNG ou JPEG.`,
+      `Encodage ${label} indisponible. Essayez AVIF, WebP, PNG ou JPEG.`,
     );
   }
 
@@ -154,14 +156,14 @@ export class ConvertError extends Error {
   static pdfReadFailed(): ConvertError {
     return new ConvertError(
       'pdf_read',
-      'PDF : lecture impossible dans le navigateur. Rechargez la page ou réessayez avec un PDF plus léger.',
+      'PDF : lecture impossible. Réessayez avec un PDF plus léger.',
     );
   }
 
   static pdfTooManyPages(max: number): ConvertError {
     return new ConvertError(
       'pdf_pages',
-      `PDF : ce fichier dépasse ${max} pages (limite du site).`,
+      `PDF : ce fichier dépasse ${max} pages (limite de l'application).`,
     );
   }
 
@@ -182,19 +184,94 @@ export class ConvertError extends Error {
   static unknown(): ConvertError {
     return new ConvertError(
       'unknown',
-      `Conversion impossible. Vérifiez le format, le poids (lot max ${webBatchMoLabel()} Mo) et le format de sortie.`,
+      'Conversion impossible. Vérifiez le format et le format de sortie.',
     );
   }
 }
 
-export function formatConversionError(err: unknown, file?: File): string {
+function readConvertErrorMessage(err: unknown): string | null {
   if (err instanceof ConvertError) return err.userMessage;
+  if (
+    err &&
+    typeof err === 'object' &&
+    'userMessage' in err &&
+    typeof (err as ConvertError).userMessage === 'string'
+  ) {
+    return (err as ConvertError).userMessage;
+  }
+  return null;
+}
 
-  const raw = err instanceof Error ? err.message : String(err);
+function readErrorText(err: unknown): string {
+  if (typeof err === 'string') return err;
+  if (err instanceof Error) return err.message;
+  return String(err);
+}
+
+function stripDesktopInvokePrefix(raw: string): string {
+  return raw
+    .replace(/^.*command `convert_native_file`:\s*/i, '')
+    .replace(/^convert_native_file:\s*/i, '')
+    .replace(/^read_native_output:\s*/i, '')
+    .replace(/^stage_native_input:\s*/i, '')
+    .trim();
+}
+
+export function formatConversionError(err: unknown, file?: File): string {
+  const convertMessage = readConvertErrorMessage(err);
+  if (convertMessage) return convertMessage;
+
+  const raw = readErrorText(err);
+  const stripped = stripDesktopInvokePrefix(raw);
   const lower = raw.toLowerCase();
 
+  if (/command .+ not found/i.test(raw)) {
+    return 'Moteur desktop indisponible. Relancez avec make dev (recompile Rust si besoin).';
+  }
+
+  if (/invalid args/i.test(raw)) {
+    if (/inputPath|input_path/i.test(raw)) {
+      return 'Fichier sans chemin disque. Videz la file, redéposez les fichiers, puis réessayez.';
+    }
+    return 'Moteur desktop indisponible. Relancez avec make dev (recompile Rust si besoin).';
+  }
+
+  if (
+    stripped.length > 0
+    && stripped !== raw
+    && !/^(__tauri_internals__|tauri\.invok|ipc)/i.test(stripped)
+  ) {
+    return stripped;
+  }
+
+  if (
+    /conversion image|fichier source introuvable|chemin du fichier|codec ffmpeg|ffmpeg est introuvable|catégorie non prise en charge/i.test(
+      raw,
+    )
+  ) {
+    return raw;
+  }
+  if (/fichier vide|illisible|impossible de lire le contenu/i.test(raw)) {
+    return 'Fichier illisible. Réessayez avec le sélecteur de fichiers ou redéposez le fichier.';
+  }
+  if (/ffmpeg|libreoffice|soffice/i.test(raw)) {
+    return raw;
+  }
+  if (
+    /webassembly|wasm|instantiatestreaming|failed to fetch|dynamically imported|403|mime type|unreachable|runtimeerror/i.test(
+      lower,
+    )
+  ) {
+    return 'Moteur WASM indisponible ou image trop lourde. Réduisez la taille du fichier et relancez l\'application.';
+  }
+  if (/out of memory|allocation failed|array buffer allocation/i.test(lower)) {
+    return 'Mémoire insuffisante pour cette conversion. Réduisez la taille ou convertissez moins de fichiers à la fois.';
+  }
+  if (/encoding error/i.test(lower)) {
+    return ConvertError.imageUnreadable().userMessage;
+  }
   if (/volume|volumineux|too large|file size/i.test(raw)) {
-    return ConvertError.fileTooHeavy().userMessage;
+    return ConvertError.fileTooHeavy(file).userMessage;
   }
   if (/json/i.test(raw) && /invalid|parse/i.test(lower)) {
     return ConvertError.jsonInvalid().userMessage;
@@ -214,7 +291,7 @@ export function formatConversionError(err: unknown, file?: File): string {
 
   const ext = file ? extensionFromFile(file) : '';
   if (ext) {
-    return `Conversion impossible pour .${ext}. Vérifiez le poids (lot max ${webBatchMoLabel()} Mo) et le format de sortie.`;
+    return `Conversion impossible pour .${ext}. Vérifiez le format de sortie.`;
   }
 
   return ConvertError.unknown().userMessage;
@@ -238,12 +315,10 @@ function rejectedFormatLabel(file: File): string {
   return file.name || 'fichier inconnu';
 }
 
-/** Message affiché dans la dropzone quand des fichiers ne sont pas pris en charge sur le web. */
 export function formatRejectedFilesMessage(files: readonly File[]): string {
   if (files.length === 0) return '';
 
-  const appOnly: string[] = [];
-  const other: string[] = [];
+  const labels: string[] = [];
   const seen = new Set<string>();
 
   for (const file of files) {
@@ -251,18 +326,8 @@ export function formatRejectedFilesMessage(files: readonly File[]): string {
     const key = ext || file.name;
     if (seen.has(key)) continue;
     seen.add(key);
-    const label = rejectedFormatLabel(file);
-    if (ext && isAppOnlyExtension(ext)) appOnly.push(label);
-    else other.push(label);
+    labels.push(rejectedFormatLabel(file));
   }
 
-  const list = [...appOnly, ...other].join(', ');
-
-  if (appOnly.length > 0 && other.length === 0) {
-    return `Format : ${list} non disponible(s) sur le web. Utilisez l'application desktop.`;
-  }
-  if (appOnly.length > 0) {
-    return `Format : ${list} non pris en charge sur le web. Certains types nécessitent l'application desktop.`;
-  }
-  return `Format : ${list} non pris en charge sur le web.`;
+  return `Format : ${labels.join(', ')} non pris en charge.`;
 }

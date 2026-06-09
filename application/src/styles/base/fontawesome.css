@@ -1,0 +1,6 @@
+/**
+ * Font Awesome 7 (@fortawesome/fontawesome-free, bundlé, hors ligne).
+ * Solid uniquement : fa-solid sur les balises <i>.
+ */
+@import '@fortawesome/fontawesome-free/css/fontawesome.min.css';
+@import '@fortawesome/fontawesome-free/css/solid.min.css';

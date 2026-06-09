@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-stage-native-input"
+description = "Enables the stage_native_input command without any pre-configured scope."
+commands.allow = ["stage_native_input"]
+
+[[permission]]
+identifier = "deny-stage-native-input"
+description = "Denies the stage_native_input command without any pre-configured scope."
+commands.deny = ["stage_native_input"]

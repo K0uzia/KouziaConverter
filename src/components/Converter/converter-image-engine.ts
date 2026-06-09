@@ -52,6 +52,61 @@ const MAX_IMAGE_PIXELS = 32_000_000;
 /** Rasterisation haute résolution avant vectorisation (logos 80×74, etc.). */
 const SVG_TRACE_RASTER_MIN = 1024;
 
+function assertPixelBudget(width: number, height: number): void {
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+    return;
+  }
+  if (width * height > MAX_IMAGE_PIXELS) {
+    throw ConvertError.imageTooLargePixels(Math.round(width), Math.round(height));
+  }
+}
+
+function readPngDimensions(buffer: ArrayBuffer): { width: number; height: number } | null {
+  const bytes = new Uint8Array(buffer);
+  if (bytes.length < 24 || bytes[0] !== 0x89 || bytes[1] !== 0x50) return null;
+  const view = new DataView(buffer);
+  return {
+    width: view.getUint32(16, false),
+    height: view.getUint32(20, false),
+  };
+}
+
+function readJpegDimensions(buffer: ArrayBuffer): { width: number; height: number } | null {
+  const bytes = new Uint8Array(buffer);
+  if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8) return null;
+  let i = 2;
+  while (i < bytes.length - 9) {
+    if (bytes[i] !== 0xff) {
+      i += 1;
+      continue;
+    }
+    const marker = bytes[i + 1]!;
+    if (marker >= 0xc0 && marker <= 0xc3) {
+      const height = (bytes[i + 5]! << 8) | bytes[i + 6]!;
+      const width = (bytes[i + 7]! << 8) | bytes[i + 8]!;
+      return { width, height };
+    }
+    const len = (bytes[i + 2]! << 8) | bytes[i + 3]!;
+    if (len < 2) break;
+    i += 2 + len;
+  }
+  return null;
+}
+
+async function assertRasterDecodable(file: File): Promise<void> {
+  const ext = extensionFromFile(file);
+  if (ext === 'png') {
+    const dims = readPngDimensions(await file.slice(0, 32).arrayBuffer());
+    if (dims) assertPixelBudget(dims.width, dims.height);
+    return;
+  }
+  if (ext === 'jpeg' || ext === 'jpg' || ext === 'jfif') {
+    const sampleSize = Math.min(file.size, 512 * 1024);
+    const dims = readJpegDimensions(await file.slice(0, sampleSize).arrayBuffer());
+    if (dims) assertPixelBudget(dims.width, dims.height);
+  }
+}
+
 async function decodeWithWasm(ext: string, buffer: ArrayBuffer): Promise<ImageData> {
   const normalized = ext === 'jpg' || ext === 'jfif' ? 'jpeg' : ext;
   if (normalized === 'png') {
@@ -380,25 +435,32 @@ export async function convertImageFile(
 ): Promise<ConvertResult> {
   validateImageFile(file);
   onProgress(0.05);
-  const passthrough = await tryPassthroughVectorSvg(file, output);
-  if (passthrough) {
+  try {
+    const passthrough = await tryPassthroughVectorSvg(file, output);
+    if (passthrough) {
+      onProgress(1);
+      return passthrough;
+    }
+    await assertRasterDecodable(file);
+    let imageData: ImageData;
+    if (output.id === 'svg' && extensionFromFile(file) === 'svg') {
+      const embedded = await decodeEmbeddedRasterFromSvg(file);
+      imageData = embedded ?? (await decodeSvgToImageData(file, true));
+    } else {
+      imageData = await decodeToImageData(file);
+    }
+    imageData = constrainImagePixels(imageData);
+    onProgress(0.45);
+    const encoded = await encodeImageData(imageData, output.id);
     onProgress(1);
-    return passthrough;
+    return {
+      blob: new Blob([encoded], { type: output.mime }),
+      mime: output.mime,
+      filename: `${baseFilename(file)}.${output.extension}`,
+    };
+  } catch (err) {
+    if (err instanceof ConvertError) throw err;
+    console.error('convertImageFile', err);
+    throw ConvertError.imageUnreadable();
   }
-  let imageData: ImageData;
-  if (output.id === 'svg' && extensionFromFile(file) === 'svg') {
-    const embedded = await decodeEmbeddedRasterFromSvg(file);
-    imageData = embedded ?? (await decodeSvgToImageData(file, true));
-  } else {
-    imageData = await decodeToImageData(file);
-  }
-  imageData = constrainImagePixels(imageData);
-  onProgress(0.45);
-  const encoded = await encodeImageData(imageData, output.id);
-  onProgress(1);
-  return {
-    blob: new Blob([encoded], { type: output.mime }),
-    mime: output.mime,
-    filename: `${baseFilename(file)}.${output.extension}`,
-  };
 }

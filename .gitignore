@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# application desktop (Tauri)
+application/dist/
+application/src-tauri/target/

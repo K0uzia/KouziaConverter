@@ -1,0 +1,81 @@
+name: Desktop build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - 'application/**'
+      - '.github/workflows/desktop-build.yml'
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            label: linux
+          - os: windows-latest
+            label: windows
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        working-directory: application
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux system dependencies
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libxdo-dev \
+            libssl-dev \
+            build-essential
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: application/pnpm-lock.yaml
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: application/src-tauri -> target
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Tauri bundles
+        run: pnpm tauri build
+
+      - name: Upload Linux bundles
+        if: matrix.os == 'ubuntu-22.04'
+        uses: actions/upload-artifact@v4
+        with:
+          name: converter-linux
+          if-no-files-found: error
+          path: |
+            application/src-tauri/target/release/bundle/deb/*.deb
+            application/src-tauri/target/release/bundle/appimage/*.AppImage
+
+      - name: Upload Windows installer
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: converter-windows
+          if-no-files-found: error
+          path: application/src-tauri/target/release/bundle/nsis/*-setup.exe
