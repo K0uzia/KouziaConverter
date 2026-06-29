@@ -13,6 +13,11 @@ const faqJsonLd = buildFaqPageJsonLd(new URL(homeSections.apropos, siteUrl).href
 ---
 
 <Layout title={pageTitle} description={defaultDescription} canonicalPath="/">
+  <meta
+    slot="head"
+    name="google-site-verification"
+    content="pbrKK0uc6G0__OdrrqtVxwbYVrdC1SOp_aG7HwSw-lE"
+  />
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqJsonLd)} />
   <div slot="site-header" hidden aria-hidden="true"></div>
   <Hero />
