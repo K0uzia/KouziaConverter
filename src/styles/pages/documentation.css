@@ -180,6 +180,11 @@ html.layout--docs .docs {
   color: var(--color-accent-hover);
 }
 
+.docs__sidebar-home:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .docs__sidebar-home.is-active {
   color: var(--color-accent);
   background: color-mix(in srgb, var(--color-accent) 8%, transparent);
@@ -314,6 +319,11 @@ html.layout--docs .docs {
   color: var(--color-title);
 }
 
+.docs__sidebar-article-link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .docs__sidebar-list {
   display: flex;
   flex-flow: column nowrap;
@@ -384,6 +394,11 @@ html.layout--docs .docs {
 .docs__sidebar-link:hover {
   color: var(--color-title);
   background: color-mix(in srgb, var(--color-accent) 5%, transparent);
+}
+
+.docs__sidebar-link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .docs__sidebar-link.is-active {
@@ -461,6 +476,11 @@ html.layout--docs .docs {
 
 .docs__sidebar-toc-link:hover {
   color: var(--color-accent-hover);
+}
+
+.docs__sidebar-toc-link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .docs__main {

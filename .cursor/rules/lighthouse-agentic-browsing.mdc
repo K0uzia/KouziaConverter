@@ -1,0 +1,31 @@
+---
+description: Règles Lighthouse pour la navigation agentique, WebMCP, llms.txt et stabilité
+globs: "{src/**,public/**,**/*.astro,**/*.ts,**/*.css}"
+alwaysApply: true
+---
+
+# Lighthouse Navigation Agentique
+
+Références : [scoring](https://developer.chrome.com/docs/lighthouse/agentic-browsing/scoring?hl=fr), [outils WebMCP](https://developer.chrome.com/docs/lighthouse/agentic-browsing/registered-webmcp-tools?hl=fr), [formulaires WebMCP](https://developer.chrome.com/docs/lighthouse/agentic-browsing/forms-missing-declarative-webmcp?hl=fr), [schéma WebMCP](https://developer.chrome.com/docs/lighthouse/agentic-browsing/webmcp-schema-validity?hl=fr), [llms.txt](https://developer.chrome.com/docs/lighthouse/agentic-browsing/llms-txt?hl=fr), [accessibilité agents](https://developer.chrome.com/docs/lighthouse/agentic-browsing/accessibility-for-agents?hl=fr), [stabilité](https://developer.chrome.com/docs/lighthouse/agentic-browsing/layout-stability?hl=fr).
+
+## Objectif
+
+Les pages doivent rester compréhensibles par les agents IA : DOM sémantique, libellés programmatiques, interactions détectables et stabilité visuelle.
+
+## Règles
+
+- Préférer HTML natif et sémantique : `button`, `a`, `form`, `main`, `nav`, `article`, `section`.
+- Chaque contrôle interactif doit avoir un nom accessible clair, visible ou via ARIA quand nécessaire.
+- Éviter les interactions cachées uniquement en JS si un équivalent HTML déclaratif est possible.
+- Pour les formulaires importants, ajouter `toolname` et `tooldescription` WebMCP, avec `name` unique sur chaque champ.
+- Ajouter `toolparamdescription` ou un `<label>` explicite aux champs de formulaire exposés à WebMCP.
+- Ne jamais créer un attribut WebMCP incomplet : `toolname` et `tooldescription` vont ensemble.
+- Maintenir un fichier `public/llms.txt` si le site expose des parcours ou documents utiles aux agents.
+- Éviter les décalages de mise en page : dimensions d'images, zones réservées, pas d'injection tardive avant le contenu existant.
+
+## Vérification Rapide
+
+- [ ] Les boutons, liens et champs ont un nom accessible.
+- [ ] Les formulaires importants sont compréhensibles sans contexte visuel.
+- [ ] Aucun contenu injecté ne déplace brusquement le contenu déjà affiché.
+- [ ] `public/llms.txt` reste à jour si la structure du site change.

@@ -1,0 +1,29 @@
+---
+description: Règles Lighthouse d'accessibilité pour contrôles, libellés et navigation clavier
+globs: "{src/**,public/**,**/*.astro,**/*.ts,**/*.css}"
+alwaysApply: true
+---
+
+# Lighthouse Accessibilité
+
+Références : [score accessibilité](https://developer.chrome.com/docs/lighthouse/accessibility/scoring?utm_source=lighthouse&utm_medium=lr&hl=fr), [rôles des contrôles](https://developer.chrome.com/docs/lighthouse/accessibility/custom-control-roles?hl=fr), [libellés des contrôles](https://developer.chrome.com/docs/lighthouse/accessibility/custom-controls-labels?hl=fr), [pièges de focus](https://developer.chrome.com/docs/lighthouse/accessibility/focus-traps?hl=fr).
+
+## Règles
+
+- Utiliser les éléments natifs avant ARIA : un vrai `<button>` vaut mieux qu'un `div role="button"`.
+- Tous les boutons, liens, menus et champs doivent avoir un nom accessible descriptif.
+- Les labels visibles et les noms accessibles doivent correspondre autant que possible.
+- Les rôles ARIA doivent être valides, cohérents avec l'élément et accompagnés des attributs requis.
+- Aucun élément focusable ne doit être caché avec `aria-hidden="true"`.
+- L'ordre DOM doit suivre l'ordre visuel pour une tabulation logique.
+- Conserver des états `:focus-visible` visibles sur tous les liens et boutons.
+- Ne pas piéger le focus, sauf modale volontaire avec échappement clavier clair.
+- Garder une hiérarchie de titres logique : un `h1`, puis `h2`, `h3`, sans saut pour le style.
+- Garantir un contraste suffisant pour texte courant, liens, boutons et états.
+
+## Vérification Rapide
+
+- [ ] Navigation complète possible au clavier.
+- [ ] Aucun bouton ou lien sans texte descriptif.
+- [ ] Aucun ARIA ajouté pour compenser un HTML natif disponible.
+- [ ] Les contenus ajoutés dynamiquement restent accessibles aux lecteurs d'écran.

@@ -569,3 +569,12 @@ html.is-header-pinned .header--hero.header--pinned {
     animation: none;
   }
 }
+
+.header__logo:focus-visible,
+.header__nav-link:focus-visible,
+.header__menu-btn:focus-visible,
+.header__mobile-nav-link:focus-visible,
+.header__cta:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

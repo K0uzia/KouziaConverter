@@ -20,6 +20,20 @@
   z-index: auto;
 }
 
+.converter__form {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  font-family: var(--font);
+  color: inherit;
+  background: transparent;
+  transition: none;
+  overflow: visible;
+  z-index: auto;
+}
+
 .converter__upload-block {
   display: block;
   width: 100%;

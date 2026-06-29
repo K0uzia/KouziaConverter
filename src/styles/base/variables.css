@@ -79,6 +79,14 @@
   --site-pad-x: var(--pad-x);
   --gap-logo: calc(var(--head) / 10.24);
 
+  /* Bannière de consentement */
+  --z-consent-banner: 100;
+  --consent-banner-max-width: calc(var(--head) * 8);
+  --consent-banner-offset: var(--site-pad-x);
+  --consent-banner-gap: calc(var(--head) / 8);
+  --consent-banner-pad: calc(var(--head) / 4);
+  --consent-banner-shadow: 0 calc(var(--head) / 16) calc(var(--head) / 4) color-mix(in srgb, var(--color-bg) 55%, transparent);
+
   /* Header */
   --header-scale: 0.75;
   --header-bar-bg: var(--color-surface-raised);

@@ -29,10 +29,16 @@ export function pageUrl(path: string): string {
 }
 
 export const defaultDescription =
-  'Convertisseur de fichiers 100 % local dans le navigateur : images, audio, documents et PDF. Gratuit, open source, sans envoi sur un serveur.';
+  'Convertisseur de fichiers 100 % local dans le navigateur : images, audio, documents et PDF. Entièrement gratuit, sans envoi sur un serveur.';
 
 export const githubUrl = `https://github.com/K0uzia/${brandRepo}`;
 export const githubIssuesUrl = `${githubUrl}/issues`;
+
+/** Identifiant de mesure Google Analytics 4. */
+export const googleAnalyticsId = 'G-C7ES9HLE1B';
+
+/** Clé localStorage pour le choix de consentement analytique. */
+export const analyticsConsentStorageKey = 'converter-consent-analytics';
 
 /** Ancres de la page d'accueil (préfixées par `base` pour GitHub Pages). */
 export const homeSections = {

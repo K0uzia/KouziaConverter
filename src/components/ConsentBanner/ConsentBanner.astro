@@ -1,0 +1,37 @@
+---
+import './ConsentBanner.css';
+import { brandName, pageUrl } from '../../data/site';
+
+const privacyUrl = pageUrl('confidentialite/');
+---
+
+<div
+  class="consent-banner"
+  data-consent-banner
+  role="region"
+  aria-labelledby="consent-banner-title"
+  aria-describedby="consent-banner-desc"
+  hidden
+>
+  <h2 class="consent-banner__title" id="consent-banner-title">Mesure d'audience</h2>
+  <p class="consent-banner__text" id="consent-banner-desc">
+    {brandName} utilise Google Analytics pour comprendre l'utilisation du site. Vos fichiers
+    convertis restent sur votre appareil. Consultez la
+    <a href={privacyUrl}>politique de confidentialité</a>.
+  </p>
+  <div class="consent-banner__actions">
+    <button type="button" class="btn btn--secondary consent-banner__btn" data-consent-deny>
+      Refuser
+    </button>
+    <button type="button" class="btn btn--primary consent-banner__btn" data-consent-accept>
+      Accepter
+    </button>
+  </div>
+</div>
+
+<script>
+  import { initConsentBanner } from './consent-banner.ts';
+
+  initConsentBanner();
+  document.addEventListener('astro:page-load', initConsentBanner);
+</script>

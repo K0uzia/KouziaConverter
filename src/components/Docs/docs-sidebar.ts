@@ -60,15 +60,6 @@ function bindArticleLinkToggle(nav: HTMLElement): void {
     link.dataset.docsSidebarLinkBound = 'true';
 
     link.addEventListener('click', (event) => {
-      if (isMobileSidebar()) {
-        const group = link.closest<HTMLDetailsElement>('.docs__sidebar-group');
-        if (!group) return;
-        event.preventDefault();
-        event.stopPropagation();
-        group.open = !group.open;
-        return;
-      }
-
       event.stopPropagation();
     });
   }

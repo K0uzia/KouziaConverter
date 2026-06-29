@@ -233,3 +233,8 @@
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
+
+.footer__text-link--button {
+  cursor: pointer;
+  text-align: left;
+}

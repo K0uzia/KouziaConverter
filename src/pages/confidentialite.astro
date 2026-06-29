@@ -6,7 +6,7 @@ import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
 
 <Layout
   title={`Confidentialité - ${brandName}`}
-  description={`Politique de confidentialité de ${brandName} : traitement local des fichiers et mesure d'audience Google Analytics.`}
+  description={`Politique de confidentialité de ${brandName} : traitement local des fichiers, consentement analytique et Google Analytics.`}
   canonicalPath="/confidentialite/"
 >
   <article class="privacy" aria-labelledby="privacy-title">
@@ -15,7 +15,7 @@ import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
         <h1 class="privacy__title" id="privacy-title">Politique de confidentialité</h1>
         <p class="privacy__lead">
           {brandName} est conçu pour traiter vos fichiers sur votre appareil, sans téléversement vers
-          un serveur de conversion.
+          un serveur de conversion. La mesure d'audience du site repose sur votre consentement.
         </p>
       </header>
 
@@ -26,8 +26,9 @@ import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
             La politique de confidentialité de {brandName} est volontairement simple : les
             conversions prévues sur le site s'exécutent dans votre navigateur et vos fichiers ne
             quittent pas votre appareil pour être convertis. Nous utilisons Google Analytics pour
-            mesurer l'audience du site, sans cookies publicitaires ni profilage publicitaire de notre
-            part.
+            mesurer l'audience du site, uniquement si vous l'acceptez via la bannière de
+            consentement. Les données analytiques sont conservées 2 mois, puis supprimées. Nous
+            n'utilisons pas de cookies publicitaires ni de profilage publicitaire de notre part.
           </p>
           <p>
             Cette politique décrit le site officiel du projet. Une copie auto-hébergée peut gérer les
@@ -80,16 +81,47 @@ import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
         <section class="privacy__section" aria-labelledby="privacy-analytics">
           <h2 class="privacy__heading" id="privacy-analytics">Analytique</h2>
           <p>
-            Nous utilisons Google Analytics pour comprendre l'utilisation du site : pages consultées,
-            provenance approximative du trafic, type d'appareil et événements techniques agrégés. Ces
-            mesures nous aident à améliorer le site et ne donnent pas accès au contenu de vos
-            fichiers.
+            Nous utilisons Google Analytics 4 pour comprendre l'utilisation du site : pages
+            consultées, provenance approximative du trafic, type d'appareil et événements techniques
+            agrégés. Ces mesures nous aident à améliorer le site et ne donnent pas accès au contenu
+            de vos fichiers.
           </p>
           <p>
-            Google peut traiter certaines informations techniques liées à votre visite, comme votre
-            adresse IP, les informations du navigateur ou des identifiants de mesure. Vous pouvez
-            limiter ou bloquer cette mesure via les paramètres de confidentialité de votre navigateur,
-            un bloqueur de contenu ou les outils proposés par Google.
+            Le site implémente le mode Consentement de Google. Tant que vous n'avez pas accepté la
+            mesure, aucun cookie analytique n'est enregistré. Google peut toutefois recevoir des
+            signaux techniques minimaux (par exemple user-agent, résolution d'écran ou adresse IP
+            traitée selon les règles de Google Analytics) afin de produire des statistiques
+            agrégées et de la modélisation du comportement.
+          </p>
+          <p>
+            Si vous acceptez la mesure, Google Analytics peut utiliser des cookies analytiques
+            propriétaires pour reconnaître une visite sur plusieurs pages. Si vous refusez, la
+            mesure reste limitée et ne repose pas sur ces cookies.
+          </p>
+          <p>
+            Les données de mesure d'audience collectées via Google Analytics sont conservées pendant
+            <strong>2 mois</strong>, puis supprimées automatiquement. Ce délai est configuré dans
+            notre propriété Google Analytics 4.
+          </p>
+          <p>
+            Vous pouvez modifier votre choix à tout moment via le lien
+            <strong>Préférences cookies</strong> en pied de page. Vous pouvez aussi limiter la
+            mesure via les paramètres de confidentialité de votre navigateur, un bloqueur de contenu
+            ou les outils proposés par Google.
+          </p>
+        </section>
+
+        <section class="privacy__section" aria-labelledby="privacy-consent">
+          <h2 class="privacy__heading" id="privacy-consent">Consentement</h2>
+          <p>
+            Lors de votre première visite, une notification discrète en bas à droite vous propose
+            d'accepter ou de refuser la mesure d'audience. Votre choix est enregistré localement
+            dans votre navigateur afin de ne pas vous redemander à chaque page.
+          </p>
+          <p>
+            Nous ne demandons qu'un consentement pour la mesure analytique. Les cookies
+            publicitaires restent désactivés sur ce site, y compris si vous acceptez la mesure
+            d'audience.
           </p>
         </section>
 

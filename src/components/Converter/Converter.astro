@@ -4,15 +4,25 @@ import { WEB_ACCEPT_ATTR } from '../../data/converter-limits';
 ---
 
 <section class="converter" data-converter aria-labelledby="converter-upload-label">
+  <form
+    class="converter__form"
+    data-converter-form
+    toolname="convert_files_local"
+    tooldescription="Ajoute et convertit des fichiers localement dans le navigateur, sans envoi sur un serveur"
+  >
   <div class="converter__upload-block">
     <div class="converter__upload">
       <input
         type="file"
         id="converter-file-input"
+        name="files"
         class="converter__input"
         multiple
         accept={WEB_ACCEPT_ATTR}
         data-converter-input
+        tabindex="-1"
+        aria-label="Sélectionner des fichiers à convertir localement"
+        toolparamdescription="Un ou plusieurs fichiers image, audio, document ou PDF à convertir dans le navigateur"
       />
       <div
         class="converter__dropzone"
@@ -88,6 +98,7 @@ import { WEB_ACCEPT_ATTR } from '../../data/converter-limits';
       </button>
     </div>
   </div>
+  </form>
 
 </section>
 

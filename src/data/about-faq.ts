@@ -36,6 +36,6 @@ export const aboutFaqItems: AboutFaqItem[] = [
     id: 'gratuit',
     question: 'Le projet restera-t-il gratuit ?',
     answer:
-      "Oui, gratuit à vie. Le site et l'application restent sans frais, sans abonnement et sans publicité. Projet open source : pas de version payante prévue pour convertir vos fichiers, ni de modèle freemium qui limite l'accès ou la qualité.",
+      "Oui, gratuit à vie. Le site et l'application restent sans frais, sans abonnement et sans publicité. Pas de version payante prévue pour convertir vos fichiers, ni de modèle freemium qui limite l'accès ou la qualité.",
   },
 ];

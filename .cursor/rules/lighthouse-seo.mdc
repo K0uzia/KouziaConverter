@@ -1,0 +1,29 @@
+---
+description: Règles Lighthouse SEO pour description, liens, hreflang et canonical
+globs: "{src/**,public/**,**/*.astro}"
+alwaysApply: true
+---
+
+# Lighthouse SEO
+
+Références : [meta description](https://developer.chrome.com/docs/lighthouse/seo/meta-description?hl=fr), [texte des liens](https://developer.chrome.com/docs/lighthouse/seo/link-text?hl=fr), [hreflang](https://developer.chrome.com/docs/lighthouse/seo/hreflang?hl=fr), [canonical](https://developer.chrome.com/docs/lighthouse/seo/canonical?hl=fr).
+
+## Règles
+
+- Chaque page indexable doit avoir une `meta description` unique, non vide et fidèle au contenu visible.
+- Chaque page indexable doit avoir un `<title>` unique et descriptif via `Layout`.
+- Chaque page indexable doit déclarer une URL canonique absolue et valide.
+- Ne pas générer plusieurs liens `rel="canonical"` sur une même page.
+- Le canonical doit pointer vers la version principale de la même langue et du même contenu.
+- Les textes de liens doivent décrire la destination : éviter `ici`, `cliquez ici`, `en savoir plus` seuls.
+- Les liens internes doivent aider la navigation et utiliser les helpers d'URL du projet.
+- Ajouter `hreflang` seulement si des versions linguistiques réelles existent.
+- Si `hreflang` est ajouté, chaque version doit référencer les autres versions et elle-même.
+- Ne pas ajouter de `meta keywords`.
+
+## Vérification Rapide
+
+- [ ] Titre, description et canonical uniques sur la page modifiée.
+- [ ] Aucun lien générique sans contexte.
+- [ ] Aucun canonical vers une page non équivalente.
+- [ ] Pas de balise SEO contradictoire avec le contenu visible.

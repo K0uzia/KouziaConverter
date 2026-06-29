@@ -1,0 +1,29 @@
+---
+description: Règles Lighthouse bonnes pratiques pour HTML, console, images et encodage
+globs: "{src/**,public/**,**/*.astro,**/*.ts,**/*.css}"
+alwaysApply: true
+---
+
+# Lighthouse Bonnes Pratiques
+
+Références : [doctype](https://developer.chrome.com/docs/lighthouse/best-practices/doctype?hl=fr), [erreurs console](https://developer.chrome.com/docs/lighthouse/best-practices/errors-in-console?hl=fr), [ratio images](https://developer.chrome.com/docs/lighthouse/best-practices/image-aspect-ratio?hl=fr), [charset](https://developer.chrome.com/docs/lighthouse/best-practices/charset?hl=fr).
+
+## Règles
+
+- Conserver `<!doctype html>` en haut du document généré.
+- Placer `<meta charset="utf-8" />` très tôt dans `<head>`, idéalement en premier élément métier.
+- Ne pas déplacer ou supprimer la balise viewport existante.
+- Corriger les erreurs console causées par le code du projet.
+- Ne pas masquer une erreur avec `try/catch` vide, sauf impossibilité connue et commentée.
+- Les images doivent conserver leur ratio naturel, sans étirement CSS.
+- Ajouter `width` et `height` aux images quand les dimensions sources sont connues.
+- Pour les images responsives, utiliser une mise en page qui conserve les proportions.
+- Les liens externes ouverts dans un nouvel onglet doivent garder `rel="noopener noreferrer"`.
+- Éviter les APIs obsolètes ou comportements dépendants de quirks mode.
+
+## Vérification Rapide
+
+- [ ] Pas d'erreur console attendue.
+- [ ] Encodage et doctype toujours présents.
+- [ ] Images affichées sans déformation.
+- [ ] Les attributs de sécurité des liens externes sont conservés.

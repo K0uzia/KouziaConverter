@@ -1,0 +1,29 @@
+---
+description: Règles Lighthouse performance pour FCP, Speed Index, TBT, LCP et CLS
+globs: "{src/**,public/**,**/*.astro,**/*.ts,**/*.css}"
+alwaysApply: true
+---
+
+# Lighthouse Performance
+
+Références : [score performance](https://developer.chrome.com/docs/lighthouse/performance/performance-scoring?utm_source=lighthouse&utm_medium=lr&hl=fr), [FCP](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint?hl=fr), [Speed Index](https://developer.chrome.com/docs/lighthouse/performance/speed-index?hl=fr), [TBT](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time?hl=fr), [LCP](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint?hl=fr), [CLS](https://web.dev/articles/cls?hl=fr).
+
+## Règles
+
+- Prioriser les métriques qui pèsent le plus dans Lighthouse : LCP, TBT et CLS.
+- Éviter le JavaScript inutile au chargement initial, surtout sur les pages marketing et documentation.
+- Découper ou charger à la demande les scripts lourds, moteurs WASM et traitements de conversion.
+- Ne pas ajouter de travail synchrone long sur le thread principal pendant l'initialisation.
+- Préserver le FCP : CSS critique léger, polices maîtrisées, texte visible rapidement.
+- Protéger le LCP : ne pas retarder le contenu principal par des scripts tiers ou animations.
+- Réduire le Speed Index : contenu principal rendu sans attendre des composants secondaires.
+- Prévenir le CLS : `width` / `height` sur images, espaces réservés, pas d'injection au-dessus du contenu.
+- Les bannières, modales et widgets doivent être fixes ou réserver leur espace sans déplacer la page.
+- Les ressources tierces doivent être justifiées et chargées avec `async`, `defer` ou équivalent.
+
+## Vérification Rapide
+
+- [ ] Pas de script lourd ajouté dans le chemin critique.
+- [ ] L'élément principal de la page reste visible rapidement.
+- [ ] Les images et médias ont des dimensions ou un ratio stable.
+- [ ] Aucun composant tardif ne décale le contenu existant.
