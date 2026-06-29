@@ -67,6 +67,15 @@
   --weight-bold: 700;
   --line-tight: 1.15;
 
+  /* Accessibilité : cibles tactiles et utilitaires */
+  --touch-target-min: calc(var(--head) / 1.454);
+  --visually-hidden-size: calc(var(--head) / 64);
+  --skip-link-offset: var(--site-pad-x);
+  --skip-link-pad-y: calc(var(--head) / 16);
+  --skip-link-pad-x: calc(var(--head) / 8);
+  --skip-link-radius: var(--radius-md);
+  --z-skip-link: calc(var(--z-consent-banner) + 1);
+
   /* Rayons, ombres */
   --radius-md: calc(var(--head) / 10.667);
 
@@ -109,9 +118,6 @@
   --header-mobile-nav-pad-y: calc(var(--head) / 8.5 * var(--header-scale));
   --header-mobile-nav-pad-x: calc(var(--head) / 2.8 * var(--header-scale));
   --header-mobile-nav-radius: calc(var(--head) / 8.5 * var(--header-scale));
-  --header-mobile-nav-hero-offset-x: calc(var(--head) * -1.25 * var(--header-scale));
-  --header-mobile-nav-offset-left: 82px;
-  --header-mobile-nav-offset-top: 53px;
   --header-mobile-nav-hero-top-lift: calc(var(--head) / 40 * var(--header-scale));
   --header-mobile-nav-gap: calc(var(--head) / 10 * var(--header-scale));
   --header-mobile-nav-link-pad: calc(var(--head) / 12 * var(--header-scale));
@@ -330,7 +336,7 @@
   --converter-settings-table-pad-x: calc(var(--head) / 6.4);
   --converter-settings-action-cell-pad: calc(var(--head) / 10);
   --converter-settings-action-gap: calc(var(--head) / 14);
-  --converter-settings-select-min-h: calc(var(--head) / 3.2);
+  --converter-settings-select-min-h: var(--touch-target-min);
   --converter-settings-hint-font: var(--text-sm);
 
   /* Scrollbar (site, scroll sur body) */
@@ -481,7 +487,7 @@
     --converter-settings-table-pad-x: calc(var(--head) / 5.5);
     --converter-settings-action-cell-pad: calc(var(--head) / 8);
     --converter-settings-action-gap: calc(var(--head) / 10);
-    --converter-settings-select-min-h: calc(var(--head) / 2.35);
+    --converter-settings-select-min-h: var(--touch-target-min);
     --converter-settings-hint-font: var(--text-sm);
     --converter-modal-max-width: calc(100vw - var(--site-pad-x) * 2);
   }

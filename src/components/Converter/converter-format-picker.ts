@@ -196,6 +196,7 @@ function createFormatMenu(
   currentId: string,
   currentLabel: string,
   applySelection: (nextId: string) => void,
+  externalLabelId?: string,
 ): HTMLElement {
   const isSettings = config.variant === 'settings';
 
@@ -226,20 +227,32 @@ function createFormatMenu(
   trigger.id = config.id;
   trigger.setAttribute('aria-haspopup', 'listbox');
   trigger.setAttribute('aria-expanded', 'false');
-  trigger.setAttribute('aria-label', config.ariaLabel);
 
   const triggerValue = document.createElement('span');
   triggerValue.className = isSettings
     ? 'converter-settings__select-value'
     : 'converter__dropzone-file-output-value';
+  triggerValue.id = `${config.id}-value`;
   triggerValue.textContent = currentLabel;
+
+  if (externalLabelId) {
+    trigger.setAttribute('aria-labelledby', `${externalLabelId} ${triggerValue.id}`);
+    trigger.append(triggerValue);
+  } else {
+    const triggerPrefix = document.createElement('span');
+    triggerPrefix.className = 'u-visually-hidden';
+    triggerPrefix.id = `${config.id}-prefix`;
+    triggerPrefix.textContent = `${config.ariaLabel} : `;
+    trigger.append(triggerPrefix, triggerValue);
+    trigger.setAttribute('aria-labelledby', `${triggerPrefix.id} ${triggerValue.id}`);
+  }
 
   const triggerIcon = document.createElement('i');
   triggerIcon.className = isSettings
     ? 'converter-settings__select-chevron fa-solid fa-chevron-down'
     : 'converter__dropzone-file-output-chevron fa-solid fa-chevron-down';
   triggerIcon.setAttribute('aria-hidden', 'true');
-  trigger.append(triggerValue, triggerIcon);
+  trigger.append(triggerIcon);
 
   const list = document.createElement('ul');
   const listId = `${config.id}-list`;
@@ -307,19 +320,29 @@ export function createFormatPickerField(config: FormatPickerConfig): HTMLElement
   const currentLabel =
     config.options.find((o) => o.id === currentId)?.label ?? currentId;
 
-  const menu = createFormatMenu(config, currentId, currentLabel, (nextId) => {
-    config.onChange(nextId);
-  });
-
   if (config.variant === 'settings') {
-    return menu;
+    return createFormatMenu(config, currentId, currentLabel, (nextId) => {
+      config.onChange(nextId);
+    });
   }
+
+  const fieldLabelId = `${config.id}-field-label`;
+  const menu = createFormatMenu(
+    config,
+    currentId,
+    currentLabel,
+    (nextId) => {
+      config.onChange(nextId);
+    },
+    fieldLabelId,
+  );
 
   const formatField = document.createElement('div');
   formatField.className = 'converter__dropzone-file-field converter__dropzone-file-field--format';
 
   const outputLabel = document.createElement('label');
   outputLabel.className = 'converter__dropzone-file-field-label';
+  outputLabel.id = fieldLabelId;
   outputLabel.textContent = config.labelText ?? 'Sortie';
   outputLabel.setAttribute('for', config.id);
 

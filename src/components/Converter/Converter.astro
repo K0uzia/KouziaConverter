@@ -24,13 +24,7 @@ import { WEB_ACCEPT_ATTR } from '../../data/converter-limits';
         aria-label="Sélectionner des fichiers à convertir localement"
         toolparamdescription="Un ou plusieurs fichiers image, audio, document ou PDF à convertir dans le navigateur"
       />
-      <div
-        class="converter__dropzone"
-        data-converter-dropzone
-        role="button"
-        tabindex="0"
-        aria-labelledby="converter-upload-label converter-dropzone-alert"
-      >
+      <div class="converter__dropzone" data-converter-dropzone>
         <p
           class="converter__dropzone-alert"
           id="converter-dropzone-alert"
@@ -39,10 +33,10 @@ import { WEB_ACCEPT_ATTR } from '../../data/converter-limits';
           hidden
         ></p>
         <div class="converter__dropzone-empty" data-converter-dropzone-empty>
-          <p class="converter__dropzone-hint" id="converter-upload-label">
+          <label class="converter__dropzone-hint" id="converter-upload-label" for="converter-file-input">
             Images, audio, documents et PDF, en local. <span data-converter-batch-mo>24</span> Mo max par lot.
             Vidéo et Office : application desktop.
-          </p>
+          </label>
         </div>
         <ul class="converter__dropzone-files" data-converter-dropzone-files hidden></ul>
         <div class="converter__dropzone-footer" data-converter-dropzone-footer hidden>
@@ -103,18 +97,16 @@ import { WEB_ACCEPT_ATTR } from '../../data/converter-limits';
 </section>
 
 <script>
-  import { initConverterUi, resetConverterQueue } from './converter-ui.ts';
-
   const bootConverterUi = (): void => {
-    void initConverterUi();
+    void import('./converter-ui.ts').then(({ initConverterUi }) => initConverterUi());
   };
 
   bootConverterUi();
   document.addEventListener('astro:page-load', bootConverterUi);
   document.addEventListener('cal:storage-cleared', () => {
-    void (async () => {
+    void import('./converter-ui.ts').then(async ({ initConverterUi, resetConverterQueue }) => {
       await resetConverterQueue();
       await initConverterUi();
-    })();
+    });
   });
 </script>

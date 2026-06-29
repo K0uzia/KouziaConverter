@@ -139,6 +139,7 @@
   line-height: var(--line-relaxed);
   color: var(--color-text);
   background: transparent;
+  cursor: pointer;
   transition: none;
   overflow: visible;
   z-index: auto;
@@ -859,7 +860,7 @@
   flex-flow: row wrap;
   align-items: center;
   justify-content: center;
-  gap: calc(var(--head) / 8);
+  gap: calc(var(--head) / 6);
   width: 100%;
   margin: 0;
   padding: 0;
@@ -879,7 +880,9 @@
   justify-content: center;
   flex-shrink: 0;
   width: auto;
+  min-width: var(--touch-target-min);
   height: auto;
+  min-height: var(--touch-target-min);
   margin: 0;
   padding: calc(var(--head) / 16) calc(var(--head) / 8);
   border-radius: var(--radius-md);
@@ -898,7 +901,9 @@
   justify-content: center;
   flex-shrink: 0;
   width: auto;
+  min-width: var(--touch-target-min);
   height: auto;
+  min-height: var(--touch-target-min);
   margin: 0;
   padding: calc(var(--head) / 16) calc(var(--head) / 8);
   border-radius: var(--radius-md);
@@ -925,7 +930,8 @@
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
-  min-width: 0;
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
   margin: 0;
   appearance: none;
   padding: calc(var(--head) / 14) calc(var(--head) / 8);

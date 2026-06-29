@@ -1,5 +1,44 @@
 @import url('../components/site-edge-geo.css');
 
+.layout__skip-link {
+  position: absolute;
+  top: var(--skip-link-offset);
+  left: var(--skip-link-offset);
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: var(--skip-link-pad-y) var(--skip-link-pad-x);
+  border-radius: var(--skip-link-radius);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--line-tight);
+  color: var(--btn-primary-fg);
+  background: var(--btn-primary-bg);
+  transform: translateY(calc(var(--touch-target-min) * -2));
+  transition: transform var(--ease);
+  overflow: visible;
+  z-index: var(--z-skip-link);
+}
+
+.layout__skip-link:focus-visible {
+  transform: translateY(0);
+  outline: calc(var(--visually-hidden-size) * 2) solid var(--color-accent);
+  outline-offset: calc(var(--visually-hidden-size) * 2);
+}
+
+.u-visually-hidden {
+  position: absolute;
+  width: var(--visually-hidden-size);
+  height: var(--visually-hidden-size);
+  margin: calc(var(--visually-hidden-size) * -1);
+  padding: 0;
+  border-width: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
 html {
   margin: 0;
   padding: 0;

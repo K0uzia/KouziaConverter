@@ -86,10 +86,6 @@ html.is-header-pinned .header--hero.header--pinned {
 }
 
 @media (max-width: 767px) {
-  .header--hero .header__container {
-    justify-content: flex-end;
-  }
-
   .header--hero .header__cta {
     display: none;
   }
@@ -101,7 +97,7 @@ html.is-header-pinned .header--hero.header--pinned {
 }
 
 .header--hero.header--pinned .header__mobile-nav {
-  top: var(--header-mobile-nav-offset-top);
+  top: calc(100% + var(--header-mobile-nav-pad-y));
   bottom: auto;
 }
 
@@ -125,6 +121,12 @@ html.is-header-pinned .header--hero.header--pinned {
   transition: none;
   overflow: visible;
   z-index: auto;
+}
+
+@media (max-width: 767px) {
+  .header__container {
+    justify-content: flex-end;
+  }
 }
 
 @media (max-width: 639px) {
@@ -361,9 +363,9 @@ html.is-header-pinned .header--hero.header--pinned {
 .header__mobile-nav {
   display: none;
   position: absolute;
-  top: var(--header-mobile-nav-offset-top);
-  left: 0;
-  right: auto;
+  top: calc(100% + var(--header-mobile-nav-pad-y));
+  left: auto;
+  right: 0;
   box-sizing: border-box;
   width: fit-content;
   min-width: var(--header-mobile-nav-min-w);
@@ -389,18 +391,6 @@ html.is-header-pinned .header--hero.header--pinned {
 @media (max-width: 767px) {
   .header__mobile-nav:not([hidden]) {
     display: block;
-  }
-}
-
-@media (max-width: 639px) {
-  .header__mobile-nav:not([hidden]) {
-    left: var(--header-mobile-nav-offset-left);
-    transform: none;
-  }
-
-  .header--hero .header__mobile-nav:not([hidden]) {
-    left: var(--header-mobile-nav-hero-offset-x);
-    transform: none;
   }
 }
 

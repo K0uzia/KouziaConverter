@@ -303,10 +303,7 @@ function updateDropzoneZipButton(): void {
       entries.length === 1
         ? 'Tout télécharger (ZIP)'
         : `Tout télécharger (ZIP, ${entries.length})`;
-    btn.setAttribute(
-      'aria-label',
-      `Télécharger ${entries.length} fichier(s) converti(s) en une archive ZIP`,
-    );
+    btn.removeAttribute('aria-label');
   }
 }
 
@@ -709,14 +706,6 @@ export async function initConverterUi(): Promise<void> {
     })();
   });
 
-  dropzone.addEventListener('keydown', (e) => {
-    if (dropzone.classList.contains('converter__dropzone--filled')) return;
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      input.click();
-    }
-  });
-
   if (!isDesktopApp) {
     dropzone.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -849,22 +838,12 @@ async function removeQueueItem(id: string): Promise<void> {
 }
 
 function updateDropzoneInteractionState(
-  dropzone: HTMLElement,
   addMoreEl: HTMLElement | null,
   filled: boolean,
 ): void {
   if (filled) {
-    dropzone.removeAttribute('role');
-    dropzone.removeAttribute('tabindex');
-    dropzone.removeAttribute('aria-labelledby');
     addMoreEl?.setAttribute('aria-label', 'Ajouter d\'autres fichiers');
   } else {
-    dropzone.setAttribute('role', 'button');
-    dropzone.setAttribute('tabindex', '0');
-    dropzone.setAttribute(
-      'aria-labelledby',
-      'converter-upload-label converter-dropzone-alert',
-    );
     addMoreEl?.removeAttribute('aria-label');
   }
 }
@@ -887,7 +866,7 @@ function renderDropzoneFiles(
     emptyBlock?.classList.remove('converter__dropzone-empty--hidden');
     footerEl?.setAttribute('hidden', '');
     dropzone.classList.remove('converter__dropzone--filled');
-    updateDropzoneInteractionState(dropzone, addMoreEl, false);
+    updateDropzoneInteractionState(addMoreEl, false);
     return;
   }
 
@@ -895,7 +874,7 @@ function renderDropzoneFiles(
   emptyBlock?.classList.add('converter__dropzone-empty--hidden');
   footerEl?.removeAttribute('hidden');
   dropzone.classList.add('converter__dropzone--filled');
-  updateDropzoneInteractionState(dropzone, addMoreEl, true);
+  updateDropzoneInteractionState(addMoreEl, true);
 
   for (const item of queueItemsForDisplay(queue)) {
     const li = document.createElement('li');
@@ -1066,7 +1045,6 @@ function fillOutputSizeValue(el: HTMLElement, display: OutputWeightDisplay): voi
   after.textContent = display.after;
 
   el.append(before, arrow, after);
-  el.setAttribute('aria-label', display.value);
 }
 
 function fillFileWeightSlot(container: HTMLElement, item: QueueItem): void {

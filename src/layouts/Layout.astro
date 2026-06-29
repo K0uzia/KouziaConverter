@@ -29,6 +29,9 @@ const canonicalUrl = canonicalPath
   ? new URL(canonicalPath, siteUrl).href
   : new URL(Astro.url.pathname, siteUrl).href;
 const ogImageUrl = new URL(ogImage, siteUrl).href;
+/** Polices limitées aux graisses utilisées (400, 500, 700, 800). */
+const fontsUrl =
+  'https://fonts.googleapis.com/css2?family=Elms+Sans:wght@700;800&family=Nunito+Sans:opsz,wght@6..12,400;500;700&display=swap';
 ---
 
 <!doctype html>
@@ -68,16 +71,17 @@ const ogImageUrl = new URL(ogImage, siteUrl).href;
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&family=Mallanna&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preload" as="style" href={fontsUrl} />
+    <link rel="stylesheet" href={fontsUrl} media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href={fontsUrl} />
+    </noscript>
     <link rel="icon" type="image/svg+xml" href={assetUrl('favicon/favicon.svg')} />
     <link rel="apple-touch-icon" href={assetUrl('favicon/favicon.svg')} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="" id="site-theme-color" />
+    <meta name="theme-color" content="#0a0a0a" />
     {noindex && <meta name="robots" content="noindex" />}
     {!noindex && <link rel="canonical" href={canonicalUrl} />}
     <meta property="og:type" content="website" />
@@ -92,17 +96,10 @@ const ogImageUrl = new URL(ogImage, siteUrl).href;
     <meta name="twitter:image" content={ogImageUrl} />
     <link rel="manifest" href={assetUrl('manifest.webmanifest')} />
     <title>{title}</title>
-    <script is:inline>
-      (function () {
-        var meta = document.getElementById('site-theme-color');
-        if (!meta) return;
-        var bg = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
-        if (bg) meta.setAttribute('content', bg);
-      })();
-    </script>
     <slot name="head" />
   </head>
   <body>
+    <a class="layout__skip-link" href="#main">Aller au contenu principal</a>
     <SiteGeoEdges />
     <slot name="site-header">
       <Header />
