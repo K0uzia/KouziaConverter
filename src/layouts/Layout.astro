@@ -33,6 +33,15 @@ const ogImageUrl = new URL(ogImage, siteUrl).href;
 <!doctype html>
 <html lang="fr" class:list={[{ 'layout--docs': layout === 'docs' }]}>
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C7ES9HLE1B"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-C7ES9HLE1B');
+    </script>
     <meta charset="utf-8" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

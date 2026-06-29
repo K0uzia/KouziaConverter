@@ -6,7 +6,7 @@ import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
 
 <Layout
   title={`Confidentialité - ${brandName}`}
-  description={`Politique de confidentialité de ${brandName} : traitement local des fichiers, sans collecte de données personnelles.`}
+  description={`Politique de confidentialité de ${brandName} : traitement local des fichiers et mesure d'audience Google Analytics.`}
   canonicalPath="/confidentialite/"
 >
   <article class="privacy" aria-labelledby="privacy-title">
@@ -14,8 +14,8 @@ import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
       <header class="privacy__head">
         <h1 class="privacy__title" id="privacy-title">Politique de confidentialité</h1>
         <p class="privacy__lead">
-          {brandName} est conçu pour traiter vos fichiers sur votre appareil, sans collecte de données
-          personnelles.
+          {brandName} est conçu pour traiter vos fichiers sur votre appareil, sans téléversement vers
+          un serveur de conversion.
         </p>
       </header>
 
@@ -23,10 +23,11 @@ import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
         <section class="privacy__section" aria-labelledby="privacy-summary">
           <h2 class="privacy__heading" id="privacy-summary">Résumé</h2>
           <p>
-            La politique de confidentialité de {brandName} est volontairement simple : nous ne
-            collectons ni ne stockons aucune donnée personnelle vous concernant. Nous n'utilisons pas
-            de cookies publicitaires ni de traceurs. Les conversions prévues sur le site s'exécutent
-            dans votre navigateur ; vos fichiers ne quittent pas votre appareil pour être convertis.
+            La politique de confidentialité de {brandName} est volontairement simple : les
+            conversions prévues sur le site s'exécutent dans votre navigateur et vos fichiers ne
+            quittent pas votre appareil pour être convertis. Nous utilisons Google Analytics pour
+            mesurer l'audience du site, sans cookies publicitaires ni profilage publicitaire de notre
+            part.
           </p>
           <p>
             Cette politique décrit le site officiel du projet. Une copie auto-hébergée peut gérer les
@@ -79,8 +80,16 @@ import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
         <section class="privacy__section" aria-labelledby="privacy-analytics">
           <h2 class="privacy__heading" id="privacy-analytics">Analytique</h2>
           <p>
-            À ce jour, nous n'utilisons pas d'outil d'analytique tiers sur ce site (pas de Google
-            Analytics, Plausible ou équivalent intégré au dépôt).
+            Nous utilisons Google Analytics pour comprendre l'utilisation du site : pages consultées,
+            provenance approximative du trafic, type d'appareil et événements techniques agrégés. Ces
+            mesures nous aident à améliorer le site et ne donnent pas accès au contenu de vos
+            fichiers.
+          </p>
+          <p>
+            Google peut traiter certaines informations techniques liées à votre visite, comme votre
+            adresse IP, les informations du navigateur ou des identifiants de mesure. Vous pouvez
+            limiter ou bloquer cette mesure via les paramètres de confidentialité de votre navigateur,
+            un bloqueur de contenu ou les outils proposés par Google.
           </p>
         </section>
 
@@ -103,7 +112,7 @@ import { brandName, githubUrl, githubIssuesUrl } from '../data/site';
           </p>
         </section>
 
-        <p class="privacy__updated">Dernière mise à jour : 2 juin 2026</p>
+        <p class="privacy__updated">Dernière mise à jour : 29 juin 2026</p>
       </div>
     </div>
   </article>
