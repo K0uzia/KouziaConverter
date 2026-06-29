@@ -77,7 +77,7 @@ const categoryDescriptions: Record<SupportCategoryId, string> = {
                 const tabId = `supports-${category.id}`;
 
                 return (
-                  <article
+                  <div
                     class:list={['supports__wheel-panel', { 'is-active': index === 0 }]}
                     id={`supports-wheel-panel-${category.id}`}
                     data-wheel-panel
@@ -203,7 +203,7 @@ const categoryDescriptions: Record<SupportCategoryId, string> = {
                         </div>
                       </div>
                     )}
-                  </article>
+                  </div>
                 );
               })
             }

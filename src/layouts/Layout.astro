@@ -31,15 +31,14 @@ const canonicalUrl = canonicalPath
 const ogImageUrl = new URL(ogImage, siteUrl).href;
 /** Polices limitées aux graisses utilisées (400, 500, 700, 800). */
 const fontsUrl =
-  'https://fonts.googleapis.com/css2?family=Elms+Sans:wght@700;800&family=Nunito+Sans:opsz,wght@6..12,400;500;700&display=swap';
+  'https://fonts.googleapis.com/css2?family=Elms+Sans:wght@700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,500;6..12,700&display=swap';
 ---
 
 <!doctype html>
 <html lang="fr" class:list={[{ 'layout--docs': layout === 'docs' }]}>
   <head>
     <meta charset="utf-8" />
-    <!-- Google tag (gtag.js) + mode Consentement -->
-    <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}></script>
+    <!-- Google tag (gtag.js) + mode Consentement : chargement diff\u00e9r\u00e9 hors chemin critique -->
     <script is:inline define:vars={{ googleAnalyticsId, analyticsConsentStorageKey }}>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -68,6 +67,25 @@ const fontsUrl =
 
       gtag('js', new Date());
       gtag('config', googleAnalyticsId);
+
+      var gtagLoaded = false;
+      function loadGtag() {
+        if (gtagLoaded) return;
+        gtagLoaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + googleAnalyticsId;
+        document.head.appendChild(s);
+      }
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadGtag, { timeout: 5000 });
+      } else {
+        setTimeout(loadGtag, 3000);
+      }
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(function (ev) {
+        window.addEventListener(ev, loadGtag, { once: true, passive: true });
+      });
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
